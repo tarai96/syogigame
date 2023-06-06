@@ -5,9 +5,18 @@ var fps = 1000 / 30;
 var mouse = new Point();
 var ctx;
 var click = false;
+var capturedPiece = [];
+var currentMass = 0;
+var gameStatus = "stop";    // stop, play, win, lose
 var turn = 0;
 var hold = false;
+var holdPiece = 0;
 var flag = false;
+var caught = false;
+var pieceList = [];
+var previousMass = 0;
+var i;
+var j;
 
 // - const
 var CHARA_COLOR = 'rgba(0, 0, 255, 0.75)';
@@ -40,6 +49,8 @@ window.onload = function () {
     info = document.getElementById('info');
 
     // 駒初期化
+    // メモ actions １次元相対座標そのコマの座標を0として
+    //              x+y*(横のマス数)
     var actions = new Array(8).fill(0);
     var size = new Size(0,0);
     size.x = 30;
@@ -53,11 +64,20 @@ window.onload = function () {
 
     //王将 no.2
     actions.fill(1);
-    var hu = new SyogiPiece(size,actions);
+    var osyo = new SyogiPiece(size,actions);
     var osyosStatus = new Array(NUM_OSYO).fill(new SyogiPieceStatus(0));
     osyosStatus[1].player = 1;
 
+    // 駒のリスト
+    pieceList[0] = hu;
+    pieceList[1] = osyo;
+
+    // 持ち駒初期化
+    // capturedPiece 2次元配列 0 自分　1 相手
+    for(i = 0; i < 2; i++) { capturedPiece.push(Array(64).fill(0)); }
+
     // 盤面初期化
+    // board　相手の駒はマイナス
     var board = new Array(NUM_ALLMASS).fill(0);
     var mass_positionx = 0;
     var mass_positiony = 0;
@@ -81,14 +101,14 @@ window.onload = function () {
     }
     */
     // レンダリング処理を呼び出す
-    (function () {
+    (function(){
+        gameStatus = "play"
+
         // HTMLを更新
         info.innerHTML = mouse.x + ' : ' + mouse.y;
 
-        if (hold){
-              
-		}else if(turn == 0){
-            // 将棋盤面
+        if(turn == 0){
+            // 将棋盤面 i->x j->y
             for(var j = 0;j < NUM_HEIGHTMASS;j++){
                 for(i = 0;i < NUM_WIDTHMASS;i++){
                     // 位置を設定(左上)
@@ -98,12 +118,55 @@ window.onload = function () {
                     // マウスが現在の四角の中にあるかどうかをチェックする
                     if((mass_positionx < mouse.x && mouse.x < mass_positionx+mass_size) && 
                         (mass_positiony < mouse.y && mouse.y < mass_positiony+mass_size)){
-                        flag = true;
+                        currentMass = i + j * NUM_WIDTHMASS;
+                    flag = true;
+                    break;
+                }
+                if(flag) {
+                    break;
+                }
+            }
+            // マウスクリックでコマを置くか選ぶ
+            if(click && hold){
+                for(i = 0; i < 8;i++){
+                    if(previousMass + pieceList[holdPiece].actions[i]){
+                        // 行動可能なマスならば
+                        // おく
+                        // おこうとしているマスに相手の駒があるなら
+                        if(board[currentMass] < 0){
+                            // もしそれが王だったら
+                            if(board[currentMass] == -1){
+                                // 勝利
+                                gameStatus = "win"
+                                break;
+							}
+                            for(i = 0;i < 64;i++){
+                                if(capturedPiece[0][i] == 0){
+                                    break;           
+					            }
+				            }
+                            capturedPiece[0][i] = board[currentMass];
+			            }
+                        board[currentMass] = holdPiece;
+                        holdPiece = 0;
+                        hold = false;
+                        turn = 1;
                         break;
-                        if(click){
-                                          
-						}
-                    
+					}
+				}
+			}else if(click){
+                if (board[currentMass] != 0){
+                    // えらぶ
+                    holdPiece = board[currentMass];
+                    previousMass = currentMass;
+                    board[currentMass] = 0;
+                    hold = true;
+                }
+			}
+		}
+        if(turn == 1){
+            // 相手のターン
+            turn = 0;
 		}
 
         // screenクリア 
@@ -145,6 +208,14 @@ window.onload = function () {
 				}
             }
         }
+
+        if(gameStatus == "win"){
+            ctx.fillStyle = 'rgba(30,90,30,0.75)';
+            ctx.fillRect(50,50,100,100);
+            ctx.fillStyle = 'rgba(0,0,0,0.75)';
+            ctx.font = '48px serif';
+            ctx.strokeText('WIN', 10, 50);
+		}
         
         ctx.fill();
         
