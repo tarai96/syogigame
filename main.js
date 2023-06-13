@@ -3,8 +3,10 @@ var screenCanvas, info;
 var run = true;
 var fps = 1000 / 30;
 var mouse = new Point();
+var actions = [];
 var ctx;
 var click = false;
+var cnt = 0;
 var capturedPiece = [];
 var currentMass = 0;
 var gameStatus = "stop";    // stop, play, win, lose
@@ -15,8 +17,8 @@ var flag = false;
 var caught = false;
 var pieceList = [];
 var previousMass = 0;
-var i;
-var j;
+var i = 0;
+var j = 0;
 
 // - const
 var CHARA_COLOR = 'rgba(0, 0, 255, 0.75)';
@@ -51,20 +53,31 @@ window.onload = function () {
     // 駒初期化
     // メモ actions １次元相対座標そのコマの座標を0として
     //              x+y*(横のマス数)
-    var actions = new Array(8).fill(0);
+    for (i = 0; i < 2; i++) {
+        actions[i] = []
+    }
     var size = new Size(0,0);
     size.x = 30;
     size.y = 30;
 
     //歩 no.1
-    actions[1] = 1;
-    var hu = new SyogiPiece(size,actions);
+    actions[0][0] = -6;
+    var hu = new SyogiPiece(size,actions[0]);
     var husStatus = new Array(NUM_HU).fill(new SyogiPieceStatus(0));
     husStatus[1].player = 1;
+    console.log(actions[0]);
 
     //王将 no.2
-    actions.fill(1);
-    var osyo = new SyogiPiece(size,actions);
+    cnt = 0;
+    for (j = -7; j <= 7; j++) {
+        if ((-7 <= j && j <= -5) || j == -1 || j == 1 || (5 <= j && j <= 7)) {
+            actions[1][cnt] = j;
+            cnt++;
+        }
+    }
+    var A = actions[1];
+    console.log(A);
+    var osyo = new SyogiPiece(size,actions[1]);
     var osyosStatus = new Array(NUM_OSYO).fill(new SyogiPieceStatus(0));
     osyosStatus[1].player = 1;
 
@@ -100,15 +113,17 @@ window.onload = function () {
         charaShot[i] = new CharacterShot();
     }
     */
+    gameStatus = "play";
     // レンダリング処理を呼び出す
     (function(){
-        gameStatus = "play"
+        
 
         // HTMLを更新
         info.innerHTML = mouse.x + ' : ' + mouse.y;
 
         if(turn == 0){
             // 将棋盤面 i->x j->y
+            flag = false;
             for(var j = 0;j < NUM_HEIGHTMASS;j++){
                 for(i = 0;i < NUM_WIDTHMASS;i++){
                     // 位置を設定(左上)
@@ -116,51 +131,59 @@ window.onload = function () {
                     mass_positiony = j * mass_size +  BOARD_MARJIN;
 
                     // マウスが現在の四角の中にあるかどうかをチェックする
-                    if((mass_positionx < mouse.x && mouse.x < mass_positionx+mass_size) && 
-                        (mass_positiony < mouse.y && mouse.y < mass_positiony+mass_size)){
+                    if ((mass_positionx < mouse.x && mouse.x < mass_positionx + mass_size) &&
+                        (mass_positiony < mouse.y && mouse.y < mass_positiony + mass_size)) {
                         currentMass = i + j * NUM_WIDTHMASS;
-                    flag = true;
-                    break;
+                        flag = true;
+                        break;
+                    }
                 }
                 if(flag) {
                     break;
                 }
             }
             // マウスクリックでコマを置くか選ぶ
-            if(click && hold){
-                for(i = 0; i < 8;i++){
-                    if(previousMass + pieceList[holdPiece].actions[i]){
+            if (click && hold) {
+                console.log(pieceList[holdPiece - 1].actions);
+                for (i in pieceList[holdPiece - 1].actions){
+                    if (currentMass == previousMass + pieceList[holdPiece - 1].actions[i]) {
                         // 行動可能なマスならば
                         // おく
                         // おこうとしているマスに相手の駒があるなら
-                        if(board[currentMass] < 0){
+                        if (board[currentMass] > 0) {
                             // もしそれが王だったら
-                            if(board[currentMass] == -1){
+                            if (board[currentMass] == 2) {
                                 // 勝利
                                 gameStatus = "win"
+                                console.log("win!");
                                 break;
-							}
-                            for(i = 0;i < 64;i++){
-                                if(capturedPiece[0][i] == 0){
-                                    break;           
-					            }
-				            }
+                            }
+                            for (i = 0; i < 64; i++) {
+                                if (capturedPiece[0][i] == 0) {
+                                    break;
+                                }
+                            }
                             capturedPiece[0][i] = board[currentMass];
-			            }
+                        }
                         board[currentMass] = holdPiece;
                         holdPiece = 0;
                         hold = false;
                         turn = 1;
                         break;
-					}
+                    } else {
+                        // そこには動けない
+                        console.log("unable action");
+                    }
 				}
-			}else if(click){
+            } else if (click) {
+                console.log(currentMass);
                 if (board[currentMass] != 0){
                     // えらぶ
                     holdPiece = board[currentMass];
                     previousMass = currentMass;
                     board[currentMass] = 0;
                     hold = true;
+                    console.log("hold!");
                 }
 			}
 		}
@@ -214,7 +237,7 @@ window.onload = function () {
             ctx.fillRect(50,50,100,100);
             ctx.fillStyle = 'rgba(0,0,0,0.75)';
             ctx.font = '48px serif';
-            ctx.strokeText('WIN', 10, 50);
+            ctx.strokeText('WIN', 60, 150);
 		}
         
         ctx.fill();
@@ -285,6 +308,9 @@ window.onload = function () {
         // 自機ショットを描く
         ctx.fill();
         */
+
+        //フラグを戻す
+        click = false;
 
         // フラグにより再帰呼び出し
         if (run) { setTimeout(arguments.callee, fps); }

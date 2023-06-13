@@ -40,7 +40,7 @@ CharacterShot.prototype.move = function () {
 class SyogiPiece{
     constructor(size, action){
      this.size = size;
-     this.possibleaction = action;
+     this.actions = action;
 	}
 }
 
