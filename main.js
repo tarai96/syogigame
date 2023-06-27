@@ -4,6 +4,9 @@ var run = true;
 var fps = 1000 / 30;
 var mouse = new Point();
 var actions = [];
+var boardImg = new Image();
+var huImg = new Image();
+var ousyouImage = new Image();
 var ctx;
 var click = false;
 var cnt = 0;
@@ -24,8 +27,8 @@ var j = 0;
 var CHARA_COLOR = 'rgba(0, 0, 255, 0.75)';
 var CHARA_SHOT_COLOR = 'rgba(0, 255, 0, 0.75)';
 var CHARA_SHOT_MAX_COUNT = 10;
-var NUM_WIDTHMASS = 6;
-var NUM_HEIGHTMASS = 6;
+var NUM_WIDTHMASS = 9;
+var NUM_HEIGHTMASS = 9;
 var NUM_ALLMASS = NUM_HEIGHTMASS * NUM_WIDTHMASS;
 var BOARD_MARJIN = 5;
 var NUM_HU = 2;
@@ -61,7 +64,7 @@ window.onload = function () {
     size.y = 30;
 
     //歩 no.1
-    actions[0][0] = -6;
+    actions[0][0] = -1 * NUM_WIDTHMASS;
     var hu = new SyogiPiece(size,actions[0]);
     var husStatus = new Array(NUM_HU).fill(new SyogiPieceStatus(0));
     husStatus[1].player = 1;
@@ -69,11 +72,17 @@ window.onload = function () {
 
     //王将 no.2
     cnt = 0;
-    for (j = -7; j <= 7; j++) {
-        if ((-7 <= j && j <= -5) || j == -1 || j == 1 || (5 <= j && j <= 7)) {
+    for(j = -(NUM_WIDTHMASS + 1); j <= NUM_WIDTHMASS; j++){
+        if (-1 * (NUM_WIDTHMASS + 1) <= j && j <= -1 * (NUM_WIDTHMASS - 1)) {
             actions[1][cnt] = j;
             cnt++;
-        }
+        }else if(j == -1 || j == 1){
+            actions[1][cnt] = j;
+            cnt++;
+		}else if(NUM_WIDTHMASS - 1 <= j && j <= NUM_WIDTHMASS + 1){
+            actions[1][cnt] = j;
+            cnt++;
+		}
     }
     var A = actions[1];
     console.log(A);
@@ -192,6 +201,11 @@ window.onload = function () {
             turn = 0;
 		}
 
+
+        /*********************************************************
+                                描写
+        **********************************************************/
+
         // screenクリア 
         ctx.clearRect(0, 0, screenCanvas.width, screenCanvas.height);
         
@@ -209,32 +223,72 @@ window.onload = function () {
                 if((mass_positionx < mouse.x && mouse.x < mass_positionx+mass_size) && 
                     (mass_positiony < mouse.y && mouse.y < mass_positiony+mass_size)){
                     // マウスが四角の中に入っているので、塗りつぶしスタイルを青に設定する
-                    ctx.fillStyle = 'rgba(0, 0, 255, 0.75)';
+                    // ctx.fillStyle = 'rgba(0, 0, 255, 0.75)';
 				}else{
                     // マウスが四角の中に入っていない場合は、塗りつぶしスタイルをデフォルトの色に設定します。
-                    ctx.fillStyle = 'rgba(255, 0, 0, 0.75)';
+                    // ctx.fillStyle = 'rgba(255, 0, 0, 0.75)';
                 }
 
                 // パスを設定
-                ctx.fillRect(mass_positionx, mass_positiony, mass_size, mass_size);
+                // ctx.fillRect(mass_positionx, mass_positiony, mass_size, mass_size);
                 ctx.closePath();
 
                 if (board[i + (NUM_WIDTHMASS * j)] != 0){
+                    // 歩
                     if (board[i + (NUM_WIDTHMASS * j)] == 1){
+                        ctx.beginPath();
                         ctx.fillStyle = 'rgba(0, 255, 0, 0.75)';
-                        ctx.fillRect(mass_positionx, mass_positiony, hu.size.x, hu.size.y);
+                        // ctx.fillRect(mass_positionx, mass_positiony, hu.size.x, hu.size.y);
+                    // 王将
 					}else if (board[i + (NUM_WIDTHMASS * j)] == 2){
+                        ctx.beginPath();
                         ctx.fillStyle = 'rgba(150, 255, 0, 0.75)';
-                        ctx.fillRect(mass_positionx, mass_positiony, hu.size.x, hu.size.y);
-					}
+                        // ctx.fillRect(mass_positionx, mass_positiony, hu.size.x, hu.size.y);
+                    }
                     
 				}
             }
         }
 
+        // 画像表示
+        boardImg.onload = function onImageLoad() {
+            ctx.drawImage(boardImg, 0, 0, screenCanvas.width, screenCanvas.height)  
+		}
+        boardImg.src = "Image/syougi_ban.png"
+
+        var huPositions = [];
+        var osyoPositions = [];
+        for(var j = 0;j < NUM_HEIGHTMASS;j++){
+            for(i = 0;i < NUM_WIDTHMASS;i++){
+                if (board[i + (NUM_WIDTHMASS * j)] != 0){
+                    // 歩
+                    if (board[i + (NUM_WIDTHMASS * j)] == 1){
+                        ctx.beginPath();
+                        ctx.fillStyle = 'rgba(0, 255, 0, 0.75)';
+                        // ctx.fillRect(mass_positionx, mass_positiony, hu.size.x, hu.size.y);
+                    // 王将
+					}else if (board[i + (NUM_WIDTHMASS * j)] == 2){
+                        ctx.beginPath();
+                        ctx.fillStyle = 'rgba(150, 255, 0, 0.75)';
+                        // ctx.fillRect(mass_positionx, mass_positiony, hu.size.x, hu.size.y);
+                    }
+                    
+				}
+            }
+        }
+        huImg.onload = function onImageLoad() {
+            ctx.drawImage(huImg, mass_positionx, mass_positiony, hu.size.x, hu.size.y)  
+		}
+        huImg.src = "Image/syougi14_fuhyou.png"
+
+        ousyouImage.onload = function onImageLoad() {
+            ctx.drawImage(ousyouImage, mass_positionx, mass_positiony, hu.size.x, hu.size.y)  
+		}
+        ousyouImage.src = "Image/syougi01_ousyou.png"
+
         if(gameStatus == "win"){
             ctx.fillStyle = 'rgba(30,90,30,0.75)';
-            ctx.fillRect(50,50,100,100);
+            // ctx.fillRect(50,50,100,100);
             ctx.fillStyle = 'rgba(0,0,0,0.75)';
             ctx.font = '48px serif';
             ctx.strokeText('WIN', 60, 150);
