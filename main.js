@@ -20,6 +20,28 @@ var pieceList = [];
 var previousMass = 0;
 var i = 0;
 var j = 0;
+
+var NUM_WIDTHMASS = 9;
+var NUM_HEIGHTMASS = 9;
+var NUM_ALLMASS = NUM_HEIGHTMASS * NUM_WIDTHMASS;
+var BOARD_MARJIN = 5;
+var NUM_HU = 2;
+var NUM_OSYO = 2;
+
+// 盤面に駒がどこにあるかの配列を返す
+function piece_position_get(board ,number_piece){
+	var position_list = [];
+	for(var j = 0;j < NUM_HEIGHTMASS;j++){
+        for(i = 0;i < NUM_WIDTHMASS;i++){
+            // 
+            if (board[i + (NUM_WIDTHMASS * j)] == number_piece){
+                position_list.push(new Size(i,j));
+            }
+        }
+    }
+	return position_list;
+}
+
 /*
  * メインシーン
  */
@@ -98,24 +120,36 @@ phina.define("MainScene", {
 	for(i = 0; i < 2; i++) { capturedPiece.push(Array(64).fill(0)); }
 
 	// 盤面初期化
-	// board　相手の駒はマイナス
-	var board = new Array(NUM_ALLMASS).fill(0);
+	// board_array　相手の駒はマイナス
+	var board_array = new Array(NUM_ALLMASS).fill(0);
 	var mass_positionx = 320;
 	var mass_positiony = 480;
-	var mass_size = (500 - 2*BOARD_MARJIN) / NUM_WIDTHMASS;
+	var mass_size = 50;
+	console.log("mass_size",mass_size);
 	
-	board[3] = 2;
-	board[3 + (NUM_WIDTHMASS * 1)] = 1;
-	board[3 + (NUM_WIDTHMASS * 4)] = 1;
-	board[3 + (NUM_WIDTHMASS * 5)] = 2;
+	board_array[3] = 2;
+	board_array[3 + (NUM_WIDTHMASS * 1)] = 1;
+	board_array[3 + (NUM_WIDTHMASS * 4)] = 1;
+	board_array[3 + (NUM_WIDTHMASS * 5)] = 2;
 
 	// Sprite
 	var board = Sprite('ban').addChildTo(this)
 				.setPosition(mass_positionx, mass_positiony);
+	console.log(board.width,board.height);	// 460, 500
+	// 始点(左上)x:320-(460/2)=90 y:480-(500/2)=230
+	// 駒の位置 x:一マス(50)*現在マス+始点+一マスの半分
+	//			y:同様
+	var hu_positions = [];
+	hu_positions = piece_position_get(board_array,1);
+	console.log(hu_positions);
 	var hu_0 = Sprite('hu').addChildTo(this)
-				.setPosition(320, 480).setSize(mass_size, mass_size);
+				.setPosition(50 * hu_positions[0].x + 115,
+							50 * hu_positions[0].y + 255)
+				.setSize(mass_size, mass_size);
 	var hu_1 = Sprite('hu').addChildTo(this)
-				.setPosition(320, 480).setSize(mass_size, mass_size);
+				.setPosition(50 * hu_positions[1].x + 115,
+						50 * hu_positions[1].y + 255)
+				.setSize(mass_size, mass_size);
 
   },
   // 毎フレーム更新処理
