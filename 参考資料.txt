@@ -5,3 +5,4 @@ https://qiita.com/maitake9116/items/1dd9f0f7d31e16b3469b
 https://qiita.com/doxas/items/3aede5613881dc0272ef
 https://qiita.com/renesisu727/items/248cb9468a402c622003
 https://qiita.com/elu_jaune/items/eb354558d0dc39add152
+https://zenn.dev/alkn203/books/phina-js-tips

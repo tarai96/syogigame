@@ -48,5 +48,7 @@ class SyogiPieceStatus{
     constructor(player){
     // 0(Žè‘O),1(‰œ)
      this.player = player;
+     this.position = new Point(0,0);
+     this.reserve = false;
 	}
 }
