@@ -73,7 +73,6 @@ phina.define("MainScene", {
 	// 背景色
 	this.backgroundColor = 'skyblue';
 
-	var capturedPiece = [];
 	var currentMass = 0;
 	var turn = 0;
 	var hold = false;
@@ -141,8 +140,8 @@ phina.define("MainScene", {
 	pieceList[1] = osyo;
 
 	// 持ち駒初期化
-	// capturedPiece 2次元配列 0 自分　1 相手
-	for(i = 0; i < 2; i++) { capturedPiece.push(Array(64).fill(0)); }
+	// reservePiece 2次元配列 0 自分　1 相手
+	for(i = 0; i < 2; i++) { reservePiece.push(Array(64).fill(0)); }
 
 	// 盤面初期化
 	// board_array　相手の駒はマイナス
