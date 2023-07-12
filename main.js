@@ -157,7 +157,10 @@ phina.define("MainScene", {
 	board_array[3 + (NUM_WIDTHMASS * 5)] = 2;
 
 	// Sprite
-	var board = Sprite('ban').addChildTo(this)
+	var board_group = DisplayElement().addChildTo(this);
+
+	  // board 
+	  Sprite('ban').addChildTo(board_group)
 				.setPosition(mass_positionx, mass_positiony);
 	console.log(board.width,board.height);	// 460, 500
 	// énì_(ç∂è„)x:320-(460/2)=90 y:480-(500/2)=230
@@ -173,12 +176,16 @@ phina.define("MainScene", {
 		if(husStatus[i].player == 1){
 			reverce = -1;
 		}
-		Sprite('hu').addChildTo(huGroup)
+		Sprite('hu').addChildTo(board_group)
 			.setPosition(50 * hu_positions[i].x + 115,
 						50 * hu_positions[i].y + 255)
 			.setSize(mass_size, mass_size);
 		huGroup[i].scaleY *= reverce;
-	}
+	  }
+	  /*
+	  mass_positionx = i * mass_size + BOARD_MARJIN;
+	  mass_positiony = j * mass_size + BOARD_MARJIN;
+	  */
 	/*
 	// â§è´
 	var osyo_positions = [];
