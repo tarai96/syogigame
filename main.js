@@ -88,7 +88,7 @@ phina.define("MainScene", {
 	var NUM_HEIGHTMASS = 9;
 	var NUM_ALLMASS = NUM_HEIGHTMASS * NUM_WIDTHMASS;
 	var BOARD_MARJIN = 5;
-	var NUM_HU = 2;
+	var NUM_HU = 9;
 	var NUM_OSYO = 2;
 	// 駒初期化
 	// メモ actions １次元相対座標そのコマの座標を0として
@@ -102,18 +102,18 @@ phina.define("MainScene", {
 	var size = new Size(50,50);
 
 	//歩 no.1
-	var huGroup = DisplayElement().addChildTo(this);
+	// var huGroup = DisplayElement().addChildTo(this);
 
 	actions[0][0] = -1 * NUM_WIDTHMASS;
 	var hu = new SyogiPiece(size,actions[0]);
 	var husStatus = new Array(NUM_HU).fill(new SyogiPieceStatus(0));
 	husStatus[1].player = 1;
 	console.log(actions[0]);
-	pieceStatus.push(husStatus)
+	  pieceStatus.push(husStatus);
 
 
 	//王将 no.2
-	var osyoGroup = DisplayElement().addChildTo(this);
+	// var osyoGroup = DisplayElement().addChildTo(this);
 
 	cnt = 0;
 	for(j = -(NUM_WIDTHMASS + 1); j <= NUM_WIDTHMASS; j++){
@@ -140,8 +140,8 @@ phina.define("MainScene", {
 	pieceList[1] = osyo;
 
 	// 持ち駒初期化
-	// reservePiece 2次元配列 0 自分　1 相手
-	for(i = 0; i < 2; i++) { reservePiece.push(Array(64).fill(0)); }
+	// reservePieces 2次元配列 0 自分　1 相手
+	for(i = 0; i < 2; i++) { reservePieces.push(Array(64).fill(0)); }
 
 	// 盤面初期化
 	// board_array　相手の駒はマイナス
@@ -153,16 +153,23 @@ phina.define("MainScene", {
 	
 	board_array[3] = 2;
 	board_array[3 + (NUM_WIDTHMASS * 1)] = 1;
-	board_array[3 + (NUM_WIDTHMASS * 4)] = 1;
+	board_array[4 + (NUM_WIDTHMASS * 4)] = 1;
 	board_array[3 + (NUM_WIDTHMASS * 5)] = 2;
 
-	// Sprite
-	var board_group = DisplayElement().addChildTo(this);
+	  board_array[0 + (NUM_WIDTHMASS * 0)] = 1;
+	  board_array[1 + (NUM_WIDTHMASS * 2)] = 1;
+	  board_array[2 + (NUM_WIDTHMASS * 3)] = 1;
+	  board_array[5 + (NUM_WIDTHMASS * 5)] = 1;
+	  board_array[6 + (NUM_WIDTHMASS * 6)] = 1;
+	  board_array[7 + (NUM_WIDTHMASS * 7)] = 1;
+	  board_array[8 + (NUM_WIDTHMASS * 8)] = 1;
 
-	  // board 
-	  Sprite('ban').addChildTo(board_group)
-				.setPosition(mass_positionx, mass_positiony);
-	console.log(board.width,board.height);	// 460, 500
+	// Sprite
+	  var board_group = DisplayElement().addChildTo(this);
+	  board_group.setPosition(this.gridX.center(), this.gridY.center());
+	// board 
+	Sprite('ban').addChildTo(board_group)
+	  console.log(board_array.width, board_array.height);	// 460, 500
 	// 始点(左上)x:320-(460/2)=90 y:480-(500/2)=230
 	// 駒の位置 x:一マス(50)*現在マス+始点+一マスの半分
 	//			y:同様
@@ -177,15 +184,17 @@ phina.define("MainScene", {
 			reverce = -1;
 		}
 		Sprite('hu').addChildTo(board_group)
-			.setPosition(50 * hu_positions[i].x + 115,
-						50 * hu_positions[i].y + 255)
+			.setPosition(48 * (hu_positions[i].x - (NUM_WIDTHMASS - 1) / 2) + 0,
+				52 * (hu_positions[i].y - (NUM_HEIGHTMASS - 1) / 2) + 0)
 			.setSize(mass_size, mass_size);
-		huGroup[i].scaleY *= reverce;
+		board_group.children[i].scaleY *= reverce;
 	  }
 	  /*
 	  mass_positionx = i * mass_size + BOARD_MARJIN;
 	  mass_positiony = j * mass_size + BOARD_MARJIN;
 	  */
+	  console.log(board_group);
+
 	/*
 	// 王将
 	var osyo_positions = [];
@@ -214,6 +223,29 @@ phina.define("MainScene", {
 	}
 	*/
 
+	// 将棋盤の当たり判定ます
+	  for (j = 0; j < NUM_HEIGHTMASS; j++) {
+		  for (i = 0; i < NUM_WIDTHMASS; i++) {
+			  // RectangleShape
+			  RectangleShape({
+				  width: 45,
+				  height: 49,
+				  fill: 'red',
+				  // stroke: 'lime',
+				  strokeWidth: 0,
+				  cornerRadius: 0
+			  }).addChildTo(board_group)
+				  .setPosition(48 * (i - (NUM_WIDTHMASS - 1) / 2) + 0,
+					  52 * (j - (NUM_HEIGHTMASS - 1) / 2) + 0);
+			  board_group.children[i + j * NUM_WIDTHMASS + 1 + NUM_HU].alpha = 0.25;		  }
+	  }
+
+	  // タッチイベント
+	  this.onpointmove = function (e) {
+		  // スプライトをタッチ位置に
+		  sprite.x = e.pointer.x;
+		  sprite.y = e.pointer.y;
+	  };
 
   },
   // 毎フレーム更新処理
