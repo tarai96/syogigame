@@ -6,6 +6,7 @@ var ASSETS = {
 	// 画像
 	image: {
 	'hu': "image/syougi14_fuhyou.png",
+	'osyo': "image/syougi01_ousyou.png",
 	'ban': "image/syougi_ban.png",
 	},
 };
@@ -110,11 +111,27 @@ phina.define("Hu", {
 		this.superInit('hu');
 		this.mass = mass;
 		this.previousMass = mass;
-		this.actions = action;
+		this.actions = actions;
 		this.player = player;
 		this.reserve = false;
 		// 駒種　歩
 		this.seed = 1;
+	},
+});
+
+phina.define("Osyo", {
+	//Spriteクラスを継承
+	superClass: 'Sprite',
+	init: function(mass, actions, player, reserve=false) {
+		// 親クラス初期化
+		this.superInit('osyo');
+		this.mass = mass;
+		this.previousMass = mass;
+		this.actions = actions;
+		this.player = player;
+		this.reserve = false;
+		// 駒種　王将
+		this.seed = 2;
 	},
 });
 
@@ -177,7 +194,7 @@ phina.define("MainScene", {
 	// var osyoGroup = DisplayElement().addChildTo(this);
 
 	cnt = 0;
-	for(j = -(NUM_WIDTHMASS + 1); j <= NUM_WIDTHMASS; j++){
+	for(j = -(NUM_WIDTHMASS + 1); j <= NUM_WIDTHMASS+1; j++){
 		if (-1 * (NUM_WIDTHMASS + 1) <= j && j <= -1 * (NUM_WIDTHMASS - 1)) {
 			actions[1][cnt] = j;
 			cnt++;
@@ -195,6 +212,11 @@ phina.define("MainScene", {
 	var osyosStatus = new Array(NUM_OSYO).fill(new SyogiPieceStatus(0));
 	osyosStatus[1].player = 1;
 	piece_status.push(osyosStatus);
+
+	for(i=0;i<NUM_OSYO;i++){
+		// mass,action,player 
+		piece_list.push(Hu(piece_status[1][i].position,osyo.actions,piece_status[1][i].player));
+	}
 
 	// 駒のリスト
 	piece_seed_list[0] = hu;
@@ -317,7 +339,7 @@ phina.define("MainScene", {
 					dragging = false;
 					turn = 1;
 				});
-			  board_group.children[i + j * NUM_WIDTHMASS + 1 + NUM_HU].alpha = 0.25;		  }
+			  board_group.children[i + j * NUM_WIDTHMASS + 1 + NUM_HU].alpha = 0.25;
 		   }
 	   }
 	  /*
