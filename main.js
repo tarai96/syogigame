@@ -15,7 +15,7 @@ var hold = false;
 var holdPiece = 0;
 var mouse = new Point(0,0);
 var reservePieces = [];
-var pieceStatus = [];
+var piece_status = [];
 var flag = false;
 var caught = false;
 var piece_seed_list = [];
@@ -35,6 +35,7 @@ var NUM_ALLMASS = NUM_HEIGHTMASS * NUM_WIDTHMASS;
 var BOARD_MARJIN = 5;
 var NUM_HU = 2;
 var NUM_OSYO = 2;
+var NUM_PIECE = [NUM_HU,NUM_OSYO];
 
 // 盤面に駒がどこにあるかの配列を返す
 function get_piece_position(board ,number_piece){
@@ -49,19 +50,20 @@ function get_piece_position(board ,number_piece){
     }
 	return position_list;
 }
-
+// 一つの駒を指定し動けるマスを座標で返す
 function get_valid_actions(board, number_piece, control_number){
 	var actions_list = [];
-	if(pieceStatus[number_piece - 1][control_number].reserve){
+	if(piece_status[number_piece - 1][control_number].reserve){
 		return [];
 	}
 	var x=0;
 	var y=0;
 	for(var i in piece_seed_list[number_piece].actions){
-		x = pieceStatus[number_piece-1][control_number].position.x + piece_seed_list[number_piece].actions.x;
-		y = pieceStatus[number_piece-1][control_number].position.y + piece_seed_list[number_piece].actions.y;
+		x = piece_status[number_piece-1][control_number].position.x + piece_seed_list[number_piece].actions.x;
+		y = piece_status[number_piece-1][control_number].position.y + piece_seed_list[number_piece].actions.y;
 		actions_list.push(new Point(x,y));
 	}
+	// Todo: 下のget_valid_actionsを参考にget_valid_actionを作る
 	return actions_list;
 }
 
@@ -74,7 +76,8 @@ function get_num_enemy_piece(board_group){
 	}
 	return cnt;
 }
-
+/*
+// なんか二つ作ってたので一つは封印
 function get_valid_actions(state, n_piece){
 	var valid_actions = [];
 	var piece = board_group.children[n_piece+1]
@@ -89,6 +92,7 @@ function get_valid_actions(state, n_piece){
 	}
 	return valid_actions;
 }
+*/
 
 function set_initial_state(state, positions){
 	for(var seed=0;seed<positions.length;seed++){
@@ -141,8 +145,9 @@ phina.define("MainScene", {
 	var NUM_HEIGHTMASS = 9;
 	var NUM_ALLMASS = NUM_HEIGHTMASS * NUM_WIDTHMASS;
 	var BOARD_MARJIN = 5;
-	var NUM_HU = 9;
+	var NUM_HU = 2;
 	var NUM_OSYO = 2;
+	var NUM_PIECE = [NUM_HU,NUM_OSYO];
 	// 駒初期化
 	// メモ actions １次元相対座標そのコマの座標を0として
 	//              x+y*(横のマス数)
@@ -152,22 +157,22 @@ phina.define("MainScene", {
 		actions[i] = [];
 	}
 
-	var size = new Size(50,50);
-
+	// メモ　piece_status[駒種-1][通し番号]
+	//       piece_list[番号] 番号の求め方（仮）(駒種ごとの駒の数のそれまでの合計)+(上の通し番号)
 	//歩 no.1
 	// var huGroup = DisplayElement().addChildTo(this);
 
 	actions[0][0] = -1 * NUM_WIDTHMASS;
-	var hu = new SyogiPiece(size,actions[0]);
+	var hu = new SyogiPiece(actions[0]);
 	var husStatus = new Array(NUM_HU).fill(new SyogiPieceStatus(0));
 	husStatus[1].player = 1;
 	console.log(actions[0]);
-	pieceStatus.push(husStatus);
+	piece_status.push(husStatus);
 
 	for(i=0;i<NUM_HU;i++){
-		// mass,action,player 仮
-		piece_list.push(Hu(-1,hu.actions,0));
-
+		// mass,action,player 
+		piece_list.push(Hu(piece_status[0][i].position,hu.actions,piece_status[0][i].player));
+	}
 	//王将 no.2
 	// var osyoGroup = DisplayElement().addChildTo(this);
 
@@ -186,10 +191,10 @@ phina.define("MainScene", {
 	}
 	var A = actions[1];
 	console.log(A);
-	var osyo = new SyogiPiece(size,actions[1]);
+	var osyo = new SyogiPiece(actions[1]);
 	var osyosStatus = new Array(NUM_OSYO).fill(new SyogiPieceStatus(0));
 	osyosStatus[1].player = 1;
-	pieceStatus.push(osyosStatus);
+	piece_status.push(osyosStatus);
 
 	// 駒のリスト
 	piece_seed_list[0] = hu;
@@ -209,7 +214,7 @@ phina.define("MainScene", {
 	board_array[3 + (NUM_WIDTHMASS * 1)] = -1;
 	board_array[4 + (NUM_WIDTHMASS * 4)] = 1;
 	board_array[3 + (NUM_WIDTHMASS * 5)] = 2;
-
+	/*
 	  board_array[0 + (NUM_WIDTHMASS * 0)] = 1;
 	  board_array[1 + (NUM_WIDTHMASS * 2)] = 1;
 	  board_array[2 + (NUM_WIDTHMASS * 3)] = -1;
@@ -217,7 +222,7 @@ phina.define("MainScene", {
 	  board_array[6 + (NUM_WIDTHMASS * 6)] = -1;
 	  board_array[7 + (NUM_WIDTHMASS * 7)] = 1;
 	  board_array[8 + (NUM_WIDTHMASS * 8)] = 1;
-
+	*/
 	// Sprite
 	  var board_group = DisplayElement().addChildTo(this);
 	  board_group.setPosition(this.gridX.center(), this.gridY.center());

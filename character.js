@@ -38,17 +38,16 @@ CharacterShot.prototype.move = function () {
 };
 
 class SyogiPiece{
-    constructor(size, action){
-     this.size = size;
+    constructor(action){
      this.actions = action;
 	}
 }
 
 class SyogiPieceStatus{
-    constructor(player){
+    constructor(player, position = new Point(0,0), reserve = false){
     // 0(Žè‘O),1(‰œ)
      this.player = player;
-     this.position = new Point(0,0);
-     this.reserve = false;
+     this.position = position;
+     this.reserve = reserve;
 	}
 }
