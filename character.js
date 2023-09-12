@@ -44,7 +44,7 @@ class SyogiPiece{
 }
 
 class SyogiPieceStatus{
-    constructor(player, mass = new Point(0,0), reserve = false){
+    constructor(player, mass = 0, reserve = false){
     // 0(Žè‘O),1(‰œ)
      this.player = player;
      this.mass = mass;

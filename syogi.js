@@ -35,9 +35,26 @@ for(j = -(NUM_WIDTHMASS + 1); j <= NUM_WIDTHMASS; j++){
 }
 */
 
-function syogi_init(){
-	// excelファイルを読み込んで、board_array,piece_statusを返す(未実装)
+function syogi_init(board_array,NUM_WIDTHMASS,NUM_HEIGHTMASS){
+	// 配列を読み込んで、piece_statusを返す(未実装)
+	// 多次元配列 0:歩 1:王玉将
+	var piece_status = [];
+	var player = 0;
+	var seed = 0;
+	for(var i=0;i<NUM_WIDTHMASS*NUM_HEIGHTMASS;i++){ 
+	  if(board_array[i] != 0){
+	    if(board_array[i] < 0){
+		  seed = -board_array[i];
+		  player = 1;
+		}else{
+		  seed = board_array[i];
+		  player = 0;
+		}
+	    piece_status[seed].push(new SyogiPieceStatus(player,mass = i));
+	  }
 
+	// TODO ほかの初期化追加
+	}
 }
 // 駒全体 syogi_init内で使う(未実装)
 function pieces_init(array,actions){
