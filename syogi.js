@@ -77,7 +77,7 @@ function syogi_init(board_array,NUM_WIDTHMASS,NUM_HEIGHTMASS){
 		actions[i] = [];
 	}
 	*/
-	var actions = [[],[],[],[],[],[],[],[]];
+	var actions = [[],[],[],[],[],[],[],[],[],[],[],[]];
 	var cnt = 0;
 	actions[0][0] = -1 * NUM_WIDTHMASS;
 	cnt = 0;
@@ -93,12 +93,18 @@ function syogi_init(board_array,NUM_WIDTHMASS,NUM_HEIGHTMASS){
 			cnt++;
 		}
 	}
+	// 仮のアクション
+	for(var i=2;i<12;i++){
+		actions[i][0] = -1 * NUM_WIDTHMASS - 1
+	}
 	
 	var piece_seed_list = [];
 	var HU = new SyogiPiece(actions[0]);
-	piece_seed_list.push(HU);
 	var OSYO = new SyogiPiece(actions[1]);
-	piece_seed_list.push(OSYO);
+
+	for(var i =0;i<12;i++){
+		piece_seed_list.push(new SyogiPiece(actions[i]));
+	}
 
 	// TODO ほかの初期化追加
 
@@ -107,61 +113,3 @@ function syogi_init(board_array,NUM_WIDTHMASS,NUM_HEIGHTMASS){
 	return {piece_status ,piece_seed_list ,NUM_PIECE};
 }
 
-// 駒単体
-function piece_init(player,position,reserve = false){
-	
-	// 個々の駒
-	var status = new SyogiPieceStatus(player,position,reserve);
-
-	return status
-}
-
-// 仮の初期化
-function piece_init_0(){
-
-}
-
-function syogi_init_0(){
-	NUM_HU_0 = [1,1];
-	NUM_OSYO_0 = [1,1];
-	NUM_PIECE_0 = [NUM_HU_0,NUM_OSYO_0];
-
-	var board_array = new Array(NUM_ALLMASS).fill(0);
-
-	board_array[3] = -2;
-	board_array[3 + (NUM_WIDTHMASS * 1)] = -1;
-	board_array[4 + (NUM_WIDTHMASS * 4)] = 1;
-	board_array[3 + (NUM_WIDTHMASS * 5)] = 2;
-
-	/*
-	  board_array[0 + (NUM_WIDTHMASS * 0)] = 1;
-	  board_array[1 + (NUM_WIDTHMASS * 2)] = 1;
-	  board_array[2 + (NUM_WIDTHMASS * 3)] = -1;
-	  board_array[5 + (NUM_WIDTHMASS * 5)] = 1;
-	  board_array[6 + (NUM_WIDTHMASS * 6)] = -1;
-	  board_array[7 + (NUM_WIDTHMASS * 7)] = 1;
-	  board_array[8 + (NUM_WIDTHMASS * 8)] = 1;
-	*/
-
-	var piece_status = [];
-	var piece_seed_list = [];
-	// 駒種ずつ
-	for(var i=0;i<2;i++){
-		// 駒種のステータス
-		var Piece = new SyogiPiece(actions[i]);
-		piece_seed_list.push(Piece);
-		for(var j=0;j<NUM_PIECE[i];j++){
-			// 個々の駒のステータス(駒種ずつ)
-			var statuses = [];
-			for(var l=0;l<2;l++){
-				//自駒、敵駒別々 0:自　1:敵
-				for(var p=0;p<NUM_PIECE_0[i,j];p++){
-					var status = piece_init(l);
-					statuses.push(status);
-				}
-			}
-		piece_status.push(statuses)	
-		}
-	}
-
-}

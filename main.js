@@ -7,7 +7,11 @@ var ASSETS = {
 	image: {
 	'hu': "image/syougi14_fuhyou.png",
 	'osyo': "image/syougi01_ousyou.png",
-	'kin' : "image/kinsyou"
+	'hisya' : "image/syougi03_hisya.png",
+	'kaku' : "image/syougi05_gakugyou.png",
+	'kin' : "image/syougi07_kinsyou.png",
+	'gin' : "image/syougi08_ginsyou.png",
+	'keima' : "image/syougi10_keima.png",
 	'ban': "image/syougi_ban.png",
 	},
 };
@@ -114,7 +118,7 @@ phina.define("Hu", {
 		this.previousMass = mass;
 		this.actions = actions;
 		this.player = player;
-		this.reserve = false;
+		this.reserve = reserve;
 		// 駒種　歩
 		this.seed = 1;
 	},
@@ -130,9 +134,89 @@ phina.define("Osyo", {
 		this.previousMass = mass;
 		this.actions = actions;
 		this.player = player;
-		this.reserve = false;
+		this.reserve = reserve;
 		// 駒種　王将
 		this.seed = 2;
+	},
+});
+//TODO seedをつける
+phina.define("Hisya", {
+	//Spriteクラスを継承
+	superClass: 'Sprite',
+	init: function(mass, actions, player, reserve=false) {
+		// 親クラス初期化
+		this.superInit('hisya');
+		this.mass = mass;
+		this.previousMass = mass;
+		this.actions = actions;
+		this.player = player;
+		this.reserve = reserve;
+		// 駒種　王将
+		this.seed = 0;
+	},
+});
+
+phina.define("Kaku", {
+	//Spriteクラスを継承
+	superClass: 'Sprite',
+	init: function(mass, actions, player, reserve=false) {
+		// 親クラス初期化
+		this.superInit('kaku');
+		this.mass = mass;
+		this.previousMass = mass;
+		this.actions = actions;
+		this.player = player;
+		this.reserve = reserve;
+		// 駒種　王将
+		this.seed = 0;
+	},
+});
+
+phina.define("Kin", {
+	//Spriteクラスを継承
+	superClass: 'Sprite',
+	init: function(mass, actions, player, reserve=false) {
+		// 親クラス初期化
+		this.superInit('kin');
+		this.mass = mass;
+		this.previousMass = mass;
+		this.actions = actions;
+		this.player = player;
+		this.reserve = reserve;
+		// 駒種　王将
+		this.seed = 0;
+	},
+});
+
+phina.define("Gin", {
+	//Spriteクラスを継承
+	superClass: 'Sprite',
+	init: function(mass, actions, player, reserve=false) {
+		// 親クラス初期化
+		this.superInit('gin');
+		this.mass = mass;
+		this.previousMass = mass;
+		this.actions = actions;
+		this.player = player;
+		this.reserve = reserve;
+		// 駒種　王将
+		this.seed = 0;
+	},
+});
+
+phina.define("Keima", {
+	//Spriteクラスを継承
+	superClass: 'Sprite',
+	init: function(mass, actions, player, reserve=false) {
+		// 親クラス初期化
+		this.superInit('keima');
+		this.mass = mass;
+		this.previousMass = mass;
+		this.actions = actions;
+		this.player = player;
+		this.reserve = reserve;
+		// 駒種　王将
+		this.seed = 0;
 	},
 });
 
@@ -164,39 +248,34 @@ phina.define("MainScene", {
 	var NUM_HEIGHTMASS = 9;
 	var NUM_ALLMASS = NUM_HEIGHTMASS * NUM_WIDTHMASS;
 	var BOARD_MARJIN = 5;
-	var NUM_HU = 2;
-	var NUM_OSYO = 0;
-	var NUM_PIECE = [NUM_HU,NUM_OSYO];
 
 	// 盤面初期化
 	// board_array　相手の駒はマイナス
 	var board_array = [0, 0, 0, 0, 0, 0, 0, 0, 0,
-						 0, 0, 0, 0, 0, 0, 0, 0, 0,
-						 -1,-1,-1,-1,-1,-1,-1,-1,-1,
-						 0, 0, 0, 0, 0, 0, 0, 0, 0,
-						 0, 0, 0, 0, 0, 0, 0, 0, 0,
-						 0, 0, 0, 0, 0, 0, 0, 0, 0,
-						 1, 1, 1, 1, 1, 1, 1, 1, 1,
-						 0, 0, 0, 0, 0, 0, 0, 0, 0,
-						 0, 0, 0, 0, 0, 0, 0, 0, 0,
-						 ]
+										 0, 0, 0, 0, 0, 0, 0, 0, 0,
+										 -1,-1,-1,-1,-1,-1,-1,-1,-1,
+										 0, 0, 0, 0, 0, 0, 0, 0, 0,
+										 0, 0, 0, 0, 0, 0, 0, 0, 0,
+										 0, 0, 0, 0, 0, 0, 0, 0, 0,
+										 1, 1, 1, 1, 1, 1, 1, 1, 1,
+										 0, 0, 0, 0, 0, 0, 0, 0, 0,
+										 0, 0, 0, 0, 0, 0, 0, 0, 0,
+										 ]
 	
 	var {piece_status,piece_seed_list,NUM_PIECE} = syogi_init(board_array,NUM_WIDTHMASS,NUM_HEIGHTMASS);
 	console.log("piece_status,piece_seed_list,NUM_PIECE");
 	console.log(piece_status,piece_seed_list,NUM_PIECE);
 	// 駒初期化
 
-	// メモ　piece_status[駒種-1][通し番号]
-	//       piece_list[番号] 番号の求め方（仮）(駒種ごとの駒の数のそれまでの合計)+(上の通し番号)
+	// メモ　game本体 piece_status[駒種-1][通し番号]
+	//       Sprite piece_list[番号] 番号の求め方（仮）(駒種ごとの駒の数のそれまでの合計)+(上の通し番号)
+
 	//歩 no.1
-	// var huGroup = DisplayElement().addChildTo(this);
 	for(i=0;i<NUM_PIECE[0];i++){
 		// mass,action,player 
 		piece_list.push(Hu(piece_status[0][i].mass,piece_seed_list[0].actions,piece_status[0][i].player));
 	}
 	//王将 no.2
-	// var osyoGroup = DisplayElement().addChildTo(this);
-
 	for(i=0;i<NUM_OSYO;i++){
 		// mass,action,player 
 		piece_list.push(Osyo(piece_status[1][i].mass,piece_seed_list[1].actions,piece_status[1][i].player));
