@@ -35,12 +35,25 @@ for(j = -(NUM_WIDTHMASS + 1); j <= NUM_WIDTHMASS; j++){
 }
 */
 
+function seed_to_index(seed){
+	return seed - 1;
+}
+
 function syogi_init(board_array,NUM_WIDTHMASS,NUM_HEIGHTMASS){
-	// 配列を読み込んで、piece_statusを返す(未実装)
+	// 配列を読み込んで、piece_status,piece_seed_list,NUM_PIECEを返す(未実装)
+	console.log("board_array");
+	console.log(board_array);
 	// 多次元配列 0:歩 1:王玉将
-	var piece_status = [];
+	/*
+	for (var i = 0; i < 2; i++) {
+		piece_status[i] = [];
+	}
+	*/
+	// メモ配列初期化 var board_array = new Array(NUM_ALLMASS).fill(0);
+	var piece_status = [[],[],[],[],[],[],[],[],[],[],[]];
 	var player = 0;
 	var seed = 0;
+	var NUM_PIECE = [0,0,0,0,0,0,0,0,0,0,0,0,0];
 	for(var i=0;i<NUM_WIDTHMASS*NUM_HEIGHTMASS;i++){ 
 	  if(board_array[i] != 0){
 	    if(board_array[i] < 0){
@@ -50,30 +63,55 @@ function syogi_init(board_array,NUM_WIDTHMASS,NUM_HEIGHTMASS){
 		  seed = board_array[i];
 		  player = 0;
 		}
-	    piece_status[seed].push(new SyogiPieceStatus(player,mass = i));
+	    piece_status[seed_to_index(seed)].push(new SyogiPieceStatus(player,mass = i));
+	    NUM_PIECE[seed_to_index(seed)] += 1;
 	  }
 
-	// TODO ほかの初期化追加
 	}
-}
-// 駒全体 syogi_init内で使う(未実装)
-function pieces_init(array,actions){
-	var piece_status = [];
-	// 駒種ずつ
-	for(var i=0;i<2;i++){
-		// 駒種のステータス
-		var Piece = new SyogiPiece(actions[i]);
-		for(var j=0;j<NUM_PIECE[i];j++){
-			var statuses = [];
-			statuses.push(
+	// 駒種クラスの初期化
+	// 各駒種のアクション
+	// メモ actions １次元相対座標そのコマの座標を0として
+	//              x+y*(横のマス数)
+	/*
+	for (var i = 0; i < 2; i++) {
+		actions[i] = [];
+	}
+	*/
+	var actions = [[],[],[],[],[],[],[],[]];
+	var cnt = 0;
+	actions[0][0] = -1 * NUM_WIDTHMASS;
+	cnt = 0;
+	for(j = -(NUM_WIDTHMASS + 1); j <= NUM_WIDTHMASS+1; j++){
+		if (-1 * (NUM_WIDTHMASS + 1) <= j && j <= -1 * (NUM_WIDTHMASS - 1)) {
+			actions[1][cnt] = j;
+			cnt++;
+		}else if(j == -1 || j == 1){
+			actions[1][cnt] = j;
+			cnt++;
+		}else if(NUM_WIDTHMASS - 1 <= j && j <= NUM_WIDTHMASS + 1){
+			actions[1][cnt] = j;
+			cnt++;
 		}
 	}
+	
+	var piece_seed_list = [];
+	var HU = new SyogiPiece(actions[0]);
+	piece_seed_list.push(HU);
+	var OSYO = new SyogiPiece(actions[1]);
+	piece_seed_list.push(OSYO);
+
+	// TODO ほかの初期化追加
+
+	console.log("piece_status,piece_seed_list,NUM_PIECE");
+	console.log(piece_status,piece_seed_list,NUM_PIECE);
+	return {piece_status ,piece_seed_list ,NUM_PIECE};
 }
+
 // 駒単体
 function piece_init(player,position,reserve = false){
 	
 	// 個々の駒
-	var status = new SyogiPieceStatus(player,position,reserve));
+	var status = new SyogiPieceStatus(player,position,reserve);
 
 	return status
 }
