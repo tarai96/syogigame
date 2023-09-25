@@ -12,34 +12,117 @@ var NUM_OSYO = 2;
 var NUM_PIECE = [NUM_HU,NUM_OSYO];
 ////////////////////////////////////////////////////////////////////
 
-var actions = [];
-
-for (i = 0; i < 2; i++) {
-	actions[i] = [];
-}
-// 歩
-actions[0][0] = -1 * NUM_WIDTHMASS;
-//王将
-cnt = 0;
-for(j = -(NUM_WIDTHMASS + 1); j <= NUM_WIDTHMASS; j++){
-	if (-1 * (NUM_WIDTHMASS + 1) <= j && j <= -1 * (NUM_WIDTHMASS - 1)) {
-		actions[1][cnt] = j;
-		cnt++;
-	}else if(j == -1 || j == 1){
-		actions[1][cnt] = j;
-		cnt++;
-	}else if(NUM_WIDTHMASS - 1 <= j && j <= NUM_WIDTHMASS + 1){
-		actions[1][cnt] = j;
-		cnt++;
-	}
-}
 */
 
 function seed_to_index(seed){
 	return seed - 1;
 }
 
-function syogi_init(board_array,NUM_WIDTHMASS,NUM_HEIGHTMASS){
+function sum_2darray(arr) {
+	let sum = 0;
+	for (let i = 0; i < arr.length; i++) {
+		for (let j = 0; j < arr[i].length; j++) {
+			sum += arr[i][j];
+		}
+	}
+	return sum;
+}
+
+// piece_listの番号からpiece_statusの番号へ
+function ctr_num_to_stat_num(control_number, NUM_PIECE) {
+	const sum_piece = sum_2darray(NUM_PIECE);
+	let status_number = control_number;
+	for (let seed = 0; seed < arr.lenth; i++) {
+		if (status_number >= NUM_PIECE[seed]) {
+			status_number -= NUM_PIECE[seed];
+		} else {
+			return [seed, status_number]
+		}
+	}
+}
+
+function stat_num_to_ctr_num(seed, status_number, NUM_PIECE) {
+	let control_number = 0;
+	for (let i = 0; i < seed; i++) {
+		control_number += NUM_PIECE[i];
+	}
+	control_number += status_number;
+	const sum_piece = sum_2darray(NUM_PIECE);
+	if (control_number >= sum_piece) {
+		console.log("error control_number >= sum_piece");
+		console.log("control_number, sum_piece,NUM_PIECE");
+		console.log(control_number, sum_piece, NUM_PIECE);
+	}
+	return control_number;
+}
+
+function mass_to_xy(mass) {
+	let x = mass;
+	for (let y = 0; y < NUM_HEIGHTMASS; y++) {
+		if (x < NUM_WIDTHMASS) {
+			return Position(x, y);
+		}
+		x -= NUM_WIDTHMASS;
+	}
+}
+
+function is_valid_action(board_array, action, player) {
+if (action < 0 && action >= NUM_ALLMASS) {
+	// 将棋盤の外
+	  return false;
+} else if (board_array[action] < 0 && player == 0) {
+	// 動こうとするマスにこの駒の味方の駒がいなければ動ける
+	  return true;
+} else if (board_array[action] > 0 && player == 1) {
+	  return true;
+} else if (board_array[action] == 0) {
+	  return true;
+} else {
+	  console.log("error");
+}
+}
+
+// 一つの駒を指定し動けるマスを座標で返す
+function get_valid_actions(board_array, piece_seed_list, pieces_status, number_piece, control_number) {
+	let board = board_array.concat();
+	let piece_status = pieces_status.concat();
+	let reserve_piece = reserve_pieces.concat();
+	let actions_list = [];
+	if (piece_status[number_piece - 1][control_number].reserve) {
+		return [];
+	}
+	var x = 0;
+	var y = 0;
+	// 駒種のアクションを実際の座標に直す
+	let position = 0;
+	let action = new Position(0, 0);
+	for (var i in piece_seed_list[number_piece].actions) {
+		position = mass_to_xy(piece_status[number_piece - 1][control_number].mass);
+		action.x = position.x + piece_seed_list[number_piece].actions.x;
+		action.y = position.y + piece_seed_list[number_piece].actions.y;
+
+		if(is_valid_action(board, action, piece_status[number_piece - 1][control_number].mass.player)){
+			actions_list.push(new Position(action.x, action.y));
+		}
+	}
+	return actions_list;
+}
+
+function find_piece_for_mass(piece_status, NUM_PIECE, mass) {
+	let seed = -1;
+	let status_number = -1;
+	for (var i = 0; i < NUM_PIECE.length; i++) {
+		for (var j = 0; j < NUM_PIECE[i]; j++) {
+			if (piece_status[i][j].mass == mass) {
+				return [i, j];
+			}
+		}
+	}
+	console.log("not find");
+	return -1, -1;
+}
+
+function syogi_init(board_array, NUM_WIDTHMASS, NUM_HEIGHTMASS) {
 	// 配列を読み込んで、piece_status,piece_seed_list,NUM_PIECEを返す(未実装)
 	console.log("board_array");
 	console.log(board_array);
@@ -50,22 +133,22 @@ function syogi_init(board_array,NUM_WIDTHMASS,NUM_HEIGHTMASS){
 	}
 	*/
 	// メモ配列初期化 var board_array = new Array(NUM_ALLMASS).fill(0);
-	var piece_status = [[],[],[],[],[],[],[],[],[],[],[]];
+	var piece_status = [[], [], [], [], [], [], [], [], [], [], []];
 	var player = 0;
 	var seed = 0;
-	var NUM_PIECE = [0,0,0,0,0,0,0,0,0,0,0,0,0];
-	for(var i=0;i<NUM_WIDTHMASS*NUM_HEIGHTMASS;i++){ 
-	  if(board_array[i] != 0){
-	    if(board_array[i] < 0){
-		  seed = -board_array[i];
-		  player = 1;
-		}else{
-		  seed = board_array[i];
-		  player = 0;
+	var NUM_PIECE = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+	for (var i = 0; i < NUM_WIDTHMASS * NUM_HEIGHTMASS; i++) {
+		if (board_array[i] != 0) {
+			if (board_array[i] < 0) {
+				seed = -board_array[i];
+				player = 1;
+			} else {
+				seed = board_array[i];
+				player = 0;
+			}
+			piece_status[seed_to_index(seed)].push(new SyogiPieceStatus(player, mass = i));
+			NUM_PIECE[seed_to_index(seed)] += 1;
 		}
-	    piece_status[seed_to_index(seed)].push(new SyogiPieceStatus(player,mass = i));
-	    NUM_PIECE[seed_to_index(seed)] += 1;
-	  }
 
 	}
 	// 駒種クラスの初期化
@@ -77,39 +160,77 @@ function syogi_init(board_array,NUM_WIDTHMASS,NUM_HEIGHTMASS){
 		actions[i] = [];
 	}
 	*/
-	var actions = [[],[],[],[],[],[],[],[],[],[],[],[]];
+	var actions = [[], [], [], [], [], [], [], [], [], [], [], []];
 	var cnt = 0;
 	actions[0][0] = -1 * NUM_WIDTHMASS;
 	cnt = 0;
-	for(j = -(NUM_WIDTHMASS + 1); j <= NUM_WIDTHMASS+1; j++){
+	for (j = -(NUM_WIDTHMASS + 1); j <= NUM_WIDTHMASS + 1; j++) {
 		if (-1 * (NUM_WIDTHMASS + 1) <= j && j <= -1 * (NUM_WIDTHMASS - 1)) {
 			actions[1][cnt] = j;
 			cnt++;
-		}else if(j == -1 || j == 1){
+		} else if (j == -1 || j == 1) {
 			actions[1][cnt] = j;
 			cnt++;
-		}else if(NUM_WIDTHMASS - 1 <= j && j <= NUM_WIDTHMASS + 1){
+		} else if (NUM_WIDTHMASS - 1 <= j && j <= NUM_WIDTHMASS + 1) {
 			actions[1][cnt] = j;
 			cnt++;
 		}
 	}
 	// 仮のアクション
-	for(var i=2;i<12;i++){
+	for (var i = 2; i < 12; i++) {
 		actions[i][0] = -1 * NUM_WIDTHMASS - 1
 	}
-	
+
 	var piece_seed_list = [];
 	var HU = new SyogiPiece(actions[0]);
 	var OSYO = new SyogiPiece(actions[1]);
 
-	for(var i =0;i<12;i++){
+	for (var i = 0; i < 12; i++) {
 		piece_seed_list.push(new SyogiPiece(actions[i]));
 	}
 
 	// TODO ほかの初期化追加
 
 	console.log("piece_status,piece_seed_list,NUM_PIECE");
-	console.log(piece_status,piece_seed_list,NUM_PIECE);
-	return {piece_status ,piece_seed_list ,NUM_PIECE};
+	console.log(piece_status, piece_seed_list, NUM_PIECE);
+	return [piece_status, piece_seed_list, NUM_PIECE];
 }
 
+// 戻り値 board_array, reserve_pieces, done
+function syogi_step(board_array, pieces_status, reserve_pieces, piece, action, player) {
+  // action 
+  // 引数の配列を変えたくないのでコピーを取る
+  let board = board_array.concat();
+  let piece_status = pieces_status.concat();
+  let reserve_piece = reserve_pieces.concat();
+  let piece_idx = 0;
+  let n_idx = 0;
+  if ((board[action] < 0 && player == 0) || (board[action] > 0 && player == 1)) {
+    // 動こうとするマスにこの駒の敵の駒がいれば
+
+    [piece_idx, n_idx] = find_piece_for_mass(piece_status, NUM_PIECE, action);
+    piece_status[piece_idx][n_idx].reserve = true;
+    if (piece_status[piece_idx][n_idx].player == 0) {
+      piece_status[piece_idx][n_idx].player = 1;
+    } else {
+      piece_status[piece_idx][n_idx].player = 0;
+    }
+    [piece_idx, n_idx] = ctr_num_to_stat_num(piece, NUM_PIECE);
+    board[piece_status[piece_idx][n_idx].mass] = 0;
+    piece_status[piece_idx][n_idx].mass = -1;
+    board[action] = (piece_idx + 1) * piece_status[piece_idx][n_idx].player;
+    piece_status[piece_idx][n_idx].mass = action;
+  } else if (board_array[action] == 0) {
+    [piece_idx, n_idx] = ctr_num_to_stat_num(piece, NUM_PIECE);
+    board[piece_status[piece_idx][n_idx].mass] = 0;
+    board[action] = (piece_idx + 1) * piece_status[piece_idx][n_idx].player;
+    piece_status[piece_idx][n_idx].mass = action;
+  } else {
+    console.log("error");
+    console.log("board, action,player, reserve_piece");
+    console.log(board, action, player, reserve_piece);
+    // TODO エラー処理
+  }
+
+  return board_array, reserve_pieces, done;
+}
