@@ -38,8 +38,9 @@ CharacterShot.prototype.move = function () {
 };
 
 class SyogiPiece{
-    constructor(action){
-     this.actions = action;
+    constructor(action,seed){
+      this.actions = action;
+      this.seed = seed;
 	}
 }
 

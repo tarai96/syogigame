@@ -5,14 +5,15 @@ phina.globalize();
 var ASSETS = {
 	// 画像
 	image: {
-	'hu': "image/syougi14_fuhyou.png",
-	'osyo': "image/syougi01_ousyou.png",
-	'hisya' : "image/syougi03_hisya.png",
-	'kaku' : "image/syougi05_gakugyou.png",
-	'kin' : "image/syougi07_kinsyou.png",
-	'gin' : "image/syougi08_ginsyou.png",
-	'keima' : "image/syougi10_keima.png",
-	'ban': "image/syougi_ban.png",
+	  'hu': "image/syougi14_fuhyou.png",
+	  'osyo': "image/syougi01_ousyou.png",
+	  'hisya' : "image/syougi03_hisya.png",
+	  'kaku' : "image/syougi05_gakugyou.png",
+	  'kin' : "image/syougi07_kinsyou.png",
+	  'gin' : "image/syougi08_ginsyou.png",
+    'keima': "image/syougi10_keima.png",
+    'kyousya': "syougi12_kyousya.png",
+	  'ban': "image/syougi_ban.png",
 	},
 };
 var currentMass = 0;
@@ -121,6 +122,103 @@ phina.define("Hu", {
 	},
 });
 
+phina.define("Keima", {
+  //Spriteクラスを継承
+  superClass: 'Sprite',
+  init: function (mass, actions, player, reserve = false) {
+    // 親クラス初期化
+    this.superInit('keima');
+    this.mass = mass;
+    this.previousMass = mass;
+    this.actions = actions;
+    this.player = player;
+    this.reserve = reserve;
+    // 駒種　桂馬
+    this.seed = 2;
+  },
+});
+
+phina.define("Kyousya", {
+  //Spriteクラスを継承
+  superClass: 'Sprite',
+  init: function (mass, actions, player, reserve = false) {
+    // 親クラス初期化
+    this.superInit('kyousya');
+    this.mass = mass;
+    this.previousMass = mass;
+    this.actions = actions;
+    this.player = player;
+    this.reserve = reserve;
+    // 駒種　香車
+    this.seed = 3;
+  },
+});
+
+phina.define("Kin", {
+  //Spriteクラスを継承
+  superClass: 'Sprite',
+  init: function (mass, actions, player, reserve = false) {
+    // 親クラス初期化
+    this.superInit('kin');
+    this.mass = mass;
+    this.previousMass = mass;
+    this.actions = actions;
+    this.player = player;
+    this.reserve = reserve;
+    // 駒種　金
+    this.seed = 4;
+  },
+});
+
+phina.define("Gin", {
+  //Spriteクラスを継承
+  superClass: 'Sprite',
+  init: function (mass, actions, player, reserve = false) {
+    // 親クラス初期化
+    this.superInit('gin');
+    this.mass = mass;
+    this.previousMass = mass;
+    this.actions = actions;
+    this.player = player;
+    this.reserve = reserve;
+    // 駒種　銀
+    this.seed = 5;
+  },
+});
+
+//TODO seedをつける
+phina.define("Hisya", {
+  //Spriteクラスを継承
+  superClass: 'Sprite',
+  init: function (mass, actions, player, reserve = false) {
+    // 親クラス初期化
+    this.superInit('hisya');
+    this.mass = mass;
+    this.previousMass = mass;
+    this.actions = actions;
+    this.player = player;
+    this.reserve = reserve;
+    // 駒種　飛車
+    this.seed = 6;
+  },
+});
+
+phina.define("Kaku", {
+  //Spriteクラスを継承
+  superClass: 'Sprite',
+  init: function (mass, actions, player, reserve = false) {
+    // 親クラス初期化
+    this.superInit('kaku');
+    this.mass = mass;
+    this.previousMass = mass;
+    this.actions = actions;
+    this.player = player;
+    this.reserve = reserve;
+    // 駒種　角
+    this.seed = 7;
+  },
+});
+
 phina.define("Osyo", {
 	//Spriteクラスを継承
 	superClass: 'Sprite',
@@ -133,87 +231,7 @@ phina.define("Osyo", {
 		this.player = player;
 		this.reserve = reserve;
 		// 駒種　王将
-		this.seed = 2;
-	},
-});
-//TODO seedをつける
-phina.define("Hisya", {
-	//Spriteクラスを継承
-	superClass: 'Sprite',
-	init: function(mass, actions, player, reserve=false) {
-		// 親クラス初期化
-		this.superInit('hisya');
-		this.mass = mass;
-		this.previousMass = mass;
-		this.actions = actions;
-		this.player = player;
-		this.reserve = reserve;
-		// 駒種　王将
-		this.seed = 0;
-	},
-});
-
-phina.define("Kaku", {
-	//Spriteクラスを継承
-	superClass: 'Sprite',
-	init: function(mass, actions, player, reserve=false) {
-		// 親クラス初期化
-		this.superInit('kaku');
-		this.mass = mass;
-		this.previousMass = mass;
-		this.actions = actions;
-		this.player = player;
-		this.reserve = reserve;
-		// 駒種　王将
-		this.seed = 0;
-	},
-});
-
-phina.define("Kin", {
-	//Spriteクラスを継承
-	superClass: 'Sprite',
-	init: function(mass, actions, player, reserve=false) {
-		// 親クラス初期化
-		this.superInit('kin');
-		this.mass = mass;
-		this.previousMass = mass;
-		this.actions = actions;
-		this.player = player;
-		this.reserve = reserve;
-		// 駒種　王将
-		this.seed = 0;
-	},
-});
-
-phina.define("Gin", {
-	//Spriteクラスを継承
-	superClass: 'Sprite',
-	init: function(mass, actions, player, reserve=false) {
-		// 親クラス初期化
-		this.superInit('gin');
-		this.mass = mass;
-		this.previousMass = mass;
-		this.actions = actions;
-		this.player = player;
-		this.reserve = reserve;
-		// 駒種　王将
-		this.seed = 0;
-	},
-});
-
-phina.define("Keima", {
-	//Spriteクラスを継承
-	superClass: 'Sprite',
-	init: function(mass, actions, player, reserve=false) {
-		// 親クラス初期化
-		this.superInit('keima');
-		this.mass = mass;
-		this.previousMass = mass;
-		this.actions = actions;
-		this.player = player;
-		this.reserve = reserve;
-		// 駒種　王将
-		this.seed = 0;
+		this.seed = 8;
 	},
 });
 
@@ -229,6 +247,7 @@ phina.define("MainScene", {
 	this.superInit();
 	// 背景色
 	this.backgroundColor = 'skyblue';
+
 
 	var currentMass = 0;
 	var hold = false;
@@ -262,7 +281,7 @@ phina.define("MainScene", {
     let num_piece = [];
 	[piece_status,piece_seed_list,num_piece] = syogi_init(board_array,NUM_WIDTHMASS,NUM_HEIGHTMASS);
     const NUM_PIECE = num_piece;
-    const SUM_PIECE = sum_2darray(NUM_PIECE);
+    const SUM_PIECE = sum_array(NUM_PIECE);
     console.log("piece_status,piece_seed_list,NUM_PIECE");
 	console.log(piece_status,piece_seed_list,NUM_PIECE);
 	// 駒初期化
@@ -270,16 +289,46 @@ phina.define("MainScene", {
 	// メモ　game本体 piece_status[駒種-1][通し番号]
 	//       Sprite piece_list[番号] 番号の求め方（仮）(駒種ごとの駒の数のそれまでの合計)+(上の通し番号)
 
-	//歩 no.1
-	for(let i=0;i<NUM_PIECE[0];i++){
-		// mass,action,player 
-		piece_list.push(Hu(piece_status[0][i].mass,piece_seed_list[0].actions,piece_status[0][i].player));
-	}
-	//王将 no.2
-	for(let i=0;i<NUM_PIECE[1];i++){
-		// mass,action,player 
-		piece_list.push(Osyo(piece_status[1][i].mass,piece_seed_list[1].actions,piece_status[1][i].player));
-	}
+	  //歩 no.1
+	  for(let i=0;i<NUM_PIECE[0];i++){
+		  // mass,action,player 
+		  piece_list.push(Hu(piece_status[0][i].mass,piece_seed_list[0].actions,piece_status[0][i].player));
+      }
+    //桂馬 no.2
+    for (let i = 0; i < NUM_PIECE[0]; i++) {
+      // mass,action,player 
+      piece_list.push(Hu(piece_status[0][i].mass, piece_seed_list[0].actions, piece_status[0][i].player));
+    }
+    //香車 no.3
+    for (let i = 0; i < NUM_PIECE[0]; i++) {
+      // mass,action,player 
+      piece_list.push(Hu(piece_status[0][i].mass, piece_seed_list[0].actions, piece_status[0][i].player));
+    }
+    //金 no.1
+    for (let i = 0; i < NUM_PIECE[0]; i++) {
+      // mass,action,player 
+      piece_list.push(Hu(piece_status[0][i].mass, piece_seed_list[0].actions, piece_status[0][i].player));
+    }
+    //銀 no.1
+    for (let i = 0; i < NUM_PIECE[0]; i++) {
+      // mass,action,player 
+      piece_list.push(Hu(piece_status[0][i].mass, piece_seed_list[0].actions, piece_status[0][i].player));
+    }
+    //飛車 no.1
+    for (let i = 0; i < NUM_PIECE[0]; i++) {
+      // mass,action,player 
+      piece_list.push(Hu(piece_status[0][i].mass, piece_seed_list[0].actions, piece_status[0][i].player));
+    }
+    //角 no.1
+    for (let i = 0; i < NUM_PIECE[0]; i++) {
+      // mass,action,player 
+      piece_list.push(Hu(piece_status[0][i].mass, piece_seed_list[0].actions, piece_status[0][i].player));
+    }
+	  //王将 no.8
+	  for(let i=0;i<NUM_PIECE[1];i++){
+		  // mass,action,player 
+		  piece_list.push(Osyo(piece_status[1][i].mass,piece_seed_list[1].actions,piece_status[1][i].player));
+	  }
 
 	// 持ち駒初期化
 	// reservePieces 2次元配列 0 自分　1 相手
@@ -375,33 +424,48 @@ phina.define("MainScene", {
 	for (j = 0; j < NUM_HEIGHTMASS; j++) {
 		for (i = 0; i < NUM_WIDTHMASS; i++) {
 		// RectangleShape
-		RectangleShape({
-			width: 45,
-			height: 49,
-			fill: 'red',
-			// stroke: 'lime',
-			strokeWidth: 0,
-			cornerRadius: 0
-		}).addChildTo(board_group)
-		.setPosition(48 * (i - (NUM_WIDTHMASS - 1) / 2) + 0,
-			52 * (j - (NUM_HEIGHTMASS - 1) / 2) + 0)
-		.on('pointstart', function(){
-			// 駒を置くとき
-			// タッチイベントを無効にする 有効にしてたマスだけ　動けたとこだけ
-			var valid_actions = get_valid_action(board_array,dragging_piece);
-			for(var l=0;l<NUM_WIDTHMASS*NUM_HEIGHTMASS;l++){
-				if (valid_actions.includes(l)) {
-					board_group.children[l + 1 + SUM_PIECE].setInteractive(false);
-				}
-			}
-			board_group.children[dragging_piece].mass = (i%NUM_WIDTHMASS,Math.floor(i/NUM_WIDTHMASS));
-			board_array[board_group.children[dragging_piece].previousMass] = 0;
-			board_array[i] = board_group.children[dragging_piece].syurui * board_group.children[dragging_piece].player;
-			dragging = false;
-			turn = 1;
-		});
-			board_group.children[i + j * NUM_WIDTHMASS + 1 + SUM_PIECE].alpha = 0.0;
-		}
+      RectangleShape({
+        width: 45,
+        height: 49,
+        fill: 'red',
+        // stroke: 'lime',
+        strokeWidth: 0,
+        cornerRadius: 0
+      }).addChildTo(board_group)
+        .setPosition(48 * (i - (NUM_WIDTHMASS - 1) / 2) + 0,
+          52 * (j - (NUM_HEIGHTMASS - 1) / 2) + 0)
+        .on('pointstart', function () {
+          // 駒を置くとき(ここに動くことは確定している)
+          // piece は通し番号
+          let mass = xy_to_mass(i, j);
+          let seed = 0;
+          let num_idx = 0;
+          [seed, num_idx] = find_piece_for_mass(piece_status, NUM_PIECE, mass);
+          let piece = stat_num_to_ctr_num(seed, num_idx, NUM_PIECE);
+          if (seed == 0) {
+            dragging_piece_idx = piece + 1 + 0;
+          } else {
+            dragging_piece_idx = piece + 1 + sum_array(NUM_PIECE.slice(0, seed));
+          }
+          board_group.children[dragging_piece].mass = mass;
+          // タッチイベントを無効にする 有効にしてたマスだけ　動けたとこだけ
+          var valid_actions = get_valid_action(board_array, dragging_piece);
+          for (let l = 0;l < NUM_WIDTHMASS * NUM_HEIGHTMASS; l++) {
+            if (valid_actions.includes(l)) {
+              board_group.children[l + 1 + SUM_PIECE].setInteractive(false);
+            }
+          }
+
+          dragging = false;
+
+          let player = piece_status[seed][num_idx].player;
+          [board_array, reservePieces, done] = syogi_step(board_array, piece_status, reservePieces, piece, action = mass, player = player);
+          turn = 1;
+      });
+      let mass = xy_to_mass(i, j);
+      board_group.children[i + j * NUM_WIDTHMASS + 1 + SUM_PIECE].alpha = 0.0;
+      
+    }
 	}
 	},
 	// 毎フレーム更新処理

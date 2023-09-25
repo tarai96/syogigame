@@ -18,19 +18,16 @@ function seed_to_index(seed){
 	return seed - 1;
 }
 
-function sum_2darray(arr) {
-	let sum = 0;
+function sum_array(arr) {
+  let sum = 0;
 	for (let i = 0; i < arr.length; i++) {
-		for (let j = 0; j < arr[i].length; j++) {
-			sum += arr[i][j];
-		}
-	}
+		sum += arr[i];
+  }
 	return sum;
 }
 
 // piece_listÇÃî‘çÜÇ©ÇÁpiece_statusÇÃî‘çÜÇ÷
 function ctr_num_to_stat_num(control_number, NUM_PIECE) {
-	const sum_piece = sum_2darray(NUM_PIECE);
 	let status_number = control_number;
 	for (let seed = 0; seed < arr.lenth; i++) {
 		if (status_number >= NUM_PIECE[seed]) {
@@ -64,6 +61,11 @@ function mass_to_xy(mass) {
 		}
 		x -= NUM_WIDTHMASS;
 	}
+}
+
+function xy_to_mass(x, y) {
+  mass = y * NUM_WIDTHMASS + x;
+  return mass;
 }
 
 function is_valid_action(board_array, action, player) {
@@ -232,5 +234,5 @@ function syogi_step(board_array, pieces_status, reserve_pieces, piece, action, p
     // TODO ÉGÉâÅ[èàóù
   }
 
-  return board_array, reserve_pieces, done;
+  return [board_array, reserve_pieces, done];
 }
