@@ -1,19 +1,5 @@
 // JavaScript source code
 
-/*
-/// excelファイル読み込むならここで初期化しない変数 ////////////
-var NUM_WIDTHMASS = 9;
-var NUM_HEIGHTMASS = 9;
-var NUM_ALLMASS = NUM_HEIGHTMASS * NUM_WIDTHMASS;
-var NUM_HU = 2;
-var NUM_OSYO = 2;
-
-
-var NUM_PIECE = [NUM_HU,NUM_OSYO];
-////////////////////////////////////////////////////////////////////
-
-*/
-
 function seed_to_index(seed){
 	return seed - 1;
 }
@@ -69,19 +55,19 @@ function xy_to_mass(x, y) {
 }
 
 function is_valid_action(board_array, action, player) {
-if (action < 0 && action >= NUM_ALLMASS) {
-	// 将棋盤の外
-	  return false;
-} else if (board_array[action] < 0 && player == 0) {
-	// 動こうとするマスにこの駒の味方の駒がいなければ動ける
-	  return true;
-} else if (board_array[action] > 0 && player == 1) {
-	  return true;
-} else if (board_array[action] == 0) {
-	  return true;
-} else {
+	if (action < 0 && action >= NUM_ALLMASS) {
+		// 将棋盤の外
+		  return false;
+	}	else if (board_array[action] < 0 && player == 0) {
+		// 動こうとするマスにこの駒の味方の駒がいなければ動ける
+		  return true;
+	} else if (board_array[action] > 0 && player == 1) {
+		  return true;
+	} else if (board_array[action] == 0) {
+		  return true;
+	} else {
 	  console.log("error");
-}
+	}
 }
 
 // 一つの駒を指定し動けるマスを座標で返す
@@ -125,15 +111,9 @@ function find_piece_for_mass(piece_status, NUM_PIECE, mass) {
 }
 
 function syogi_init(board_array, NUM_WIDTHMASS, NUM_HEIGHTMASS) {
-	// 配列を読み込んで、piece_status,piece_seed_list,NUM_PIECEを返す(未実装)
+	// 配列を読み込んで、piece_status,piece_seed_list,NUM_PIECEを返す
 	console.log("board_array");
 	console.log(board_array);
-	// 多次元配列 0:歩 1:王玉将
-	/*
-	for (var i = 0; i < 2; i++) {
-		piece_status[i] = [];
-	}
-	*/
 	// メモ配列初期化 var board_array = new Array(NUM_ALLMASS).fill(0);
 	var piece_status = [[], [], [], [], [], [], [], [], [], [], []];
 	var player = 0;
@@ -200,7 +180,6 @@ function syogi_init(board_array, NUM_WIDTHMASS, NUM_HEIGHTMASS) {
 
 // 戻り値 board_array, reserve_pieces, done
 function syogi_step(board_array, pieces_status, reserve_pieces, piece, action, player) {
-  // action 
   // 引数の配列を変えたくないのでコピーを取る
   let board = board_array.concat();
   let piece_status = pieces_status.concat();
@@ -209,7 +188,6 @@ function syogi_step(board_array, pieces_status, reserve_pieces, piece, action, p
   let n_idx = 0;
   if ((board[action] < 0 && player == 0) || (board[action] > 0 && player == 1)) {
     // 動こうとするマスにこの駒の敵の駒がいれば
-
     [piece_idx, n_idx] = find_piece_for_mass(piece_status, NUM_PIECE, action);
     piece_status[piece_idx][n_idx].reserve = true;
     if (piece_status[piece_idx][n_idx].player == 0) {

@@ -11,8 +11,8 @@ var ASSETS = {
 	  'kaku' : "image/syougi05_gakugyou.png",
 	  'kin' : "image/syougi07_kinsyou.png",
 	  'gin' : "image/syougi08_ginsyou.png",
-    'keima': "image/syougi10_keima.png",
-    'kyousya': "syougi12_kyousya.png",
+		'keima': "image/syougi10_keima.png",
+    'kyousya': "image/syougi12_kyousya.png",
 	  'ban': "image/syougi_ban.png",
 	},
 };
@@ -31,9 +31,6 @@ var gameStatus = ""
 var turn = 0;
 var dragging = false;
 var dragging_piece = -1
-var i = 0;
-var j = 0;
-
 
 var NUM_WIDTHMASS = 9;
 var NUM_HEIGHTMASS = 9;
@@ -42,7 +39,7 @@ var BOARD_MARJIN = 5;
 
 // 盤面に駒がどこにあるかの配列を返す
 function get_piece_mass(board,number_piece){
-	var mass_list = [];
+	let mass_list = [];
 	for(var j = 0;j < NUM_HEIGHTMASS;j++){
 		for(i = 0;i < NUM_WIDTHMASS;i++){
 			// 
@@ -53,57 +50,15 @@ function get_piece_mass(board,number_piece){
 	}
 	return mass_list;
 }
-// 一つの駒を指定し動けるマスを座標で返す
-function get_valid_actions(board, piece_seed_list, piece_status, number_piece, control_number){
-	var actions_list = [];
-	if(piece_status[number_piece - 1][control_number].reserve){
-		return [];
-	}
-	var x=0;
-	var y=0;
-	// 駒種のアクションを実際の座標に直す
-	for(var i in piece_seed_list[number_piece].actions){
-		x = piece_status[number_piece-1][control_number].mass.x + piece_seed_list[number_piece].actions.x;
-		y = piece_status[number_piece-1][control_number].mass.y + piece_seed_list[number_piece].actions.y;
-		actions_list.push(new Point(x,y));
-	}
-	// Todo: 下のget_valid_actionsを参考にget_valid_actionを作る
-	return actions_list;
-}
 
 function get_num_enemy_piece(board_group){
-	var cnt = 0;
+	let cnt = 0;
 	for(i=0;i<NUM_HU;i++){
 		if(board_group.children[i+1].player == -1){
 			cnt++;
 		}
 	}
 	return cnt;
-}
-/*
-// なんか二つ作ってたので一つは封印
-function get_valid_actions(state, n_piece){
-	var valid_actions = [];
-	var piece = board_group.children[n_piece+1]
-	for(var i=0;i<NUM_ALLMASS;i++){
-		if(piece.position + piece.actions[i] < 0 && piece.position + piece.actions[i] >= NUM_ALLMASS){
-			// 将棋盤の外
-			continue;
-		}else if(state[board_group.children[piece+1].actions[i]] != board_group.children[piece+1].player){
-			// 動こうとするマスにこの駒の味方の駒がいなければ動ける
-			valid_actions.push(board_group.children[piece+1].actions[i]);
-		}
-	}
-	return valid_actions;
-}
-*/
-
-function set_initial_state(state, positions){
-	for(var seed=0;seed<positions.length;seed++){
-		for(var idx=0;idx<positions[idx].length;idx++){
-			state[positions[seed][idx]] = seed
-		}
-	}
 }
 
 phina.define("Hu", {
@@ -267,16 +222,16 @@ phina.define("MainScene", {
 
 	// 盤面初期化
 	// board_array　相手の駒はマイナス
-	var board_array = [0, 0, 0, 0, 0, 0, 0, 0, 0,
-						0, 0, 0, 0, 0, 0, 0, 0, 0,
-						-1,-1,-1,-1,-1,-1,-1,-1,-1,
-						0, 0, 0, 0, 0, 0, 0, 0, 0,
-						0, 0, 0, 0, 0, 0, 0, 0, 0,
-						0, 0, 0, 0, 0, 0, 0, 0, 0,
-						1, 1, 1, 1, 1, 1, 1, 1, 1,
-						0, 0, 0, 0, 0, 0, 0, 0, 0,
-						0, 0, 0, 0, 0, 0, 0, 0, 0,
-						]
+	var board_array = [-3, -2, -5, -4, -8, -4, -5, -2, -3,
+										0, -6, 0, 0, 0, 0, 0, -7, 0,
+										-1,-1,-1,-1,-1,-1,-1,-1,-1,
+										0, 0, 0, 0, 0, 0, 0, 0, 0,
+										0, 0, 0, 0, 0, 0, 0, 0, 0,
+										0, 0, 0, 0, 0, 0, 0, 0, 0,
+										1, 1, 1, 1, 1, 1, 1, 1, 1,
+										0, 7, 0, 0, 0, 0, 0, 6, 0,
+										3, 2, 5, 4, 8, 4, 5, 2, 3,
+										]
 
     let num_piece = [];
 	[piece_status,piece_seed_list,num_piece] = syogi_init(board_array,NUM_WIDTHMASS,NUM_HEIGHTMASS);
@@ -295,39 +250,39 @@ phina.define("MainScene", {
 		  piece_list.push(Hu(piece_status[0][i].mass,piece_seed_list[0].actions,piece_status[0][i].player));
       }
     //桂馬 no.2
-    for (let i = 0; i < NUM_PIECE[0]; i++) {
+    for (let i = 0; i < NUM_PIECE[1]; i++) {
       // mass,action,player 
-      piece_list.push(Hu(piece_status[0][i].mass, piece_seed_list[0].actions, piece_status[0][i].player));
+      piece_list.push(Keima(piece_status[1][i].mass, piece_seed_list[1].actions, piece_status[1][i].player));
     }
     //香車 no.3
-    for (let i = 0; i < NUM_PIECE[0]; i++) {
+    for (let i = 0; i < NUM_PIECE[2]; i++) {
       // mass,action,player 
-      piece_list.push(Hu(piece_status[0][i].mass, piece_seed_list[0].actions, piece_status[0][i].player));
+      piece_list.push(Kyousya(piece_status[2][i].mass, piece_seed_list[2].actions, piece_status[2][i].player));
     }
-    //金 no.1
-    for (let i = 0; i < NUM_PIECE[0]; i++) {
+    //金 no.4
+    for (let i = 0; i < NUM_PIECE[3]; i++) {
       // mass,action,player 
-      piece_list.push(Hu(piece_status[0][i].mass, piece_seed_list[0].actions, piece_status[0][i].player));
+      piece_list.push(Kin(piece_status[3][i].mass, piece_seed_list[3].actions, piece_status[3][i].player));
     }
-    //銀 no.1
-    for (let i = 0; i < NUM_PIECE[0]; i++) {
+    //銀 no.5
+    for (let i = 0; i < NUM_PIECE[4]; i++) {
       // mass,action,player 
-      piece_list.push(Hu(piece_status[0][i].mass, piece_seed_list[0].actions, piece_status[0][i].player));
+      piece_list.push(Gin(piece_status[4][i].mass, piece_seed_list[4].actions, piece_status[4][i].player));
     }
-    //飛車 no.1
-    for (let i = 0; i < NUM_PIECE[0]; i++) {
+    //飛車 no.6
+    for (let i = 0; i < NUM_PIECE[5]; i++) {
       // mass,action,player 
-      piece_list.push(Hu(piece_status[0][i].mass, piece_seed_list[0].actions, piece_status[0][i].player));
+      piece_list.push(Hisya(piece_status[5][i].mass, piece_seed_list[5].actions, piece_status[5][i].player));
     }
-    //角 no.1
-    for (let i = 0; i < NUM_PIECE[0]; i++) {
+    //角 no.7
+    for (let i = 0; i < NUM_PIECE[6]; i++) {
       // mass,action,player 
-      piece_list.push(Hu(piece_status[0][i].mass, piece_seed_list[0].actions, piece_status[0][i].player));
+      piece_list.push(Kaku(piece_status[6][i].mass, piece_seed_list[6].actions, piece_status[6][i].player));
     }
 	  //王将 no.8
-	  for(let i=0;i<NUM_PIECE[1];i++){
+	  for(let i=0;i<NUM_PIECE[7];i++){
 		  // mass,action,player 
-		  piece_list.push(Osyo(piece_status[1][i].mass,piece_seed_list[1].actions,piece_status[1][i].player));
+		  piece_list.push(Osyo(piece_status[7][i].mass,piece_seed_list[7].actions,piece_status[7][i].player));
 	  }
 
 	// 持ち駒初期化
@@ -343,22 +298,11 @@ phina.define("MainScene", {
 	// board 
 	Sprite('ban').addChildTo(board_group)
 	var reverce = 1;
-	// 歩
-	/*
-	var hu_masses = [];
-	hu_masses = get_piece_mass(board_array,1);
-	console.log("hu_masss");
-	console.log(hu_masses);
-	console.log("piece_list");
-	console.log(piece_list);
-	var mass_x = 0;
-	var mass_y = 0;
-	*/
+	
 	console.log("piece_list")
 	console.log(piece_list)
 
-	// TODO for文に歩の数だけ回すようになってるからすべての駒の数にする
-	for(i=0;i<NUM_PIECE[0];i++){
+	for(let i=0;i<SUM_PIECE;i++){
 		// 敵は表示を上下反転
 		if(piece_list[i].player == 1){
 			reverce = -1;
@@ -391,34 +335,6 @@ phina.define("MainScene", {
 		board_group.children[i+1].scaleY *= reverce;
 	}
 	console.log(board_group);
-
-	/*
-	// 王将
-	var osyo_masses = [];
-	osyo_masses = get_piece_mass(board_array, 2);
-	for(i=0;i<NUM_OSYO;i++){
-		if(osyosStatus[i].player == 1){
-			reverce = -1;
-		}else{
-			reverce = 1;
-		}
-		Sprite('osyo').addChildTo(osyoGroup)
-			.setPosition(50 * osyo_masses[i].x + 115,
-						50 * hu_masses[i].y + 255)
-			.setSize(mass_size, mass_size);
-		osyoGroup[i].scaleY *= reverce;
-	}
-
-	// 金
-	var kin_masses = [];
-	kin_masses = get_piece_mass(board_array, ?);
-	for(i=0;i<2;i++){
-		Sprite('osyo').addChildTo(osyoGroup)
-			.setPosition(50 * osyo_masses[i].x + 115,
-						50 * hu_masses[i].y + 255)
-			.setSize(mass_size, mass_size);
-	}
-	*/
 
 	// 将棋盤の当たり判定ます
 	for (j = 0; j < NUM_HEIGHTMASS; j++) {
@@ -463,8 +379,8 @@ phina.define("MainScene", {
           turn = 1;
       });
       let mass = xy_to_mass(i, j);
+			console.log(SUM_PIECE);
       board_group.children[i + j * NUM_WIDTHMASS + 1 + SUM_PIECE].alpha = 0.0;
-      
     }
 	}
 	},
@@ -478,11 +394,11 @@ phina.define("MainScene", {
 			// 当たり判定 ちょっと光らせる
 			for(i=0;i<NUM_WIDTHMASS*NUM_HEIGHTMASS;i++){
 				if(board_group.children[dragging_piece]
-					.hitTestElement(board_group.children[i+1+NUM_HU])){
+					.hitTestElement(board_group.children[i+1+SUM_PIECE])){
 					console.log(i, "hit");
-					board_group.children[i+1+NUM_HU].alpha = 0.1;
+					board_group.children[i+1+SUM_PIECE].alpha = 0.1;
 				}else{
-					board_group.children[i+1+NUM_HU].alpha = 0;
+					board_group.children[i+1+SUM_PIECE].alpha = 0;
 					console.log(i, "no hit");
 				}
 			}
@@ -494,8 +410,7 @@ phina.define("MainScene", {
 		// 動かすコマ
 		activePiece = Math.floor(Math.random() * get_num_enemy_piece());
 		var cnt = 0;
-		// TODO for文に歩の数だけ回すようになってるからすべての駒の数にする
-		for(i=0;i<NUM_HU;i++){
+		for(i=0;i<SUM_PIECE;i++){
 			if(board_group.children[i+1].player == -1){
 				if(cnt==activePiece){
 				break;
@@ -513,8 +428,7 @@ phina.define("MainScene", {
 		turn = 0;
 		// ターン終了
 		// 駒のタッチを有効にする
-		// TODO for文に歩の数だけ回すようになってるからすべての駒の数にする
-		for(i=0;i<NUM_HU;i++){
+		for(i=0;i<SUM_PIECE;i++){
 			board_group.children[i+1].setInteractive(true);
 		}
 	}
