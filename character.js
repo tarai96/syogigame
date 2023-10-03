@@ -28,24 +28,24 @@ CharacterShot.prototype.set = function (p, size, speed) {
 };
 
 CharacterShot.prototype.move = function () {
-    // 座標を真上にspeed分だけ移動させる
-    this.position.y -= this.speed;
+  // 座標を真上にspeed分だけ移動させる
+  this.position.y -= this.speed;
 
-    // 一定以上の座標に到達していたら生存フラグを降ろす
-    if (this.position.y < -this.size) {
-        this.alive = false;
-    }
+  // 一定以上の座標に到達していたら生存フラグを降ろす
+  if (this.position.y < -this.size) {
+      this.alive = false;
+  }
 };
 
 class SyogiPiece{
-    constructor(action,seed){
-      this.actions = action;
-      this.seed = seed;
+  constructor(action,seed){
+    this.actions = action;
+    this.seed = seed;
   }
 }
 
 class SyogiPieceStatus{
-    constructor(seed, control_number, player, mass = 0, reserve = false){
+  constructor(seed, control_number, player, mass = 0, reserve = false){
     this.seed = seed;
     this.control_number = control_number;
     // 0(手前),1(奥)

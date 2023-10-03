@@ -15,7 +15,7 @@ function sum_array(arr) {
 // piece_listの番号からpiece_statusの番号へ
 function ctr_num_to_stat_num(control_number, NUM_PIECE) {
 	let status_number = control_number;
-	for (let seed = 0; seed < arr.lenth; i++) {
+	for (let seed = 0; seed < NUM_PIECE.lenth; i++) {
 		if (status_number >= NUM_PIECE[seed]) {
 			status_number -= NUM_PIECE[seed];
 		} else {
@@ -71,12 +71,12 @@ function is_valid_action(board_array, action, player) {
 }
 
 // 一つの駒を指定し動けるマスを座標で返す
-function get_valid_actions(board_array, piece_seed_list, pieces_status, number_piece, control_number) {
+function get_valid_actions(board_array, piece_seed_list, pieces_status, seed, piece_number) {
 	let board = board_array.concat();
 	let piece_status = pieces_status.concat();
 	let reserve_piece = reserve_pieces.concat();
 	let actions_list = [];
-	if (piece_status[number_piece - 1][control_number].reserve) {
+	if (piece_status[seed_to_index(seed)][piece_number].reserve) {
 		return [];
 	}
 	var x = 0;
@@ -84,12 +84,12 @@ function get_valid_actions(board_array, piece_seed_list, pieces_status, number_p
 	// 駒種のアクションを実際の座標に直す
 	let position = 0;
 	let action = new Position(0, 0);
-	for (var i in piece_seed_list[number_piece].actions) {
-		position = mass_to_xy(piece_status[number_piece - 1][control_number].mass);
-		action.x = position.x + piece_seed_list[number_piece].actions.x;
-		action.y = position.y + piece_seed_list[number_piece].actions.y;
+	for (var i in piece_seed_list[seed_to_index(seed)].actions) {
+		position = mass_to_xy(piece_status[seed_to_index(seed)][piece_number].mass);
+		action.x = position.x + piece_seed_list[seed_to_index(seed)].actions.x;
+		action.y = position.y + piece_seed_list[seed_to_index(seed)].actions.y;
 
-		if(is_valid_action(board, action, piece_status[number_piece - 1][control_number].mass.player)){
+		if(is_valid_action(board, action, piece_status[seed_to_index(seed)][piece_number].mass.player)){
 			actions_list.push(new Position(action.x, action.y));
 		}
 	}
@@ -139,10 +139,10 @@ function syogi_init(board_array, NUM_WIDTHMASS, NUM_HEIGHTMASS) {
 	for(let i = 0;i < sum_array(NUM_PIECE);i++){
 		piece_status[seed_to_index(seed)][j].control_number = control_number;
 		control_number++;
-		if(i <= NUM_PIECE[seed_to_index(seed)]){
-			seed++;
-			j -= NUM_PIECE[seed_to_index(seed)];
+		if(j >= NUM_PIECE[seed_to_index(seed)] - 1){
 			j++;
+			j -= NUM_PIECE[seed_to_index(seed)];
+			seed++;
     }else{
 			j++;
     }

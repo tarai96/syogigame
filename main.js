@@ -30,12 +30,13 @@ var previousMass = 0;
 var gameStatus = ""
 var turn = 0;
 var dragging = false;
-var dragging_piece = -1
+dragging_piece = -1;
 
 var NUM_WIDTHMASS = 9;
 var NUM_HEIGHTMASS = 9;
 var NUM_ALLMASS = NUM_HEIGHTMASS * NUM_WIDTHMASS;
 var BOARD_MARJIN = 5;
+NUM_PIECE = [];
 
 // 盤面に駒がどこにあるかの配列を返す
 function get_piece_mass(board,number_piece){
@@ -64,7 +65,7 @@ function get_num_enemy_piece(board_group){
 phina.define("Hu", {
 	//Spriteクラスを継承
 	superClass: 'Sprite',
-	init: function(mass, actions, player, reserve=false) {
+	init: function(control_number,mass, actions, player, reserve=false) {
 		// 親クラス初期化
 		this.superInit('hu');
 		this.mass = mass;
@@ -74,13 +75,14 @@ phina.define("Hu", {
 		this.reserve = reserve;
 		// 駒種　歩
 		this.seed = 1;
+		this.control_number = control_number;
 	},
 });
 
 phina.define("Keima", {
   //Spriteクラスを継承
   superClass: 'Sprite',
-  init: function (mass, actions, player, reserve = false) {
+  init: function (control_number,mass, actions, player, reserve = false) {
     // 親クラス初期化
     this.superInit('keima');
     this.mass = mass;
@@ -90,13 +92,14 @@ phina.define("Keima", {
     this.reserve = reserve;
     // 駒種　桂馬
     this.seed = 2;
+		this.control_number = control_number;
   },
 });
 
 phina.define("Kyousya", {
   //Spriteクラスを継承
   superClass: 'Sprite',
-  init: function (mass, actions, player, reserve = false) {
+  init: function (control_number,mass, actions, player, reserve = false) {
     // 親クラス初期化
     this.superInit('kyousya');
     this.mass = mass;
@@ -106,13 +109,14 @@ phina.define("Kyousya", {
     this.reserve = reserve;
     // 駒種　香車
     this.seed = 3;
+		this.control_number = control_number;
   },
 });
 
 phina.define("Kin", {
   //Spriteクラスを継承
   superClass: 'Sprite',
-  init: function (mass, actions, player, reserve = false) {
+  init: function (control_number,mass, actions, player, reserve = false) {
     // 親クラス初期化
     this.superInit('kin');
     this.mass = mass;
@@ -122,13 +126,14 @@ phina.define("Kin", {
     this.reserve = reserve;
     // 駒種　金
     this.seed = 4;
+		this.control_number = control_number;
   },
 });
 
 phina.define("Gin", {
   //Spriteクラスを継承
   superClass: 'Sprite',
-  init: function (mass, actions, player, reserve = false) {
+  init: function (control_number,mass, actions, player, reserve = false) {
     // 親クラス初期化
     this.superInit('gin');
     this.mass = mass;
@@ -138,6 +143,7 @@ phina.define("Gin", {
     this.reserve = reserve;
     // 駒種　銀
     this.seed = 5;
+		this.control_number = control_number;
   },
 });
 
@@ -145,7 +151,7 @@ phina.define("Gin", {
 phina.define("Hisya", {
   //Spriteクラスを継承
   superClass: 'Sprite',
-  init: function (mass, actions, player, reserve = false) {
+  init: function (control_number,mass, actions, player, reserve = false) {
     // 親クラス初期化
     this.superInit('hisya');
     this.mass = mass;
@@ -155,13 +161,14 @@ phina.define("Hisya", {
     this.reserve = reserve;
     // 駒種　飛車
     this.seed = 6;
+		this.control_number = control_number;
   },
 });
 
 phina.define("Kaku", {
   //Spriteクラスを継承
   superClass: 'Sprite',
-  init: function (mass, actions, player, reserve = false) {
+  init: function (control_number,mass, actions, player, reserve = false) {
     // 親クラス初期化
     this.superInit('kaku');
     this.mass = mass;
@@ -171,13 +178,14 @@ phina.define("Kaku", {
     this.reserve = reserve;
     // 駒種　角
     this.seed = 7;
+		this.control_number = control_number;
   },
 });
 
 phina.define("Osyo", {
 	//Spriteクラスを継承
 	superClass: 'Sprite',
-	init: function(mass, actions, player, reserve=false) {
+	init: function(control_number,mass, actions, player, reserve=false) {
 		// 親クラス初期化
 		this.superInit('osyo');
 		this.mass = mass;
@@ -187,6 +195,7 @@ phina.define("Osyo", {
 		this.reserve = reserve;
 		// 駒種　王将
 		this.seed = 8;
+		this.control_number = control_number;
 	},
 });
 
@@ -210,7 +219,7 @@ phina.define("MainScene", {
 	var flag = false;
 	var caught = false;
 	var piece_seed_list = [];
-	var piece_status = []
+	var piece_status = [];
 	var previousMass = 0;
 	var i = 0;
 	var j = 0;
@@ -235,7 +244,7 @@ phina.define("MainScene", {
 
     let num_piece = [];
 	[piece_status,piece_seed_list,num_piece] = syogi_init(board_array,NUM_WIDTHMASS,NUM_HEIGHTMASS);
-    const NUM_PIECE = num_piece;
+    NUM_PIECE = num_piece;
     const SUM_PIECE = sum_array(NUM_PIECE);
     console.log("piece_status,piece_seed_list,NUM_PIECE");
 	console.log(piece_status,piece_seed_list,NUM_PIECE);
@@ -243,47 +252,55 @@ phina.define("MainScene", {
 
 	// メモ　game本体 piece_status[駒種-1][通し番号]
 	//       Sprite piece_list[番号] 番号の求め方（仮）(駒種ごとの駒の数のそれまでの合計)+(上の通し番号)
-
+		let control_number = 0;
 	  //歩 no.1
 	  for(let i=0;i<NUM_PIECE[0];i++){
 		  // mass,action,player 
-		  piece_list.push(Hu(piece_status[0][i].mass,piece_seed_list[0].actions,piece_status[0][i].player));
-      }
+		  piece_list.push(Hu(control_number,piece_status[0][i].mass,piece_seed_list[0].actions,piece_status[0][i].player));
+      control_number++;
+			}
     //桂馬 no.2
     for (let i = 0; i < NUM_PIECE[1]; i++) {
       // mass,action,player 
-      piece_list.push(Keima(piece_status[1][i].mass, piece_seed_list[1].actions, piece_status[1][i].player));
-    }
+      piece_list.push(Keima(control_number,piece_status[1][i].mass, piece_seed_list[1].actions, piece_status[1][i].player));
+			control_number++;
+		}
     //香車 no.3
     for (let i = 0; i < NUM_PIECE[2]; i++) {
       // mass,action,player 
-      piece_list.push(Kyousya(piece_status[2][i].mass, piece_seed_list[2].actions, piece_status[2][i].player));
-    }
+      piece_list.push(Kyousya(control_number,piece_status[2][i].mass, piece_seed_list[2].actions, piece_status[2][i].player));
+			control_number++;
+		}
     //金 no.4
     for (let i = 0; i < NUM_PIECE[3]; i++) {
       // mass,action,player 
-      piece_list.push(Kin(piece_status[3][i].mass, piece_seed_list[3].actions, piece_status[3][i].player));
-    }
+      piece_list.push(Kin(control_number,piece_status[3][i].mass, piece_seed_list[3].actions, piece_status[3][i].player));
+			control_number++;
+		}
     //銀 no.5
     for (let i = 0; i < NUM_PIECE[4]; i++) {
       // mass,action,player 
-      piece_list.push(Gin(piece_status[4][i].mass, piece_seed_list[4].actions, piece_status[4][i].player));
-    }
+      piece_list.push(Gin(control_number,piece_status[4][i].mass, piece_seed_list[4].actions, piece_status[4][i].player));
+			control_number++;
+		}
     //飛車 no.6
     for (let i = 0; i < NUM_PIECE[5]; i++) {
       // mass,action,player 
-      piece_list.push(Hisya(piece_status[5][i].mass, piece_seed_list[5].actions, piece_status[5][i].player));
-    }
+      piece_list.push(Hisya(control_number,piece_status[5][i].mass, piece_seed_list[5].actions, piece_status[5][i].player));
+			control_number++;
+		}
     //角 no.7
     for (let i = 0; i < NUM_PIECE[6]; i++) {
       // mass,action,player 
-      piece_list.push(Kaku(piece_status[6][i].mass, piece_seed_list[6].actions, piece_status[6][i].player));
-    }
+      piece_list.push(Kaku(control_number,piece_status[6][i].mass, piece_seed_list[6].actions, piece_status[6][i].player));
+			control_number++;
+		}
 	  //王将 no.8
 	  for(let i=0;i<NUM_PIECE[7];i++){
 		  // mass,action,player 
-		  piece_list.push(Osyo(piece_status[7][i].mass,piece_seed_list[7].actions,piece_status[7][i].player));
-	  }
+		  piece_list.push(Osyo(control_number,piece_status[7][i].mass,piece_seed_list[7].actions,piece_status[7][i].player));
+			control_number++;
+		}
 
 	// 持ち駒初期化
 	// reservePieces 2次元配列 0 自分　1 相手
@@ -322,13 +339,18 @@ phina.define("MainScene", {
 			.on('pointstart', function(){
 				// 駒を選ぶとき
 				dragging = true;
-				board_group.children[i+1].previousMass = board_group.children[i+1].mass
+				dragging_piece = this.control_number;
+				console.log("dragging_piece",dragging_piece);
+				let seed = 0;
+				let piece_number = 0;
+				[seed, piece_number] = ctr_num_to_stat_num(dragging_piece, NUM_PIECE);
+				board_group.children[dragging_piece+1].previousMass = board_group.children[dragging_piece+1].mass
 				// 将棋盤の当たり判定オブジェクトのタッチイベントを有効にする
 				// 駒が動ける場所だけ
-				var valid_actions = get_valid_action(board_array,dragging_piece);
+				let valid_actions = get_valid_actions(board_array, piece_seed_list, piece_status, seed, piece_number);
 				for(j=0;j<NUM_WIDTHMASS*NUM_HEIGHTMASS;j++){
 					if(valid_actions.includes(j)){
-						board_group.children[j+1+NUM_HU].setInteractive(true);
+						board_group.children[j+1+SUM_PIECE].setInteractive(true);
 					}
 				}
 			});
@@ -365,7 +387,9 @@ phina.define("MainScene", {
           }
           board_group.children[dragging_piece].mass = mass;
           // タッチイベントを無効にする 有効にしてたマスだけ　動けたとこだけ
-          var valid_actions = get_valid_action(board_array, dragging_piece);
+					let piece_number = 0;
+					[seed, piece_number] = ctr_num_to_stat_num(dragging_piece);
+					let valid_actions = get_valid_actions(board_array, piece_seed_list, piece_status, seed, piece_number);
           for (let l = 0;l < NUM_WIDTHMASS * NUM_HEIGHTMASS; l++) {
             if (valid_actions.includes(l)) {
               board_group.children[l + 1 + SUM_PIECE].setInteractive(false);
@@ -380,9 +404,14 @@ phina.define("MainScene", {
       });
       let mass = xy_to_mass(i, j);
 			console.log(SUM_PIECE);
-      board_group.children[i + j * NUM_WIDTHMASS + 1 + SUM_PIECE].alpha = 0.0;
+      board_group.children[mass + 1 + SUM_PIECE].alpha = 0.0;
     }
 	}
+
+	// 駒のタッチを有効にする
+	for(i = 0;i < SUM_PIECE;i++){
+		 board_group.children[i + 1].setInteractive(true);
+  }
 	},
 	// 毎フレーム更新処理
 	update: function() {
@@ -419,7 +448,10 @@ phina.define("MainScene", {
 		}
 		let control_number = i;
 		// どこに動く
-		var valid_actions = get_valid_action(board_group.children[control_number + 1]);
+		let seed = 0;
+		let piece_number = 0;
+		[seed, piece_number] = ctr_num_to_stat_num(control_number);
+		let valid_actions = get_valid_actions(board_array, piece_seed_list, piece_status, seed, piece_number)
 		var action = Math.floor(Math.random() * valid_actions.length);
 		board_group.children[control_number + 1].mass = valid_actions[action];
 		[board_array, reservePieces, done] = syogi_step(board_array, piece_status, reservePieces, piece = control_number, action = valid_actions[action], player = 1);
