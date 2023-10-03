@@ -406,7 +406,6 @@ phina.define("MainScene", {
 	// 相手の番
 	}else if(turn == 1){
 		var activePiece;
-		
 		// 動かすコマ
 		activePiece = Math.floor(Math.random() * get_num_enemy_piece());
 		var cnt = 0;
@@ -418,13 +417,12 @@ phina.define("MainScene", {
 				cnt++;
 			}
 		}
-		board_group.children[activeMass].previousMass = board_group.children[activeMass].mass;
+		let control_number = i;
 		// どこに動く
-		var valid_action = get_valid_action(board_group.children[i]);
-		var action = Math.floor(Math.random() * valid_action.length);
-		board_group.children[activePiece].mass += board_group.children[activePiece].actions[action];
-		board_array[board_group.children[activePiece].previousMass] = 0;
-		board_array[i] = board_group.children[activePiece].syurui * board_group.children[activePiece].player
+		var valid_actions = get_valid_action(board_group.children[control_number + 1]);
+		var action = Math.floor(Math.random() * valid_actions.length);
+		board_group.children[control_number + 1].mass = valid_actions[action];
+		[board_array, reservePieces, done] = syogi_step(board_array, piece_status, reservePieces, piece = control_number, action = valid_actions[action], player = 1);
 		turn = 0;
 		// ターン終了
 		// 駒のタッチを有効にする

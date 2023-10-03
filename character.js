@@ -41,14 +41,16 @@ class SyogiPiece{
     constructor(action,seed){
       this.actions = action;
       this.seed = seed;
-	}
+  }
 }
 
 class SyogiPieceStatus{
-    constructor(player, mass = 0, reserve = false){
+    constructor(seed, control_number, player, mass = 0, reserve = false){
+    this.seed = seed;
+    this.control_number = control_number;
     // 0(Žè‘O),1(‰œ)
      this.player = player;
      this.mass = mass;
      this.reserve = reserve;
-	}
+  }
 }

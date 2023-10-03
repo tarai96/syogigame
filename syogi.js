@@ -119,6 +119,7 @@ function syogi_init(board_array, NUM_WIDTHMASS, NUM_HEIGHTMASS) {
 	var player = 0;
 	var seed = 0;
 	var NUM_PIECE = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+	let control_number = 0;
 	for (var i = 0; i < NUM_WIDTHMASS * NUM_HEIGHTMASS; i++) {
 		if (board_array[i] != 0) {
 			if (board_array[i] < 0) {
@@ -128,11 +129,24 @@ function syogi_init(board_array, NUM_WIDTHMASS, NUM_HEIGHTMASS) {
 				seed = board_array[i];
 				player = 0;
 			}
-			piece_status[seed_to_index(seed)].push(new SyogiPieceStatus(player, mass = i));
+			piece_status[seed_to_index(seed)].push(new SyogiPieceStatus(seed, control_number, player, mass = i));
 			NUM_PIECE[seed_to_index(seed)] += 1;
 		}
-
 	}
+	seed = 1;
+	let j = 0;
+	control_number = 0;
+	for(let i = 0;i < sum_array(NUM_PIECE);i++){
+		piece_status[seed_to_index(seed)][j].control_number = control_number;
+		control_number++;
+		if(i <= NUM_PIECE[seed_to_index(seed)]){
+			seed++;
+			j -= NUM_PIECE[seed_to_index(seed)];
+			j++;
+    }else{
+			j++;
+    }
+  }
 	// 駒種クラスの初期化
 	// 各駒種のアクション
 	// メモ actions １次元相対座標そのコマの座標を0として
@@ -179,7 +193,7 @@ function syogi_init(board_array, NUM_WIDTHMASS, NUM_HEIGHTMASS) {
 }
 
 // 戻り値 board_array, reserve_pieces, done
-function syogi_step(board_array, pieces_status, reserve_pieces, piece, action, player) {
+function syogi_step(board_array, pieces_status, reserve_pieces, piece_control_number, action, player) {
   // 引数の配列を変えたくないのでコピーを取る
   let board = board_array.concat();
   let piece_status = pieces_status.concat();
@@ -195,7 +209,7 @@ function syogi_step(board_array, pieces_status, reserve_pieces, piece, action, p
     } else {
       piece_status[piece_idx][n_idx].player = 0;
     }
-    [piece_idx, n_idx] = ctr_num_to_stat_num(piece, NUM_PIECE);
+    [piece_idx, n_idx] = ctr_num_to_stat_num(piece_control_number, NUM_PIECE);
     board[piece_status[piece_idx][n_idx].mass] = 0;
     piece_status[piece_idx][n_idx].mass = -1;
     board[action] = (piece_idx + 1) * piece_status[piece_idx][n_idx].player;
