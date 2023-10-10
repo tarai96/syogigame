@@ -49,7 +49,7 @@ function mass_to_xy(mass) {
 	}
 }
 
-function xy_to_mass(x, y) {
+function xy_to_mass(x, y, NUM_WIDTHMASS) {
   mass = y * NUM_WIDTHMASS + x;
   return mass;
 }
