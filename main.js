@@ -179,6 +179,22 @@ phina.define("Osyo", {
 	},
 });
 
+phina.define('Mass',{
+	superClass: 'RectangleShape',
+	init: function(number){
+		this.superInit({
+      width: 45,
+      height: 49,
+      fill: 'red',
+      // stroke: 'lime',
+      strokeWidth: 0,
+      cornerRadius: 0
+    });
+		this.number = number;
+  }
+});
+
+
 /*
  * メインシーン
  */
@@ -202,6 +218,10 @@ phina.define("MainScene", {
 	this.piece_seed_list = [];
 	this.piece_status = [];
 	this.piece_list = [];
+	this.pick = false;
+	this.num_pick_piece = 0;
+	this.put = false;
+	this.put_mass = 0;
 	this.previousMass = 0;
 	this.reservePieces = [];
 	this.turn = 0;
@@ -318,7 +338,10 @@ phina.define("MainScene", {
 			.setPosition(48 * (mass_x - (this.NUM_WIDTHMASS - 1) / 2) + 0,
 				52 * (mass_y - (this.NUM_HEIGHTMASS - 1) / 2) + 0)
 			.setSize(this.mass_size, this.mass_size)
-			.on('pointstart', this.pick_piece(this.control_number));
+			.on('pointstart', function(){
+				this.parent.parent.pick = true;
+				this.parent.parent.num_pick_piece = this.control_number;
+			});
 		this.board_group.children[i+1].scaleY *= reverce;
 	}
 	console.log(this.board_group);
@@ -327,47 +350,15 @@ phina.define("MainScene", {
 	for (j = 0; j < this.NUM_HEIGHTMASS; j++) {
 		for (i = 0; i < this.NUM_WIDTHMASS; i++) {
 		// RectangleShape
-      RectangleShape({
-        width: 45,
-        height: 49,
-        fill: 'red',
-        // stroke: 'lime',
-        strokeWidth: 0,
-        cornerRadius: 0
-      }).addChildTo(this.board_group)
+			let mass = xy_to_mass(i, j, this.NUM_WIDTHMASS);
+      Mass(mass).addChildTo(this.board_group)
         .setPosition(48 * (i - (this.NUM_WIDTHMASS - 1) / 2) + 0,
           52 * (j - (this.NUM_HEIGHTMASS - 1) / 2) + 0)
         .on('pointstart', function () {
           // 駒を置くとき(ここに動くことは確定している)
-          // piece は通し番号
-          let mass = xy_to_mass(i, j, this.NUM_WIDTHMASS);
-          let seed = 0;
-          let num_idx = 0;
-          [seed, num_idx] = find_piece_for_mass(piece_status, this.NUM_PIECE, mass);
-          let piece = stat_num_to_ctr_num(seed, num_idx, this.NUM_PIECE);
-          if (seed == 0) {
-            dragging_piece_idx = piece + 1 + 0;
-          } else {
-            dragging_piece_idx = piece + 1 + sum_array(this.NUM_PIECE.slice(0, seed));
-          }
-          this.board_group.children[dragging_piece].mass = mass;
-          // タッチイベントを無効にする 有効にしてたマスだけ　動けたとこだけ
-					let piece_number = 0;
-					[seed, piece_number] = ctr_num_to_stat_num(dragging_piece);
-					let valid_actions = get_valid_actions(board_array, piece_seed_list, piece_status, seed, piece_number);
-          for (let l = 0;l < this.NUM_WIDTHMASS * NUM_HEIGHTMASS; l++) {
-            if (valid_actions.includes(l)) {
-              this.board_group.children[l + 1 + SUM_PIECE].setInteractive(false);
-            }
-          }
-
-          dragging = false;
-
-          let player = piece_status[seed][num_idx].player;
-          [board_array, reservePieces, done] = syogi_step(board_array, piece_status, reservePieces, piece, action = mass, player = player);
-          turn = 1;
-      });
-      let mass = xy_to_mass(i, j, this.NUM_WIDTHMASS);
+          this.parent.parent.put = true;
+					this.parent.parent.put_mass = this.number;
+				});
 			console.log(this.SUM_PIECE);
       this.board_group.children[mass + 1 + this.SUM_PIECE].alpha = 0.0;
     }
@@ -380,7 +371,7 @@ phina.define("MainScene", {
 	},
 	// 毎フレーム更新処理
 	update: function() {
-	console.log("turn",this.turn,"dragging",this.dragging);
+	console.log("turn",this.turn,"dragging",this.dragging,"pick",this.pick,"put",this.put);
 	// 自分の番
 	if(this.turn == 0){
 		if(this.dragging){
@@ -397,6 +388,12 @@ phina.define("MainScene", {
 				}
 			}
 		}
+		if(this.put){
+			this.put_piece();
+    }
+		if(this.pick){
+			this.pick_piece();
+    }
 	// 相手の番
 	}else if(turn == 1){
 		let activePiece;
@@ -428,10 +425,11 @@ phina.define("MainScene", {
 		}
 	}
 	},
-	pick_piece: function(control_number){
+	pick_piece: function(){
+		console.log("pick_piece")
 		// 駒を選ぶとき
 		this.dragging = true;
-		let dragging_piece = control_number;
+		let dragging_piece = this.num_pick_piece;
 		console.log("dragging_piece",dragging_piece);
 		console.log("NUM_PIECE", this.NUM_PIECE)
 		let seed = 0;
@@ -446,6 +444,8 @@ phina.define("MainScene", {
 				this.board_group.children[j+1+SUM_PIECE].setInteractive(true);
 			}
 		}
+		this.pick = false;
+		this.num_pick_piece = 0;
   },
 	get_status: function(){
 		class status{
@@ -472,6 +472,39 @@ phina.define("MainScene", {
     }
 		let STATUS = status(this.currentMass,this.hold,this.holdPiece,this.flag,this.caught,this.dragging,this.gameStatus,this.piece_seed_list,this.piece_status,this.piece_list,this.previousMass,this.reservePieces,this.turn,this.NUM_WIDTHMASS,this.NUM_HEIGHTMASS,this.NUM_PIECE);
 		return STATUS;
+  },
+	put_piece: function(){
+    // 駒を置くとき(ここに動くことは確定している)
+    // piece は通し番号
+    let mass = this.put_mass;
+    let seed = 0;
+    let num_idx = 0;
+    [seed, num_idx] = find_piece_for_mass(piece_status, this.NUM_PIECE, mass);
+    let piece = stat_num_to_ctr_num(seed, num_idx, this.NUM_PIECE);
+		let dragging_piece_idx = 0;
+    if (seed == 0) {
+      dragging_piece_idx = piece + 1 + 0;
+    } else {
+      dragging_piece_idx = piece + 1 + sum_array(this.NUM_PIECE.slice(0, seed));
+    }
+    this.board_group.children[dragging_piece_idx].mass = mass;
+    // タッチイベントを無効にする 有効にしてたマスだけ　動けたとこだけ
+		let piece_number = 0;
+		[seed, piece_number] = ctr_num_to_stat_num(dragging_piece_idx - 1);
+		let valid_actions = get_valid_actions(this.board_array, this.piece_seed_list, this.piece_status, seed, piece_number);
+    for (let l = 0;l < this.NUM_WIDTHMASS * this.NUM_HEIGHTMASS; l++) {
+      if (valid_actions.includes(l)) {
+        this.board_group.children[l + 1 + this.SUM_PIECE].setInteractive(false);
+      }
+    }
+
+    this.dragging = false;
+
+    let player = this.piece_status[seed][num_idx].player;
+    [this.board_array, this.reservePieces, this.done] = syogi_step(this.board_array, this.piece_status, this.reservePieces, piece, action = mass, player = player);
+    this.put = false;
+		this.put_mass = 0;
+		this.turn = 1;
   },
 });
 
