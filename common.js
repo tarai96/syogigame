@@ -1,7 +1,9 @@
 // âÊñ ÇÃç¿ïW
-function Point() {
-    this.x = 0;
-    this.y = 0;
+class Point{
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+  }
 }
 
 class Size{
@@ -12,7 +14,9 @@ class Size{
 }
 
 // è´ä˚î’è„ÇÃç¿ïW
-function Position() {
-    this.x = 0;
-    this.y = 0;
+class Position{
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+  }
 }

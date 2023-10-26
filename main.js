@@ -213,7 +213,8 @@ phina.define("MainScene", {
 	this.holdPiece = 0;
 	this.flag = false;
 	this.caught = false;
-	this.dragging = false;
+    this.dragging = false;
+    this.dragging_piece = 0;
 	this.gameStatus = ""
 	this.piece_seed_list = [];
 	this.piece_status = [];
@@ -370,21 +371,22 @@ phina.define("MainScene", {
   }
 	},
 	// 毎フレーム更新処理
-	update: function() {
+	update: function(app) {
 	console.log("turn",this.turn,"dragging",this.dragging,"pick",this.pick,"put",this.put);
 	// 自分の番
 	if(this.turn == 0){
-		if(this.dragging){
-			this.board_group.children[dragging_piece].setposition(mouse.x,mouse.y);
+    if (this.dragging) {
+      const mouse = app.pointer;
+			//this.board_group.children[this.dragging_piece+1].setPosition(mouse.x,mouse.y);
 			// 当たり判定 ちょっと光らせる
-			for(i=0;i<NUM_WIDTHMASS*NUM_HEIGHTMASS;i++){
-				if(this.board_group.children[dragging_piece]
-					.hitTestElement(this.board_group.children[i+1+SUM_PIECE])){
-					console.log(i, "hit");
-					this.board_group.children[i+1+SUM_PIECE].alpha = 0.1;
+			for(let i=0;i<this.NUM_WIDTHMASS*this.NUM_HEIGHTMASS;i++){
+        if (this.board_group.children[this.dragging_piece+1]
+					.hitTestElement(this.board_group.children[i+1+this.SUM_PIECE])){
+					//console.log(i, "hit");
+					this.board_group.children[i+1+this.SUM_PIECE].alpha = 0.1;
 				}else{
-					this.board_group.children[i+1+SUM_PIECE].alpha = 0;
-					console.log(i, "no hit");
+					this.board_group.children[i+1+this.SUM_PIECE].alpha = 0;
+					//console.log(i, "no hit");
 				}
 			}
 		}
@@ -429,19 +431,20 @@ phina.define("MainScene", {
 		console.log("pick_piece")
 		// 駒を選ぶとき
 		this.dragging = true;
-		let dragging_piece = this.num_pick_piece;
-		console.log("dragging_piece",dragging_piece);
-		console.log("NUM_PIECE", this.NUM_PIECE)
+		this.dragging_piece = this.num_pick_piece;
+		console.log("dragging_piece",this.dragging_piece);
+    console.log("NUM_PIECE", this.NUM_PIECE);
 		let seed = 0;
-		let piece_number = 0;
-		[seed, piece_number] = ctr_num_to_stat_num(dragging_piece, this.NUM_PIECE);
-		this.board_group.children[dragging_piece+1].previousMass = board_group.children[dragging_piece+1].mass
+    let piece_number = 0;
+    [seed, piece_number] = ctr_num_to_stat_num(this.dragging_piece, this.NUM_PIECE);
+    console.log("seed,piece_number", seed, piece_number);
+		this.board_group.children[this.dragging_piece+1].previousMass = this.board_group.children[this.dragging_piece+1].mass
 		// 将棋盤の当たり判定オブジェクトのタッチイベントを有効にする
-		// 駒が動ける場所だけ
-		let valid_actions = get_valid_actions(board_array, piece_seed_list, piece_status, seed, piece_number);
-		for(j=0;j<NUM_WIDTHMASS*NUM_HEIGHTMASS;j++){
+    // 駒が動ける場所だけ
+    let valid_actions = get_valid_actions(this.board_array,this.piece_seed_list,this.piece_status, seed, piece_number, this.NUM_HEIGHTMASS, this.NUM_WIDTHMASS);
+		for(j=0;j<this.NUM_WIDTHMASS*this.NUM_HEIGHTMASS;j++){
 			if(valid_actions.includes(j)){
-				this.board_group.children[j+1+SUM_PIECE].setInteractive(true);
+				this.board_group.children[j+1+this.SUM_PIECE].setInteractive(true);
 			}
 		}
 		this.pick = false;

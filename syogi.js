@@ -14,12 +14,14 @@ function sum_array(arr) {
 
 // piece_listの番号からpiece_statusの番号へ
 function ctr_num_to_stat_num(control_number, NUM_PIECE) {
-	let status_number = control_number;
-	for (let seed = 0; seed < NUM_PIECE.lenth; i++) {
+  let status_number = control_number;
+  for (let seed = 0; seed < NUM_PIECE.length; seed++) {
+    console.log("seed","status_number",seed, status_number);
 		if (status_number >= NUM_PIECE[seed]) {
-			status_number -= NUM_PIECE[seed];
-		} else {
-			return [seed, status_number]
+      status_number -= NUM_PIECE[seed];
+    } else {
+      // seedは１から始まる
+      return [seed+1, status_number];
 		}
 	}
 }
@@ -39,22 +41,24 @@ function stat_num_to_ctr_num(seed, status_number, NUM_PIECE) {
 	return control_number;
 }
 
-function mass_to_xy(mass) {
+function mass_to_xy(mass,NUM_HEIGHTMASS,NUM_WIDTHMASS) {
 	let x = mass;
-	for (let y = 0; y < NUM_HEIGHTMASS; y++) {
-		if (x < NUM_WIDTHMASS) {
-			return Position(x, y);
+  for (let y = 0; y < NUM_HEIGHTMASS; y++) {
+    if (x < NUM_WIDTHMASS) {
+			return [x, y];
 		}
 		x -= NUM_WIDTHMASS;
 	}
 }
 
 function xy_to_mass(x, y, NUM_WIDTHMASS) {
-  mass = y * NUM_WIDTHMASS + x;
+  let mass = y * NUM_WIDTHMASS + x;
+  console.log(mass);
   return mass;
 }
 
 function is_valid_action(board_array, action, player) {
+  console.log(board_array, action, player);
 	if (action < 0 && action >= NUM_ALLMASS) {
 		// 将棋盤の外
 		  return false;
@@ -71,34 +75,29 @@ function is_valid_action(board_array, action, player) {
 }
 
 // 一つの駒を指定し動けるマスを座標で返す
-function get_valid_actions(board_array, piece_seed_list, pieces_status, seed, piece_number) {
+function get_valid_actions(board_array, piece_seed_list, pieces_status, seed, piece_number,NUM_HEIGHTMASS,NUM_WIDTHMASS) {
 	let board = board_array.concat();
 	let piece_status = pieces_status.concat();
-	let reserve_piece = reserve_pieces.concat();
 	let actions_list = [];
 	if (piece_status[seed_to_index(seed)][piece_number].reserve) {
 		return [];
 	}
-	var x = 0;
-	var y = 0;
-	// 駒種のアクションを実際の座標に直す
-	let position = 0;
-	let action = new Position(0, 0);
-	for (var i in piece_seed_list[seed_to_index(seed)].actions) {
-		position = mass_to_xy(piece_status[seed_to_index(seed)][piece_number].mass);
-		action.x = position.x + piece_seed_list[seed_to_index(seed)].actions.x;
-		action.y = position.y + piece_seed_list[seed_to_index(seed)].actions.y;
-
-		if(is_valid_action(board, action, piece_status[seed_to_index(seed)][piece_number].mass.player)){
-			actions_list.push(new Position(action.x, action.y));
+  // 駒種のアクションを実際の座標に直す
+  let position = 0;
+  let action = 0;
+  let seed_idx = seed_to_index(seed);
+  console.log(piece_seed_list);
+  for (var i in piece_seed_list[seed_idx].actions) {
+    position = piece_status[seed_idx][piece_number].mass;
+    action = position + piece_seed_list[seed_idx].actions[i];
+    if (is_valid_action(board, action, piece_status[seed_idx][piece_number].player)){
+			actions_list.push(action);
 		}
 	}
 	return actions_list;
 }
 
 function find_piece_for_mass(piece_status, NUM_PIECE, mass) {
-	let seed = -1;
-	let status_number = -1;
 	for (var i = 0; i < NUM_PIECE.length; i++) {
 		for (var j = 0; j < NUM_PIECE[i]; j++) {
 			if (piece_status[i][j].mass == mass) {
@@ -178,8 +177,6 @@ function syogi_init(board_array, NUM_WIDTHMASS, NUM_HEIGHTMASS) {
 	}
 
 	var piece_seed_list = [];
-	var HU = new SyogiPiece(actions[0]);
-	var OSYO = new SyogiPiece(actions[1]);
 
 	for (var i = 0; i < 12; i++) {
 		piece_seed_list.push(new SyogiPiece(actions[i]));
