@@ -17,29 +17,7 @@ var ASSETS = {
 	},
 };
 
-// 盤面に駒がどこにあるかの配列を返す
-function get_piece_mass(board,number_piece){
-	let mass_list = [];
-	for(var j = 0;j < NUM_HEIGHTMASS;j++){
-		for(i = 0;i < NUM_WIDTHMASS;i++){
-			// 
-			if (board[i + (NUM_WIDTHMASS * j)] == number_piece){
-				mass_list.push(new position(i,j));
-			}
-		}
-	}
-	return mass_list;
-}
 
-function get_num_enemy_piece(board_group){
-	let cnt = 0;
-	for(i=0;i<NUM_HU;i++){
-		if(board_group.children[i+1].player == -1){
-			cnt++;
-		}
-	}
-	return cnt;
-}
 
 
 phina.define("Hu", {
@@ -376,8 +354,9 @@ phina.define("MainScene", {
 	// 自分の番
 	if(this.turn == 0){
     if (this.dragging) {
+      /*
       const mouse = app.pointer;
-			//this.board_group.children[this.dragging_piece+1].setPosition(mouse.x,mouse.y);
+			this.board_group.children[this.dragging_piece+1].setPosition(mouse.x,mouse.y);
 			// 当たり判定 ちょっと光らせる
 			for(let i=0;i<this.NUM_WIDTHMASS*this.NUM_HEIGHTMASS;i++){
         if (this.board_group.children[this.dragging_piece+1]
@@ -389,6 +368,7 @@ phina.define("MainScene", {
 					//console.log(i, "no hit");
 				}
 			}
+      */
 		}
 		if(this.put){
 			this.put_piece();
@@ -397,29 +377,30 @@ phina.define("MainScene", {
 			this.pick_piece();
     }
 	// 相手の番
-	}else if(turn == 1){
-		let activePiece;
+	}else if(this.turn == 1){
+    let activePiece;
+    console.log("enemy_pieces", this.get_num_enemy_piece());
 		// 動かすコマ
-		activePiece = Math.floor(Math.random() * get_num_enemy_piece());
-		let cnt = 0;
-		for(i=0;i<this.SUM_PIECE;i++){
-			if(this.board_group.children[i+1].player == -1){
-				if(cnt==activePiece){
-				break;
-				}
-				cnt++;
-			}
-		}
-		let control_number = i;
+    activePiece = Math.floor(Math.random() * this.get_num_enemy_piece());
+    let cnt = 0;
+    for (i = 0; i < this.SUM_PIECE; i++) {
+      if (this.board_group.children[i + 1].player == 1) {
+        cnt++;
+      }
+      if (cnt == activePiece) {
+        break;
+      }
+    }
+    let control_number = i;
 		// どこに動く
 		let seed = 0;
-		let piece_number = 0;
-		[seed, piece_number] = ctr_num_to_stat_num(control_number);
-		let valid_actions = get_valid_actions(board_array, piece_seed_list, piece_status, seed, piece_number)
+    let piece_number = 0;
+    [seed, piece_number] = ctr_num_to_stat_num(control_number, this.NUM_PIECE);
+		let valid_actions = get_valid_actions(this.board_array, this.piece_seed_list, this.piece_status, seed, piece_number)
 		let action = Math.floor(Math.random() * valid_actions.length);
-		this.board_group.children[control_number + 1].mass = valid_actions[action];
-		[this.board_array, this.reservePieces, this.done] = syogi_step(board_array, piece_status, reservePieces, piece = control_number, action = valid_actions[action], player = 1);
-		turn = 0;
+    this.board_group.children[control_number + 1].mass = valid_actions[action];
+    [this.board_array, this.reservePieces, this.done] = syogi_step(this.board_array, this.piece_status, this.reservePieces, this.NUM_PIECE, piece = control_number, action = valid_actions[action], player = 1);
+		this.turn = 0;
 		// ターン終了
 		// 駒のタッチを有効にする
 		for(i=0;i<this.SUM_PIECE;i++){
@@ -439,12 +420,18 @@ phina.define("MainScene", {
     [seed, piece_number] = ctr_num_to_stat_num(this.dragging_piece, this.NUM_PIECE);
     console.log("seed,piece_number", seed, piece_number);
 		this.board_group.children[this.dragging_piece+1].previousMass = this.board_group.children[this.dragging_piece+1].mass
-		// 将棋盤の当たり判定オブジェクトのタッチイベントを有効にする
+    // コマがある場所を光らせる
+    let mass = this.board_group.children[this.dragging_piece + 1].mass;
+    this.board_group.children[mass + 1 + this.SUM_PIECE].alpha = 0.1;
+    // 将棋盤の当たり判定オブジェクトのタッチイベントを有効にする
     // 駒が動ける場所だけ
-    let valid_actions = get_valid_actions(this.board_array,this.piece_seed_list,this.piece_status, seed, piece_number, this.NUM_HEIGHTMASS, this.NUM_WIDTHMASS);
-		for(j=0;j<this.NUM_WIDTHMASS*this.NUM_HEIGHTMASS;j++){
+    let valid_actions = get_valid_actions(this.board_array, this.piece_seed_list, this.piece_status, seed, piece_number, this.NUM_HEIGHTMASS, this.NUM_WIDTHMASS);
+    console.log("valid_actions", valid_actions);
+    for (let j = 0; j < this.NUM_WIDTHMASS * this.NUM_HEIGHTMASS; j++){
 			if(valid_actions.includes(j)){
-				this.board_group.children[j+1+this.SUM_PIECE].setInteractive(true);
+        this.board_group.children[j + 1 + this.SUM_PIECE].setInteractive(true);
+        // コマが動けるところを光らせる
+        this.board_group.children[j + 1 + this.SUM_PIECE].alpha = 0.1;
 			}
 		}
 		this.pick = false;
@@ -476,39 +463,63 @@ phina.define("MainScene", {
 		let STATUS = status(this.currentMass,this.hold,this.holdPiece,this.flag,this.caught,this.dragging,this.gameStatus,this.piece_seed_list,this.piece_status,this.piece_list,this.previousMass,this.reservePieces,this.turn,this.NUM_WIDTHMASS,this.NUM_HEIGHTMASS,this.NUM_PIECE);
 		return STATUS;
   },
+
 	put_piece: function(){
     // 駒を置くとき(ここに動くことは確定している)
     // piece は通し番号
     let mass = this.put_mass;
+    console.log("put_mass", mass);
+    let dragging_piece = this.dragging_piece;
+    let dragging_piece_idx = dragging_piece + 1;
     let seed = 0;
-    let num_idx = 0;
-    [seed, num_idx] = find_piece_for_mass(piece_status, this.NUM_PIECE, mass);
-    let piece = stat_num_to_ctr_num(seed, num_idx, this.NUM_PIECE);
-		let dragging_piece_idx = 0;
-    if (seed == 0) {
-      dragging_piece_idx = piece + 1 + 0;
-    } else {
-      dragging_piece_idx = piece + 1 + sum_array(this.NUM_PIECE.slice(0, seed));
-    }
-    this.board_group.children[dragging_piece_idx].mass = mass;
-    // タッチイベントを無効にする 有効にしてたマスだけ　動けたとこだけ
-		let piece_number = 0;
-		[seed, piece_number] = ctr_num_to_stat_num(dragging_piece_idx - 1);
-		let valid_actions = get_valid_actions(this.board_array, this.piece_seed_list, this.piece_status, seed, piece_number);
-    for (let l = 0;l < this.NUM_WIDTHMASS * this.NUM_HEIGHTMASS; l++) {
+    let number = 0;
+    [seed, number] = ctr_num_to_stat_num(dragging_piece, this.NUM_PIECE);
+    // 光らせた場所を暗くする
+    let previous_mass = this.board_group.children[dragging_piece_idx].mass;
+    this.board_group.children[previous_mass + 1 + this.SUM_PIECE].alpha = 0.0;
+    let valid_actions = get_valid_actions(this.board_array, this.piece_seed_list, this.piece_status, seed, number);
+    for (let l = 0; l < this.NUM_WIDTHMASS * this.NUM_HEIGHTMASS; l++) {
       if (valid_actions.includes(l)) {
+        // タッチイベントを無効にする
         this.board_group.children[l + 1 + this.SUM_PIECE].setInteractive(false);
+        // 光らせた場所を暗くする
+        this.board_group.children[l + 1 + this.SUM_PIECE].alpha = 0.0;
       }
     }
+    this.board_group.children[dragging_piece_idx].mass = mass;
 
     this.dragging = false;
-
-    let player = this.piece_status[seed][num_idx].player;
-    [this.board_array, this.reservePieces, this.done] = syogi_step(this.board_array, this.piece_status, this.reservePieces, piece, action = mass, player = player);
+    console.log(this.piece_status);
+    let player = this.piece_status[seed_to_index(seed)][number].player;
+    [this.board_array, this.reservePieces, this.done] = syogi_step(this.board_array, this.piece_status, this.reservePieces, this.NUM_PIECE, dragging_piece, action = mass, player = player);
     this.put = false;
 		this.put_mass = 0;
 		this.turn = 1;
   },
+
+  // 盤面に駒がどこにあるかの配列を返す
+  get_piece_mass: function(number_piece){
+    let mass_list =[];
+    for(var j = 0; j<NUM_HEIGHTMASS;j++){
+      for (i = 0; i < NUM_WIDTHMASS; i++) {
+        // 
+        if (this.board_array[i + (NUM_WIDTHMASS * j)] == number_piece) {
+          mass_list.push(new position(i, j));
+        }
+      }
+    }
+    return mass_list;
+  },
+
+  get_num_enemy_piece: function() {
+    let cnt = 0;
+    for (i = 0; i < this.SUM_PIECE; i++) {
+      if (this.board_group.children[i + 1].player == 1) {
+        cnt++;
+      }
+    }
+    return cnt;
+  }
 });
 
 phina.define("ResultScene", {

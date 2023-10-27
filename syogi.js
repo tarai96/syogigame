@@ -15,13 +15,17 @@ function sum_array(arr) {
 // piece_listの番号からpiece_statusの番号へ
 function ctr_num_to_stat_num(control_number, NUM_PIECE) {
   let status_number = control_number;
-  for (let seed = 0; seed < NUM_PIECE.length; seed++) {
-    console.log("seed","status_number",seed, status_number);
-		if (status_number >= NUM_PIECE[seed]) {
-      status_number -= NUM_PIECE[seed];
+  if (control_number >= sum_array(NUM_PIECE)) {
+    console.log("error");
+    console.log("control_number,NUM_PIECE", control_number, NUM_PIECE);
+  }
+  for (let seed_idx = 0; seed_idx < NUM_PIECE.length; seed_idx++) {
+    console.log("seed_idx","status_number",seed_idx, status_number);
+		if (status_number >= NUM_PIECE[seed_idx]) {
+      status_number -= NUM_PIECE[seed_idx];
     } else {
       // seedは１から始まる
-      return [seed+1, status_number];
+      return [seed_idx+1, status_number];
 		}
 	}
 }
@@ -57,8 +61,9 @@ function xy_to_mass(x, y, NUM_WIDTHMASS) {
   return mass;
 }
 
-function is_valid_action(board_array, action, player) {
+function is_valid_action(board_array, action, player,NUM_HEIGHTMASS,NUM_WIDTHMASS) {
   console.log(board_array, action, player);
+  let NUM_ALLMASS = NUM_HEIGHTMASS * NUM_WIDTHMASS;
 	if (action < 0 && action >= NUM_ALLMASS) {
 		// 将棋盤の外
 		  return false;
@@ -90,23 +95,23 @@ function get_valid_actions(board_array, piece_seed_list, pieces_status, seed, pi
   for (var i in piece_seed_list[seed_idx].actions) {
     position = piece_status[seed_idx][piece_number].mass;
     action = position + piece_seed_list[seed_idx].actions[i];
-    if (is_valid_action(board, action, piece_status[seed_idx][piece_number].player)){
+    if (is_valid_action(board, action, piece_status[seed_idx][piece_number].player, NUM_HEIGHTMASS, NUM_WIDTHMASS)) {
 			actions_list.push(action);
 		}
 	}
 	return actions_list;
 }
 
-function find_piece_for_mass(piece_status, NUM_PIECE, mass) {
-	for (var i = 0; i < NUM_PIECE.length; i++) {
-		for (var j = 0; j < NUM_PIECE[i]; j++) {
-			if (piece_status[i][j].mass == mass) {
-				return [i, j];
+function find_piece_for_mass(piece_status,mass,NUM_PIECE) {
+	for (var seed_idx = 0; seed_idx < NUM_PIECE.length; seed_idx++) {
+		for (var piece_idx = 0; piece_idx < NUM_PIECE[seed_idx]; piece_idx++) {
+      if (piece_status[seed_idx][piece_idx].mass == mass) {
+				return [seed_idx-1, piece_idx];
 			}
 		}
 	}
 	console.log("not find");
-	return -1, -1;
+	return [-1, -1];
 }
 
 function syogi_init(board_array, NUM_WIDTHMASS, NUM_HEIGHTMASS) {
@@ -190,32 +195,38 @@ function syogi_init(board_array, NUM_WIDTHMASS, NUM_HEIGHTMASS) {
 }
 
 // 戻り値 board_array, reserve_pieces, done
-function syogi_step(board_array, pieces_status, reserve_pieces, piece_control_number, action, player) {
+function syogi_step(board_array, pieces_status, reserve_pieces,NUM_PIECE, piece_control_number, action, player) {
   // 引数の配列を変えたくないのでコピーを取る
   let board = board_array.concat();
   let piece_status = pieces_status.concat();
   let reserve_piece = reserve_pieces.concat();
+  let done = false;
+  let seed = 0;
+  let seed_idx = 0;
   let piece_idx = 0;
-  let n_idx = 0;
   if ((board[action] < 0 && player == 0) || (board[action] > 0 && player == 1)) {
     // 動こうとするマスにこの駒の敵の駒がいれば
-    [piece_idx, n_idx] = find_piece_for_mass(piece_status, NUM_PIECE, action);
-    piece_status[piece_idx][n_idx].reserve = true;
-    if (piece_status[piece_idx][n_idx].player == 0) {
-      piece_status[piece_idx][n_idx].player = 1;
+    // TODO 王を取った時の処理
+    [seed, piece_idx] = find_piece_for_mass(piece_status, NUM_PIECE, action);
+    seed_idx = seed_to_index(seed);
+    piece_status[seed_idx][piece_idx].reserve = true;
+    if (piece_status[seed_idx][piece_idx].player == 0) {
+      piece_status[seed_idx][piece_idx].player = 1;
     } else {
-      piece_status[piece_idx][n_idx].player = 0;
+      piece_status[seed_idx][piece_idx].player = 0;
     }
-    [piece_idx, n_idx] = ctr_num_to_stat_num(piece_control_number, NUM_PIECE);
-    board[piece_status[piece_idx][n_idx].mass] = 0;
-    piece_status[piece_idx][n_idx].mass = -1;
-    board[action] = (piece_idx + 1) * piece_status[piece_idx][n_idx].player;
-    piece_status[piece_idx][n_idx].mass = action;
+    [seed, piece_idx] = ctr_num_to_stat_num(piece_control_number, NUM_PIECE);
+    seed_idx = seed_to_index(seed);
+    board[piece_status[seed_idx][piece_idx].mass] = 0;
+    piece_status[seed_idx][piece_idx].mass = -1;
+    board[action] = (seed_idx + 1) * piece_status[seed_idx][piece_idx].player;
+    piece_status[seed_idx][piece_idx].mass = action;
   } else if (board_array[action] == 0) {
-    [piece_idx, n_idx] = ctr_num_to_stat_num(piece, NUM_PIECE);
-    board[piece_status[piece_idx][n_idx].mass] = 0;
-    board[action] = (piece_idx + 1) * piece_status[piece_idx][n_idx].player;
-    piece_status[piece_idx][n_idx].mass = action;
+    [seed, piece_idx] = ctr_num_to_stat_num(piece_control_number, NUM_PIECE);
+    seed_idx = seed_to_index(seed);
+    board[piece_status[seed_idx][piece_idx].mass] = 0;
+    board[action] = seed * piece_status[seed_idx][piece_idx].player;
+    piece_status[seed_idx][piece_idx].mass = action;
   } else {
     console.log("error");
     console.log("board, action,player, reserve_piece");
