@@ -75,7 +75,7 @@ function is_valid_action(board_array, action, player,NUM_HEIGHTMASS,NUM_WIDTHMAS
 	} else if (board_array[action] == 0) {
 		  return true;
 	} else {
-	  console.log("error");
+	  console.log("error,action,board_array[action]",action,board_array[action]);
 	}
 }
 
@@ -94,8 +94,14 @@ function get_valid_actions(board_array, piece_seed_list, pieces_status, seed, pi
   console.log(piece_seed_list);
   for (var i in piece_seed_list[seed_idx].actions) {
     position = piece_status[seed_idx][piece_number].mass;
-    action = position + piece_seed_list[seed_idx].actions[i];
-    if (is_valid_action(board, action, piece_status[seed_idx][piece_number].player, NUM_HEIGHTMASS, NUM_WIDTHMASS)) {
+		if(piece_status[seed_idx][piece_number].player == 1){
+			action = position - piece_seed_list[seed_idx].actions[i];
+		}else if(piece_status[seed_idx][piece_number].player == 0){
+			action = position + piece_seed_list[seed_idx].actions[i];
+    }else{
+			console.log("error");
+    }
+		if (is_valid_action(board, action, piece_status[seed_idx][piece_number].player, NUM_HEIGHTMASS, NUM_WIDTHMASS)) {
 			actions_list.push(action);
 		}
 	}
@@ -209,6 +215,7 @@ function syogi_step(board_array, pieces_status, reserve_pieces,NUM_PIECE, piece_
     // TODO â§ÇéÊÇ¡ÇΩéûÇÃèàóù
     [seed, piece_idx] = find_piece_for_mass(piece_status, NUM_PIECE, action);
     seed_idx = seed_to_index(seed);
+		console.log(piece_status,seed_idx,piece_idx);
     piece_status[seed_idx][piece_idx].reserve = true;
     if (piece_status[seed_idx][piece_idx].player == 0) {
       piece_status[seed_idx][piece_idx].player = 1;
