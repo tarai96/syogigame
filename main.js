@@ -407,10 +407,10 @@ phina.define("MainScene", {
 			console.log("valid_actions",valid_actions);
 		}
 		let action_idx = Math.floor(Math.random() * valid_actions.length);
-		let action = valid_actions[action];
+		let action = valid_actions[action_idx];
 		console.log("mass,action",this.board_group.children[control_number + 1].mass,action);
     this.board_group.children[control_number + 1].mass += action;
-    [this.board_array, this.reservePieces, this.done] = syogi_step(this.board_array, this.piece_status, this.reservePieces, this.NUM_PIECE, piece = control_number, action = valid_actions[action], player = 1);
+    [this.board_array, this.reservePieces, this.done] = syogi_step(this.board_array, this.piece_status, this.reservePieces, this.NUM_PIECE, piece = control_number, action, player = 1);
 		
 		console.log("turn:1,piece,action",control_number,action)
 		// 駒の表示位置更新

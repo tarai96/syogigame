@@ -73,8 +73,12 @@ function is_valid_action(board_array, action, player,NUM_HEIGHTMASS,NUM_WIDTHMAS
 	} else if (board_array[action] > 0 && player == 1) {
 		  return true;
 	} else if (board_array[action] == 0) {
-		  return true;
-	} else {
+    return true;
+  } else if (board_array[action] > 0 && player == 0) {
+    return false;
+  } else if (board_array[action] < 0 && player == 1) {
+    return false;
+  } else {
 	  console.log("error,action,board_array[action]",action,board_array[action]);
 	}
 }
