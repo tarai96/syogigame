@@ -288,7 +288,7 @@ phina.define("MainScene", {
 
 	// 持ち駒初期化
 	// reservePieces 2次元配列 0 自分　1 相手
-	for(let i = 0; i < 2; i++) { this.reservePieces.push(Array(64).fill(0)); }
+	for(let i = 0; i < 2; i++) { this.reservePieces.push([]); }
 	
 	// Sprite
 	this.board_group = DisplayElement().addChildTo(this);
@@ -409,7 +409,7 @@ phina.define("MainScene", {
 		let action_idx = Math.floor(Math.random() * valid_actions.length);
 		let action = valid_actions[action_idx];
 		console.log("mass,action",this.board_group.children[control_number + 1].mass,action);
-    this.board_group.children[control_number + 1].mass += action;
+    this.board_group.children[control_number + 1].mass = action;
     [this.board_array, this.reservePieces, this.done] = syogi_step(this.board_array, this.piece_status, this.reservePieces, this.NUM_PIECE, piece = control_number, action, player = 1);
 		
 		console.log("turn:1,piece,action",control_number,action)
@@ -527,6 +527,22 @@ phina.define("MainScene", {
     console.log(this.piece_status);
     let player = this.piece_status[seed_to_index(seed)][number].player;
     [this.board_array, this.reservePieces, this.done] = syogi_step(this.board_array, this.piece_status, this.reservePieces, this.NUM_PIECE, dragging_piece, action = mass, player = player);
+    console.log(this.reservePieces);
+    for (let i = 0; i < this.reservePieces[0].length; i++) {
+      [seed, number] = ctr_num_to_stat_num(this.reservePieces[0][i], this.NUM_PIECE);
+      // まだパラメータを更新していなければ
+      if (this.board_group.children[this.reservePieces[0][i]].reserve == false) {
+        this.board_group.children[this.reservePieces[0][i]].reserve = true;
+        this.board_group.children[this.reservePieces[0][i]].mass = -1;
+        if (this.board_group.children[this.reservePieces[0][i]].player == 0) {
+          this.board_group.children[this.reservePieces[0][i]].player = 1;
+        } else if (this.board_group.children[this.reservePieces[0][i]].player == 1) {
+          this.board_group.children[this.reservePieces[0][i]].player = 0;
+        }
+        // TODO 表示処理
+        this.board_group.children[this.reservePieces[0][i]].alpha = 0.0;
+      }
+    }
     this.put = false;
 		this.put_mass = 0;
 		this.turn = 1;

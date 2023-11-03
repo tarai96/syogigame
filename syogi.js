@@ -36,7 +36,7 @@ function stat_num_to_ctr_num(seed, status_number, NUM_PIECE) {
 		control_number += NUM_PIECE[i];
 	}
 	control_number += status_number;
-	const sum_piece = sum_2darray(NUM_PIECE);
+	const sum_piece = sum_array(NUM_PIECE);
 	if (control_number >= sum_piece) {
 		console.log("error control_number >= sum_piece");
 		console.log("control_number, sum_piece,NUM_PIECE");
@@ -116,11 +116,13 @@ function find_piece_for_mass(piece_status,mass,NUM_PIECE) {
 	for (var seed_idx = 0; seed_idx < NUM_PIECE.length; seed_idx++) {
 		for (var piece_idx = 0; piece_idx < NUM_PIECE[seed_idx]; piece_idx++) {
       if (piece_status[seed_idx][piece_idx].mass == mass) {
-				return [seed_idx-1, piece_idx];
+				return [seed_idx+1, piece_idx];
 			}
 		}
-	}
-	console.log("not find");
+  }
+  console.log("not find");
+  console.log("NUM_PIECE", NUM_PIECE);
+  console.log("NUM_PIECE.length, NUM_PIECE[seed_idx]", NUM_PIECE.length, NUM_PIECE[seed_idx]);
 	return [-1, -1];
 }
 
@@ -217,7 +219,7 @@ function syogi_step(board_array, pieces_status, reserve_pieces,NUM_PIECE, piece_
   if ((board[action] < 0 && player == 0) || (board[action] > 0 && player == 1)) {
     // “®‚±‚¤‚Æ‚·‚éƒ}ƒX‚É‚±‚Ì‹î‚Ì“G‚Ì‹î‚ª‚¢‚ê‚Î
     // TODO ‰¤‚ğæ‚Á‚½‚Ìˆ—
-    [seed, piece_idx] = find_piece_for_mass(piece_status, NUM_PIECE, action);
+    [seed, piece_idx] = find_piece_for_mass(piece_status,action ,NUM_PIECE);
     seed_idx = seed_to_index(seed);
 		console.log(piece_status,seed_idx,piece_idx);
     piece_status[seed_idx][piece_idx].reserve = true;
@@ -226,6 +228,10 @@ function syogi_step(board_array, pieces_status, reserve_pieces,NUM_PIECE, piece_
     } else {
       piece_status[seed_idx][piece_idx].player = 0;
     }
+    piece_status[seed_idx][piece_idx].mass = -1;
+    reserve_piece_number = stat_num_to_ctr_num(seed, piece_idx, NUM_PIECE);
+    reserve_piece[player].push(reserve_piece_number);
+
     [seed, piece_idx] = ctr_num_to_stat_num(piece_control_number, NUM_PIECE);
     seed_idx = seed_to_index(seed);
     board[piece_status[seed_idx][piece_idx].mass] = 0;
