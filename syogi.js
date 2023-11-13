@@ -187,11 +187,95 @@ function syogi_init(board_array, NUM_WIDTHMASS, NUM_HEIGHTMASS) {
 			actions[1][cnt] = j;
 			cnt++;
 		}
-	}
-	// 仮のアクション
-	for (var i = 2; i < 12; i++) {
-		actions[i][0] = -1 * NUM_WIDTHMASS - 1
-	}
+  }
+
+  // action
+  // 歩
+  actions[0][0] = -1 * NUM_WIDTHMASS;
+  //桂馬
+  actions[1][0] = -2 * NUM_WIDTHMASS - 1;
+  actions[1][1] = -2 * NUM_WIDTHMASS + 1;
+  // 香車
+  for (let j = 1; j <= NUM_HEIGHTMASS - 1; j++) {
+    actions[2][j - 1] = -j * NUM_WIDTHMASS;
+  }
+  // 金
+  actions[3][0] = -1 * NUM_WIDTHMASS - 1;
+  actions[3][1] = -1 * NUM_WIDTHMASS;
+  actions[3][2] = -1 * NUM_WIDTHMASS + 1;
+  actions[3][3] = -1;
+  actions[3][4] = 1;
+  actions[3][5] = 1 * NUM_WIDTHMASS;
+
+  // 銀
+  actions[4][0] = -1 * NUM_WIDTHMASS - 1;
+  actions[4][1] = -1 * NUM_WIDTHMASS;
+  actions[4][2] = -1 * NUM_WIDTHMASS + 1;
+  actions[4][3] = 1 * NUM_WIDTHMASS - 1;
+  actions[4][4] = 1 * NUM_WIDTHMASS + 1;
+
+  // 飛車
+  for (let j = 1; j <= NUM_HEIGHTMASS; j++) {
+    actions[5][j - 1] = -j * NUM_WIDTHMASS;
+    actions[5][NUM_HEIGHTMASS + j - 1] = j * NUM_WIDTHMASS;
+  }
+  for (let j = 1; j <= NUM_WIDTHMASS; j++) {
+    if (j == 0) {
+      continue
+    }
+    actions[5][2 * NUM_HEIGHTMASS + j - 1] = -j;
+    actions[5][2 * NUM_HEIGHTMASS + NUM_WIDTHMASS + j - 1] = j;
+  }
+  // 角
+  for (let j = 1; j <= NUM_HEIGHTMASS; j++) {
+    actions[6][j - 1] = -j * NUM_WIDTHMASS - j;
+    actions[6][NUM_HEIGHTMASS + j - 1] = -j * NUM_WIDTHMASS + j;
+  }
+  for (let j = 1; j <= NUM_HEIGHTMASS; j++) {
+    actions[6][2 * NUM_HEIGHTMASS + j - 1] = j * NUM_WIDTHMASS - j;
+    actions[6][2 * NUM_HEIGHTMASS + NUM_WIDTHMASS + j - 1] = j * NUM_WIDTHMASS + j;
+  }
+  // 王
+  actions[7][0] = -1 * NUM_WIDTHMASS - 1;
+  actions[7][1] = -1 * NUM_WIDTHMASS;
+  actions[7][2] = -1 * NUM_WIDTHMASS + 1;
+  actions[7][3] = -1;
+  actions[7][4] = 1;
+  actions[7][5] = 1 * NUM_WIDTHMASS - 1;
+  actions[7][6] = 1 * NUM_WIDTHMASS;
+  actions[7][7] = 1 * NUM_WIDTHMASS + 1;
+
+  // 竜王
+  for (let j = 1; j <= NUM_HEIGHTMASS; j++) {
+    actions[8][j - 1] = -j * NUM_WIDTHMASS;
+    actions[8][NUM_HEIGHTMASS + j - 1] = j * NUM_WIDTHMASS;
+  }
+  actions[8][2 * NUM_HEIGHTMASS + 0] = -1 * NUM_WIDTHMASS - 1;
+  actions[8][2 * NUM_HEIGHTMASS + 1] = -1 * NUM_WIDTHMASS + 1;
+  actions[8][2 * NUM_HEIGHTMASS + 2] = 1 * NUM_WIDTHMASS - 1;
+  actions[8][2 * NUM_HEIGHTMASS + 3] = 1 * NUM_WIDTHMASS + 1;
+  actions[8][2 * NUM_HEIGHTMASS + 4] = j * NUM_WIDTHMASS;
+  for (let j = 1; j <= NUM_WIDTHMASS; j++) {
+    if (j == 0) {
+      continue;
+    }
+    actions[8][2 * NUM_HEIGHTMASS + 5 + j - 1] = -j;
+    actions[8][2 * NUM_HEIGHTMASS + 5 + NUM_WIDTHMASS + j - 1] = j;
+  }
+  // 竜馬
+  for (let j = 1; j <= NUM_HEIGHTMASS; j++) {
+    actions[9][j - 1] = -j * NUM_WIDTHMASS - j;
+    actions[9][NUM_HEIGHTMASS + j - 1] = -j * NUM_WIDTHMASS + j;
+  }
+  for (let j = 1; j <= NUM_HEIGHTMASS; j++) {
+    actions[9][2 * NUM_HEIGHTMASS + j - 1] = j * NUM_WIDTHMASS - j;
+    actions[9][3 * NUM_HEIGHTMASS + j - 1] = j * NUM_WIDTHMASS + j;
+  }
+  actions[9][4 * NUM_HEIGHTMASS] = -1 * NUM_WIDTHMASS;
+  actions[9][4 * NUM_HEIGHTMASS + 1] = 1 * NUM_WIDTHMASS;
+  actions[9][4 * NUM_HEIGHTMASS + 2] = -1;
+  actions[9][4 * NUM_HEIGHTMASS + 3] = 1;
+
 
 	var piece_seed_list = [];
 
