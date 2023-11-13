@@ -31,8 +31,9 @@ function ctr_num_to_stat_num(control_number, NUM_PIECE) {
 }
 
 function stat_num_to_ctr_num(seed, status_number, NUM_PIECE) {
-	let control_number = 0;
-	for (let i = 0; i < seed; i++) {
+  let control_number = 0;
+  let seed_idx = seed_to_index(seed);
+	for (let i = 0; i < seed_idx; i++) {
 		control_number += NUM_PIECE[i];
 	}
 	control_number += status_number;
@@ -95,7 +96,6 @@ function get_valid_actions(board_array, piece_seed_list, pieces_status, seed, pi
   let position = 0;
   let action = 0;
   let seed_idx = seed_to_index(seed);
-  console.log(piece_seed_list);
   for (var i in piece_seed_list[seed_idx].actions) {
     position = piece_status[seed_idx][piece_number].mass;
 		if(piece_status[seed_idx][piece_number].player == 1){
@@ -229,6 +229,7 @@ function syogi_step(board_array, pieces_status, reserve_pieces,NUM_PIECE, piece_
       piece_status[seed_idx][piece_idx].player = 0;
     }
     piece_status[seed_idx][piece_idx].mass = -1;
+    console.log("seed, piece_idx", seed, piece_idx);
     reserve_piece_number = stat_num_to_ctr_num(seed, piece_idx, NUM_PIECE);
     reserve_piece[player].push(reserve_piece_number);
 

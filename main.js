@@ -389,12 +389,12 @@ phina.define("MainScene", {
 			// 動かすコマ
 		  activePiece = Math.floor(Math.random() * this.get_num_enemy_piece());
 			console.log("activePiece",activePiece);
-			cnt = 0;
-			for (i = 0; i < this.SUM_PIECE; i++) {
-				if (cnt == activePiece) {
-					break;
-			  }
-				if (this.board_group.children[i + 1].player == 1) {
+      cnt = 0;
+      for (i = 0; i < this.SUM_PIECE; i++) {
+        if (this.board_group.children[i + 1].player == 1) {
+          if (cnt != activePiece) {
+            break;
+          }
 					cnt++;
 				}
 			}
@@ -404,11 +404,13 @@ phina.define("MainScene", {
 			piece_number = 0;
 			[seed, piece_number] = ctr_num_to_stat_num(control_number, this.NUM_PIECE);
 			valid_actions = get_valid_actions(this.board_array, this.piece_seed_list, this.piece_status, seed, piece_number)
-			console.log("valid_actions",valid_actions);
+      console.log("valid_actions, control_number,seed, piece_number", valid_actions, control_number, seed, piece_number);
 		}
 		let action_idx = Math.floor(Math.random() * valid_actions.length);
 		let action = valid_actions[action_idx];
-		console.log("mass,action",this.board_group.children[control_number + 1].mass,action);
+    console.log("mass,action", this.board_group.children[control_number + 1].mass, action);
+    console.log("piece_status", this.piece_status);
+    console.log("board_group", this.board_group);
     this.board_group.children[control_number + 1].mass = action;
     [this.board_array, this.reservePieces, this.done] = syogi_step(this.board_array, this.piece_status, this.reservePieces, this.NUM_PIECE, piece = control_number, action, player = 1);
 		
@@ -420,7 +422,27 @@ phina.define("MainScene", {
 		console.log("action,x,y",this.board_group.children[control_number + 1].mass,mass_x,mass_y);
 		this.board_group.children[control_number + 1].setPosition(48 * (mass_x - (this.NUM_WIDTHMASS - 1) / 2) + 0,
 				52 * (mass_y - (this.NUM_HEIGHTMASS - 1) / 2) + 0);
-		
+
+    // 敵のコマを取ったら
+    console.log(this.reservePieces);
+    for (let i = 0; i < this.reservePieces[1].length; i++) {
+      ctr_num = this.reservePieces[1][i];
+      // まだパラメータを更新していなければ
+      if (this.board_group.children[1 + ctr_num].reserve == false) {
+        this.board_group.children[1 + ctr_num].reserve = true;
+        this.board_group.children[1 + ctr_num].mass = -1;
+        if (this.board_group.children[1 + ctr_num].player == 0) {
+          this.board_group.children[1 + ctr_num].player = 1;
+        } else if (this.board_group.children[1 + ctr_num].player == 1) {
+          this.board_group.children[1 + ctr_num].player = 0;
+        }
+        // TODO 表示処理
+        this.board_group.children[1 + ctr_num].alpha = 0.0;
+        this.board_group.children[1 + ctr_num].setPosition(-100, -100);
+
+      }
+    }
+
 		this.turn = 0;
 		// ターン終了
 		// 駒のタッチを有効にする
@@ -455,6 +477,21 @@ phina.define("MainScene", {
     // 駒が動ける場所だけ
     let valid_actions = get_valid_actions(this.board_array, this.piece_seed_list, this.piece_status, seed, piece_number, this.NUM_HEIGHTMASS, this.NUM_WIDTHMASS);
     console.log("valid_actions", valid_actions);
+    // 動ける場所がなければキャンセルする
+    if (valid_actions.length == 0) {
+      console.log("cancel");
+      this.pick = false;
+      this.num_pick_piece = 0;
+      // コマがある場所を暗くする
+      this.board_group.children[mass + 1 + this.SUM_PIECE].alpha = 0.0;
+      // 駒のタッチを有効にする
+      for (i = 0; i < this.SUM_PIECE; i++) {
+        // 自分の駒だけ
+        if (this.board_group.children[i + 1].player == 0) {
+          this.board_group.children[i + 1].setInteractive(true);
+        }
+      }
+    }
     for (let j = 0; j < this.NUM_WIDTHMASS * this.NUM_HEIGHTMASS; j++){
 			if(valid_actions.includes(j)){
         this.board_group.children[j + 1 + this.SUM_PIECE].setInteractive(true);
@@ -524,23 +561,24 @@ phina.define("MainScene", {
 				52 * (mass_y - (this.NUM_HEIGHTMASS - 1) / 2) + 0);
 
     this.dragging = false;
-    console.log(this.piece_status);
     let player = this.piece_status[seed_to_index(seed)][number].player;
     [this.board_array, this.reservePieces, this.done] = syogi_step(this.board_array, this.piece_status, this.reservePieces, this.NUM_PIECE, dragging_piece, action = mass, player = player);
+    // 敵のコマを取ったら
     console.log(this.reservePieces);
     for (let i = 0; i < this.reservePieces[0].length; i++) {
-      [seed, number] = ctr_num_to_stat_num(this.reservePieces[0][i], this.NUM_PIECE);
+      ctr_num = this.reservePieces[0][i];
       // まだパラメータを更新していなければ
-      if (this.board_group.children[this.reservePieces[0][i]].reserve == false) {
-        this.board_group.children[this.reservePieces[0][i]].reserve = true;
-        this.board_group.children[this.reservePieces[0][i]].mass = -1;
-        if (this.board_group.children[this.reservePieces[0][i]].player == 0) {
-          this.board_group.children[this.reservePieces[0][i]].player = 1;
-        } else if (this.board_group.children[this.reservePieces[0][i]].player == 1) {
-          this.board_group.children[this.reservePieces[0][i]].player = 0;
+      if (this.board_group.children[1 + ctr_num].reserve == false) {
+        this.board_group.children[1 + ctr_num].reserve = true;
+        this.board_group.children[1 + ctr_num].mass = -1;
+        if (this.board_group.children[1 + ctr_num].player == 0) {
+          this.board_group.children[1 + ctr_num].player = 1;
+        } else if (this.board_group.children[1 + ctr_num].player == 1) {
+          this.board_group.children[1 + ctr_num].player = 0;
         }
         // TODO 表示処理
-        this.board_group.children[this.reservePieces[0][i]].alpha = 0.0;
+        this.board_group.children[1 + ctr_num].alpha = 0.0;
+        this.board_group.children[1 + ctr_num].setPosition(-100, -100);
       }
     }
     this.put = false;
