@@ -303,6 +303,7 @@ function syogi_step(board_array, pieces_status, reserve_pieces,NUM_PIECE, piece_
   if ((board[action] < 0 && player == 0) || (board[action] > 0 && player == 1)) {
     // 動こうとするマスにこの駒の敵の駒がいれば
     // TODO 王を取った時の処理
+    // 持ち駒にするコマ
     [seed, piece_idx] = find_piece_for_mass(piece_status,action ,NUM_PIECE);
     seed_idx = seed_to_index(seed);
 		console.log(piece_status,seed_idx,piece_idx);
@@ -316,7 +317,10 @@ function syogi_step(board_array, pieces_status, reserve_pieces,NUM_PIECE, piece_
     console.log("seed, piece_idx", seed, piece_idx);
     reserve_piece_number = stat_num_to_ctr_num(seed, piece_idx, NUM_PIECE);
     reserve_piece[player].push(reserve_piece_number);
-
+    if([7,8].includes(seed) === true){
+      done = true;
+    }
+    // 動かすコマ
     [seed, piece_idx] = ctr_num_to_stat_num(piece_control_number, NUM_PIECE);
     seed_idx = seed_to_index(seed);
     board[piece_status[seed_idx][piece_idx].mass] = 0;
