@@ -284,9 +284,10 @@ function syogi_init(board_array, NUM_WIDTHMASS, NUM_HEIGHTMASS) {
 	}
 
 	// TODO ÇŸÇ©ÇÃèâä˙âªí«â¡
-
+  /*
 	console.log("piece_status,piece_seed_list,NUM_PIECE");
 	console.log(piece_status, piece_seed_list, NUM_PIECE);
+  */
 	return [piece_status, piece_seed_list, NUM_PIECE];
 }
 
@@ -317,7 +318,7 @@ function syogi_step(board_array, pieces_status, reserve_pieces,NUM_PIECE, piece_
     console.log("seed, piece_idx", seed, piece_idx);
     reserve_piece_number = stat_num_to_ctr_num(seed, piece_idx, NUM_PIECE);
     reserve_piece[player].push(reserve_piece_number);
-    if([7,8].includes(seed) === true){
+    if([8].includes(seed) === true){
       done = true;
     }
     // ìÆÇ©Ç∑ÉRÉ}
