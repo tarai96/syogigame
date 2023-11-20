@@ -181,15 +181,15 @@ phina.define('Reserve_Space',{
   sort: function (piece_list) {
     let tar1;
     let tar2;
-    for (let t = 0; t < 2; t++) {
-      for (let i = 0; i < this.children.length - 3; i++) {
+    for (let player = 0; player < 2; player++) {
+      for (let i = 0; i < this.show_timing[player].length - 1; i++) {
         tar1 = this.show_timing[player][i]
 
-        for (let j = i + 1; j < this.children.length - 2; j++) {
+        for (let j = i + 1; j < this.show_timing[player].length; j++) {
           tar2 = this.show_timing[player][j]
           if (piece_list[tar1].seed > piece_list[tar2].seed) {
-            this.show_timing[player][i] = tar2
-            this.show_timing[player][j] = tar1
+            this.show_timing[player][i] = tar2;
+            this.show_timing[player][j] = tar1;
           }
         }
       }
@@ -224,14 +224,18 @@ phina.define('Reserve_Ban',{
       console.log(this.parent.show_timing);
       piece_sprite = this.find_piece(this.parent.show_timing[this.player][i]);
       piece_sprite.setPosition(x, y, 1);
-      let reverce = 0;
+      let reverce = -1;
       if (piece_sprite.player == 1) {
-        reverce = -1;
+        if (piece_sprite.scaleY > 0) {
+          piece_sprite.scaleY *= reverce;
+        }
       } else {
-        reverce = 1;
+        if (piece_sprite.scaleY < 0) {
+          piece_sprite.scaleY *= reverce;
+        }
       }
-      piece_sprite.scaleY *= reverce;
       piece_sprite.alpha = 1.0;
+
       x += 50;
       if (x > 50) {
         x = -50;
