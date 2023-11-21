@@ -301,6 +301,8 @@ function syogi_step(board_array, pieces_status, reserve_pieces,NUM_PIECE, piece_
   let seed = 0;
   let seed_idx = 0;
   let piece_idx = 0;
+  [seed, piece_idx] = ctr_num_to_stat_num(piece_control_number, NUM_PIECE);
+  seed_idx = seed_to_index(seed);
   if ((board[action] < 0 && player == 0) || (board[action] > 0 && player == 1)) {
     // “®‚±‚¤‚Æ‚·‚éƒ}ƒX‚É‚±‚Ì‹î‚Ì“G‚Ì‹î‚ª‚¢‚ê‚Î
     // TODO ‰¤‚ğæ‚Á‚½‚Ìˆ—
@@ -328,9 +330,19 @@ function syogi_step(board_array, pieces_status, reserve_pieces,NUM_PIECE, piece_
     piece_status[seed_idx][piece_idx].mass = -1;
     board[action] = (seed_idx + 1) * piece_status[seed_idx][piece_idx].player;
     piece_status[seed_idx][piece_idx].mass = action;
+  }else if(piece_status[seed_idx][piece_idx].reserve === true){
+    // ‚¿‹î‚ğ’u‚¢‚½
+    piece_status[seed_idx][piece_idx].reserve = false;
+    let idx = 0;
+    for(let player=0;player<2;player++){
+      idx = reserve_piece[player].findIndex(elem => elem === piece_control_number);
+      if(idx != null){
+        reserve_piece[player].splice(idx, 1);
+      }
+    }
+    board[action] = seed * piece_status[seed_idx][piece_idx].player;
+    piece_status[seed_idx][piece_idx].mass = action;
   } else if (board_array[action] == 0) {
-    [seed, piece_idx] = ctr_num_to_stat_num(piece_control_number, NUM_PIECE);
-    seed_idx = seed_to_index(seed);
     board[piece_status[seed_idx][piece_idx].mass] = 0;
     board[action] = seed * piece_status[seed_idx][piece_idx].player;
     piece_status[seed_idx][piece_idx].mass = action;
