@@ -503,7 +503,7 @@ phina.define("MainScene", {
 	// ‘ŠŽè‚Ì”Ô
 	}else if(this.turn == 1){
     let activePiece;
-    console.log("enemy_pieces", this.get_num_enemy_piece());
+    // console.log("enemy_pieces", this.get_num_enemy_piece());
 		let valid_actions = [];
 		let cnt = 0;
 		let control_number = 0;
@@ -515,15 +515,17 @@ phina.define("MainScene", {
 		  activePiece = Math.floor(Math.random() * this.get_num_enemy_piece());
 			console.log("activePiece",activePiece);
       cnt = 0;
-      for (i = 0; i < this.SUM_PIECE; i++) {
+      for (let i = 0; i < this.SUM_PIECE; i++) {
         if (this.piece_list[i].player == 1) {
-          if (cnt != activePiece) {
+          // console.log("player=1,cnt,control_number",cnt,i);
+          if (cnt == activePiece) {
+			      control_number = i;
             break;
           }
 					cnt++;
 				}
-			}
-			control_number = i;
+      }
+      console.log("control_number",control_number);
 			// ‚Ç‚±‚É“®‚­
 			seed = 0;
 			piece_number = 0;
@@ -690,7 +692,7 @@ phina.define("MainScene", {
     // ‹î‚ð’u‚­‚Æ‚«(‚±‚±‚É“®‚­‚±‚Æ‚ÍŠm’è‚µ‚Ä‚¢‚é)
     // piece ‚Í’Ê‚µ”Ô†
     let mass = this.put_mass;
-    console.log("put_mass", mass);
+    // console.log("put_mass", mass);
     let dragging_piece = this.dragging_piece;
     let seed = 0;
     let number = 0;
