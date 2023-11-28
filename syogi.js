@@ -63,12 +63,6 @@ function xy_to_mass(x, y, NUM_WIDTHMASS) {
 }
 
 function is_valid_action(board_array, action, player,NUM_HEIGHTMASS,NUM_WIDTHMASS) {
-  console.log("board");
-  for(let i=0;i<NUM_HEIGHTMASS;i++){
-    console.log(board_array.slice(i*NUM_WIDTHMASS,(i+1)*NUM_WIDTHMASS));
-  }
-  console.log("board");
-  console.log(board_array);
   // console.log("action, player",action, player);
   let NUM_ALLMASS = NUM_HEIGHTMASS * NUM_WIDTHMASS;
 	if (action < 0 && action >= NUM_ALLMASS) {
@@ -98,6 +92,13 @@ function get_valid_actions(board_array, piece_seed_list, pieces_status, seed, pi
   let piece_actions = piece_seed_list[seed_idx].actions.concat();
   console.log("piece_actions",piece_actions);
 	let valid_actions = [];
+    console.log("board");
+  for(let i=0;i<NUM_HEIGHTMASS;i++){
+    console.log(board_array.slice(i*NUM_WIDTHMASS,(i+1)*NUM_WIDTHMASS));
+  }
+  console.log("board");
+  console.log(board_array);
+
 	if (piece_status[seed_to_index(seed)][piece_number].reserve) {
 		return [];
 	}
@@ -121,7 +122,6 @@ function get_valid_actions(board_array, piece_seed_list, pieces_status, seed, pi
 		    }else if(piece_status[seed_idx][piece_number].player == 0){
 			    action = position + piece_actions[i][j];
         }
-        console.log("board, action,player",board, action, piece_status[seed_idx][piece_number].player)
         if(is_valid_action(board, action, piece_status[seed_idx][piece_number].player, NUM_HEIGHTMASS, NUM_WIDTHMASS)){
           // もし動いたとき駒をとるなら終わり
           if(board[action] > 0 && player == 1){
@@ -142,6 +142,9 @@ function get_valid_actions(board_array, piece_seed_list, pieces_status, seed, pi
     // 駒種のアクションを実際の座標に直す
     let position = 0;
     let action = 0;
+    if(seed === 2){
+      console.log("actions",piece_seed_list[seed_idx].actions);
+    }
     for (var i in piece_seed_list[seed_idx].actions) {
       position = piece_status[seed_idx][piece_number].mass;
       // 敵のアクションは反転させる
@@ -223,19 +226,6 @@ function syogi_init(board_array, NUM_WIDTHMASS, NUM_HEIGHTMASS) {
 	var actions = [[], [], [], [], [], [],[], [], [], [], [], [], []];
 	var cnt = 0;
 	actions[0][0] = -1 * NUM_WIDTHMASS;
-	cnt = 0;
-	for (j = -(NUM_WIDTHMASS + 1); j <= NUM_WIDTHMASS + 1; j++) {
-		if (-1 * (NUM_WIDTHMASS + 1) <= j && j <= -1 * (NUM_WIDTHMASS - 1)) {
-			actions[1][cnt] = j;
-			cnt++;
-		} else if (j == -1 || j == 1) {
-			actions[1][cnt] = j;
-			cnt++;
-		} else if (NUM_WIDTHMASS - 1 <= j && j <= NUM_WIDTHMASS + 1) {
-			actions[1][cnt] = j;
-			cnt++;
-		}
-  }
 
   // action
   // 歩
