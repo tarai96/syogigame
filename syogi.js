@@ -46,14 +46,24 @@ function stat_num_to_ctr_num(seed, status_number, NUM_PIECE) {
 	return control_number;
 }
 
-function mass_to_xy(mass,NUM_HEIGHTMASS,NUM_WIDTHMASS) {
-	let x = mass;
-  for (let y = 0; y < NUM_HEIGHTMASS; y++) {
-    if (x < NUM_WIDTHMASS) {
-			return [x, y];
-		}
-		x -= NUM_WIDTHMASS;
-	}
+function mass_to_xy(mass, NUM_HEIGHTMASS, NUM_WIDTHMASS) {
+  if (mass >= 0) {
+    let x = mass;
+    for (let y = 0; y < NUM_HEIGHTMASS; y++) {
+      if (x < NUM_WIDTHMASS) {
+        return [x, y];
+      }
+      x -= NUM_WIDTHMASS;
+    }
+  } else {
+    let x = -mass;
+    for (let y = 0; y < NUM_HEIGHTMASS; y++) {
+      if (x < NUM_WIDTHMASS) {
+        return [-x, -y];
+      }
+      x -= NUM_WIDTHMASS;
+    }
+  }
 }
 
 function xy_to_mass(x, y, NUM_WIDTHMASS) {
@@ -100,32 +110,71 @@ function get_valid_actions(board_array, piece_seed_list, pieces_status, seed, pi
 	if (piece_status[seed_to_index(seed)][piece_number].reserve) {
 		return [];
 	}
-  // ŽÔ”òŽÔŠpŒn“
+  // ŽÔ”òŽÔŒn“
   if([3,6,7].includes(seed)){
     let position = 0;
     let action = 0;
     let player = piece_status[seed_idx][piece_number].player;
-    let opponent = 0;
 		if(piece_status[seed_idx][piece_number].player == 1){
 			opponent = 1;
 		}else if(piece_status[seed_idx][piece_number].player == 0){
 			opponent = -1;
     }
-    for(let i=0;i<piece_actions.length;i++){
+    position = piece_status[seed_idx][piece_number].mass;
+    let x = 0;
+    let y = 0;
+    [x, y] = mass_to_xy(position, NUM_HEIGHTMASS, NUM_WIDTHMASS);
+    let action_x = 0;
+    let action_y = 0;
+    let last_action_x = 0;
+    let last_action_y = 0;
+    for (let i = 0; i < piece_actions.length; i++) {
+      if (piece_status[seed_idx][piece_number].player == 1) {
+        action = position - piece_actions[i][0];
+      } else if (piece_status[seed_idx][piece_number].player == 0) {
+        action = position + piece_actions[i][0];
+      }
+      [last_action_x, last_action_y] = mass_to_xy(position, NUM_HEIGHTMASS, NUM_WIDTHMASS);
+      //last_action_x -= 1; // ‚í‚´‚Æˆê‚Â‚¸‚ç‚·
+      //last_action_y -= 1; // ‚í‚´‚Æˆê‚Â‚¸‚ç‚·
+      //console.log("last_action_x,x", last_action_x, x);
+      if (x === 0 && [-NUM_WIDTHMASS - 1, -1, NUM_WIDTHMASS - 1].includes(action - position)) {
+        //¶’[‚É‚¢‚Ä‰æ–Ê‰¡’[‚ð‰z‚¦‚½‚ç
+        continue;
+      } else if (x === NUM_WIDTHMASS - 1 && [-NUM_WIDTHMASS + 1, 1, NUM_WIDTHMASS + 1].includes(action - position)) {
+        //‰E’[‚É‚¢‚Ä‰æ–Ê‰¡’[‚ð‰z‚¦‚½‚ç
+        continue;
+      }
       for(let j =0;j<piece_actions[i].length;j++){
-        position = piece_status[seed_idx][piece_number].mass;
         // “G‚ÌƒAƒNƒVƒ‡ƒ“‚Í”½“]‚³‚¹‚é
 		    if(piece_status[seed_idx][piece_number].player == 1){
-			    action = position - piece_actions[i][j];
+          action = position - piece_actions[i][j];
 		    }else if(piece_status[seed_idx][piece_number].player == 0){
-			    action = position + piece_actions[i][j];
+          action = position + piece_actions[i][j];
         }
-        if(is_valid_action(board, action, piece_status[seed_idx][piece_number].player, NUM_HEIGHTMASS, NUM_WIDTHMASS)){
+        [action_x, action_y] = mass_to_xy(action, NUM_HEIGHTMASS, NUM_WIDTHMASS);
+        //console.log("action_x,x", action_x, x);
+        //console.log("last_action_x", last_action_x);
+        //let ysa = Math.abs(last_action_y - action_y);
+        //let xsa = Math.abs(last_action_x - action_x);
+        //console.log("xsa,ysa",xsa, ysa);
+        /*
+        if ([6].includes(seed) && (action_x < 0 || NUM_WIDTHMASS <= action_x)) {
+          // ‰æ–Ê‰¡’[‚ð‰z‚¦‚½‚ç”òŽÔ
+          break;
+        */
+        if (last_action_x === 0 && [-NUM_WIDTHMASS - 1, -1, NUM_WIDTHMASS - 1].includes(action - xy_to_mass(last_action_x, last_action_y, NUM_WIDTHMASS))) {
+          //¶’[‚É‚¢‚Ä‰æ–Ê‰¡’[‚ð‰z‚¦‚½‚ç
+          break;
+        } else if (last_action_x === NUM_WIDTHMASS - 1 && [-NUM_WIDTHMASS + 1, 1, NUM_WIDTHMASS + 1].includes(action - xy_to_mass(last_action_x, last_action_y, NUM_WIDTHMASS))) {
+          //‰E’[‚É‚¢‚Ä‰æ–Ê‰¡’[‚ð‰z‚¦‚½‚ç
+          break;
+        }else if (is_valid_action(board, action, piece_status[seed_idx][piece_number].player, NUM_HEIGHTMASS, NUM_WIDTHMASS)) {
           // ‚à‚µ“®‚¢‚½‚Æ‚«‹î‚ð‚Æ‚é‚È‚çI‚í‚è
-          if(board[action] > 0 && player == 1){
+          if (board[action] > 0 && player == 1) {
             valid_actions.push(action);
             break;
-          }else if(board[action] < 0 && player == 0){
+          } else if (board[action] < 0 && player == 0) {
             valid_actions.push(action);
             break;
           }
@@ -134,6 +183,8 @@ function get_valid_actions(board_array, piece_seed_list, pieces_status, seed, pi
           // “r’†‚Åi‚ß‚È‚­‚È‚Á‚½‚çI‚í‚è
           break;
         }
+        last_action_x = action_x;
+        last_action_y = action_y;
       }
     }
   }else{
@@ -254,7 +305,7 @@ function syogi_init(board_array, NUM_WIDTHMASS, NUM_HEIGHTMASS) {
 
   // ”òŽÔ
 
-  for(let j = 0;j<5;j++){
+  for(let j = 0;j<4;j++){
     actions[5][j] = [];
   }
   for (let j = 1; j <= NUM_HEIGHTMASS; j++) {
@@ -269,11 +320,11 @@ function syogi_init(board_array, NUM_WIDTHMASS, NUM_HEIGHTMASS) {
     if (j == 0) {
       continue
     }
-    actions[5][3][j - 1] = -j;
-    actions[5][4][j - 1] = j;
+    actions[5][2][j - 1] = -j;
+    actions[5][3][j - 1] = j;
   }
   // Šp
-  for(let j = 0;j<5;j++){
+  for(let j = 0;j<4;j++){
     actions[6][j] = [];
   }
   for (let j = 1; j <= NUM_HEIGHTMASS; j++) {

@@ -269,9 +269,9 @@ phina.define('Reserve_Ban',{
   },
   find_piece: function (ctr_num) {
     let ctrs = [];
-    console.log(this.children);
+    //console.log(this.children);
     for (let i = 0; i < this.children.length; i++) {
-      console.log(this.children[i]);
+      //console.log(this.children[i]);
       ctrs.push(this.children[i].control_number);
       if (this.children[i].control_number == ctr_num) {
         console.log("find");
@@ -728,9 +728,9 @@ phina.define("MainScene", {
     let number = 0;
     [seed, number] = ctr_num_to_stat_num(dragging_piece, this.NUM_PIECE);
     if(this.piece_list[dragging_piece].reserve === true){
-      this.piece_list[ctr_num].reserve = false;
-      this.piece_list[ctr_num].addChildTo(this.board_group.pieces);
-      this.reserve_group.del_piece(ctr_num);
+      this.piece_list[dragging_piece].reserve = false;
+      this.piece_list[dragging_piece].addChildTo(this.board_group.pieces);
+      this.reserve_group.del_piece(dragging_piece);
       this.reserve_group.sort(this.piece_list);
     }
     // Œõ‚ç‚¹‚½êŠ‚ðˆÃ‚­‚·‚é
