@@ -189,6 +189,7 @@ phina.define('Reserve_Space',{
     this.show_timing = [[], []];
   },
   sort: function (piece_list) {
+    console.log(this.show_timing);
     let tar1;
     let tar2;
     for (let player = 0; player < 2; player++) {
@@ -204,18 +205,22 @@ phina.define('Reserve_Space',{
         }
       }
     }
+    console.log(this.show_timing);
     for (i = 0; i < 2; i++) {
       this.children[i].reload();
     }
   },
   del_piece: function(piece){
+    console.log("del_piece, piece",piece);
     let idx = 0;
     for(let p=0;p<2;p++){
       idx = this.show_timing[p].findIndex(elem => elem === piece);
-      if(idx != -1){
+      console.log("idx",idx);
+      if(idx != null){
         this.show_timing[p].splice(idx, 1);
       }
     }
+    console.log("this.show_timing",this.show_timing);
     // console.log("idx",idx);
   }
 });
@@ -241,7 +246,6 @@ phina.define('Reserve_Ban',{
     let x = -50;
     let y = -50;
     for (let i = 0; i < this.parent.show_timing[this.player].length; i++) {
-      console.log(this.parent.show_timing);
       console.log(this.parent.show_timing[this.player].length);
       piece_sprite = this.find_piece(this.parent.show_timing[this.player][i]);
       piece_sprite.setPosition(x, y, 1);
@@ -256,7 +260,6 @@ phina.define('Reserve_Ban',{
         }
       }
       piece_sprite.alpha = 1.0;
-
       x += 50;
       if (x > 50) {
         x = -50;
@@ -530,7 +533,7 @@ phina.define("MainScene", {
 			seed = 0;
 			piece_number = 0;
 			[seed, piece_number] = ctr_num_to_stat_num(control_number, this.NUM_PIECE);
-			valid_actions = get_valid_actions(this.board_array, this.piece_seed_list, this.piece_status, seed, piece_number)
+			valid_actions = get_valid_actions(this.board_array, this.piece_seed_list, this.piece_status, seed, piece_number,this.NUM_HEIGHTMASS,this.NUM_WIDTHMASS)
       console.log("valid_actions, control_number,seed, piece_number", valid_actions, control_number, seed, piece_number);
 		}
 		let action_idx = Math.floor(Math.random() * valid_actions.length);
@@ -630,10 +633,14 @@ phina.define("MainScene", {
   },
   // pick_pieceの中に埋め込む
   pick_reserve_piece: function () {
+    console.log("pick_reserve_piece");
+    NUM_HEIGHTMASS = this.NUM_HEIGHTMASS;
+    NUM_WIDTHMASS = this.NUM_WIDTHMASS;
     let pick_piece = this.dragging_piece;
     let seed = 0;
     let piece_number = 0;
     [seed, piece_number] = ctr_num_to_stat_num(pick_piece, this.NUM_PIECE);
+    let player = this.piece_status[seed_to_index(seed)][piece_number].player;
     // 空のますを光らせてタッチを有効にする
     let empty_mass = this.get_empty_mass();
     for (let i = 0; i < empty_mass.length; i++) {
@@ -644,18 +651,41 @@ phina.define("MainScene", {
     let dummy_board = [];
     let dummy_valid_actions = [];
     let mass = 0;
+    let valid = true;
     for (let i = 0; i < this.NUM_HEIGHTMASS; i++) {
       for (let j = 0; j < this.NUM_WIDTHMASS; j++) {
+        valid = true;
+      /*
         if (i < 3 || i >= this.NUM_HEIGHTMASS - 3) {
           dummy_board = this.board_array.concat();
           dummy_board[mass_to_xy(j, i, this.NUM_WIDTHMASS)] = seed * player;
-          dummy_valid_actions = get_valid_actions(this.board_array, this.piece_seed_list, this.piece_status, seed, piece_number, this.NUM_HEIGHTMASS, this.NUM_WIDTHMASS);
+          // dummy_valid_actions = get_valid_actions(this.board_array, this.piece_seed_list, this.piece_status, seed, piece_number, this.NUM_HEIGHTMASS, this.NUM_WIDTHMASS);
+          
           // 置けないマスは光を消すタッチ無効
           if (dummy_valid_actions == []) {
             mass = xy_to_mass(j, i); 
             this.board_group.mass.children[mass].alpha = 0.0;
             this.board_group.mass.children[mass].setInteractive(false);
           }
+        }
+        */
+        if(i < 2 && player == 0){
+          if(i == 0 && [1,2,3].includes(seed)){
+            valid = false;
+          }else if(i==1 && [2].includes(seed)){
+            valid = false;
+          }
+        }else if(i >= NUM_HEIGHTMASS - 2 && player == 1){
+          if(i == NUM_HEIGHTMASS -1 && [1,2,3].includes(seed)){
+            valid = false;
+          }else if(i == NUM_HEIGHTMASS -2 && [2].includes(seed)){
+            valid = false;
+          }
+        }
+        if (valid == false) {
+          mass = xy_to_mass(j, i,this.NUM_WIDTHMASS); 
+          this.board_group.mass.children[mass].alpha = 0.0;
+          this.board_group.mass.children[mass].setInteractive(false);
         }
       }
     }

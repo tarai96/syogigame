@@ -96,8 +96,6 @@ function get_valid_actions(board_array, piece_seed_list, pieces_status, seed, pi
   for(let i=0;i<NUM_HEIGHTMASS;i++){
     console.log(board_array.slice(i*NUM_WIDTHMASS,(i+1)*NUM_WIDTHMASS));
   }
-  console.log("board");
-  console.log(board_array);
 
 	if (piece_status[seed_to_index(seed)][piece_number].reserve) {
 		return [];
