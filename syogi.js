@@ -152,6 +152,7 @@ function get_valid_actions(board_array, piece_seed_list, pieces_status, seed, pi
 		    }else if(piece_status[seed_idx][piece_number].player == 0){
           action = position + piece_actions[i][j];
         }
+        console.log("action, NUM_HEIGHTMASS, NUM_WIDTHMASS", action, NUM_HEIGHTMASS, NUM_WIDTHMASS);
         [action_x, action_y] = mass_to_xy(action, NUM_HEIGHTMASS, NUM_WIDTHMASS);
         //console.log("action_x,x", action_x, x);
         //console.log("last_action_x", last_action_x);
