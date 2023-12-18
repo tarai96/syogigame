@@ -453,7 +453,7 @@ phina.define('Reserve_Pieces',{
 
 phina.define('Two_choiceQ_Space', {
   superClass: 'DisplayElement',
-  init: function ({q_text="です",Y_text="yes",N_text="no" }) {
+  init: function ({q_text="q_text",Y_text="yes",N_text="no" }) {
     this.superInit();
     this.R = RectangleShape({
       width: 300,
@@ -468,7 +468,7 @@ phina.define('Two_choiceQ_Space', {
     this.question = Label('q').addChildTo(this);
     this.question.fontFamily = "'Noto'";
     this.question.setPosition(0, -40);
-    this.question.text = "ま";
+    this.question.text = q_text;
     // ボタン用
     // 成る
     DisplayElement().addChildTo(this);
@@ -1025,7 +1025,7 @@ phina.define("MainScene", {
     console.log("was_reserve, mass <(3 * this.NUM_WIDTHMASS)", was_reserve, mass< (3 * this.NUM_WIDTHMASS));
     // 成れる駒が相手側から３ます以内に入ったとき(持ち駒から置いたときを除く)
     if (!was_reserve && mass < (3 * this.NUM_WIDTHMASS)) {
-      this.user_grow_select_element = Two_choiceQ_Space({ Y_text: "yes", N_text: "成らない" }).addChildTo(this);
+      this.user_grow_select_element = Two_choiceQ_Space({ q_text:"成りますか?",Y_text: "はい", N_text: "いいえ" }).addChildTo(this);
       this.user_grow_select_element.setPosition(this.gridX.center(), this.gridY.center());
     }
 
