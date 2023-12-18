@@ -25,7 +25,8 @@ var ASSETS = {
 
 phina.define("Piece_class", {
   superClass: 'DisplayElement',
-  init: function (seed, control_number, mass, actions, player, reserve = false, evolve = false, evolves_to = "", evolves_sprite=null) {
+  init: function (seed, control_number, mass, actions, player,
+                  reserve = false, evolve = false, evolves_to = "", evolves_sprite = null) {
     this.superInit();
     this.mass = mass;
     this.previousMass = mass;
@@ -38,24 +39,63 @@ phina.define("Piece_class", {
     this.evolves_to = evolves_to;
     this.evolve_sprite = evolves_sprite;
   },
+  set_size(width, height) {
+    this.parent.width = width;
+    this.parent.height = height;
+    // 成らないなら何もいじらない
+    //console.log("this.evolves_sprite", this.evolves_sprite);
+    if (this.evolve_sprite === null) {
+      return;
+    } else {
+      this.evolve_sprite.width = width;
+      this.evolve_sprite.height = height;
+    }
+  },
   set_on_mass(x, y) {
     // mainsceneから
     let NUM_WIDTHMASS = this.parent.parent.parent.parent.NUM_WIDTHMASS;
     let NUM_HEIGHTMASS = this.parent.parent.parent.parent.NUM_HEIGHTMASS;
 
-    this.parent.position.x = 48 * (x - (NUM_WIDTHMASS - 1) / 2);
-    this.parent.position.y = 52 * (y - (NUM_HEIGHTMASS - 1) / 2);
+    this.show(48 * (x - (NUM_WIDTHMASS - 1) / 2), 52 * (y - (NUM_HEIGHTMASS - 1) / 2));
   },
-  show() {
+  show(x, y, z = 0) {
+    this.parent.setPosition(x, y, z);
+    let reverce = 0;
+    // 敵の駒なら反転
+    if (this.player == 1) {
+      reverce = -1;
+    } else {
+      reverce = 1;
+    }
+    this.parent.scaleY = reverce;
+    // 成らないなら何もいじらない
+    //console.log("this.evolves_sprite", this.evolves_sprite);
+    if (this.evolve_sprite === null) {
+      return;
+    } else {
+      this.evolve_sprite.scaleY = reverce;
+    }
     if (this.evolve) {
-      this.parent.alpha = 0.0;
-      this.evolves_sprite.alpha = 1.0;
-      this.evolves_sprite.setPosition(this.parent.position.x, this.parent.position.y);
+      this.parent.alpha = 0.5;
+      // 画面外に置いときたい
+      this.parent.setPosition(-50, -50);
+      this.evolve_sprite.alpha = 1.0;
+      this.evolve_sprite.setPosition(x, y,z);
     } else {
       this.parent.alpha = 1.0;
-      this.evolves_sprite.alpha = 0.0;
+      this.evolve_sprite.alpha = 0.5;
       // 画面外に置いときたい
-      this.evolves_sprite.setPosition(-500, -500);
+      this.evolve_sprite.setPosition(-50, -50);
+    }
+  },
+  set_interactive(interactive) {
+    this.parent.setInteractive(interactive);
+    // 成らないなら何もいじらない
+    if (this.evolve_sprite === null) {
+      return;
+    } else if (this.evolve) {
+      this.evolve_sprite.setInteractive(!interactive);
+      this.evolve_sprite.setInteractive(interactive);
     }
   }
 });
@@ -64,80 +104,205 @@ phina.define("Piece_class", {
 phina.define("Hu", {
 	//Spriteクラスを継承
 	superClass: 'Sprite',
-  init: function (control_number, mass, actions, player, reserve = false,evolve = false, evolves_to = "", evolves_sprite=null) {
-		// 親クラス初期化
+  init: function ({ control_number, mass, actions, player,
+    reserve = false, evolve = false,
+    f_onpointstart = null }) {
+    // 親クラス初期化
     this.superInit('hu');
-    this.c = Piece_class(1, control_number, mass, actions, player, reserve, evolve, evolves_to, evolves_sprite).addChildTo(this);
-	},
+    let evolves_to = "";
+    let evolves_sprite = Tokin({before_evolves_sprite :this, f_onpointstart:f_onpointstart});
+    this.c = Piece_class(1, control_number, mass, actions, player,
+      reserve, evolve, evolves_to, evolves_sprite).addChildTo(this);
+    this.on("pointstart", function () {
+      this.parent.parent.parent.pick = true;
+      this.parent.parent.parent.num_pick_piece = this.c.control_number;
+    });
+  },
 });
 
 phina.define("Keima", {
   //Spriteクラスを継承
   superClass: 'Sprite',
-  init: function (control_number, mass, actions, player, reserve = false, evolve = false, evolves_to = "", evolves_sprite = null) {
+  init: function ({ control_number, mass, actions, player,
+    reserve = false, evolve = false, evolves_to = "", f_onpointstart = null
+      }) {
     // 親クラス初期化
     this.superInit('keima');
-    this.c = Piece_class(2, control_number, mass, actions, player, reserve, evolve, evolves_to, evolves_sprite).addChildTo(this);
+    let evolves_sprite = Narikei({before_evolves_sprite :this, f_onpointstart:f_onpointstart});
+    this.c = Piece_class(2, control_number, mass, actions, player,
+      reserve, evolve, evolves_to, evolves_sprite).addChildTo(this);
+    this.on("pointstart", function () {
+      this.parent.parent.parent.pick = true;
+      this.parent.parent.parent.num_pick_piece = this.c.control_number;
+    });
   },
 });
 
 phina.define("Kyousya", {
   //Spriteクラスを継承
   superClass: 'Sprite',
-  init: function (control_number, mass, actions, player, reserve = false, evolve = false, evolves_to = "", evolves_sprite = null) {
+  init: function ({ control_number, mass, actions, player,
+    reserve = false, evolve = false, evolves_to = "", f_onpointstart = null }) {
     // 親クラス初期化
     this.superInit('kyousya');
-    this.c = Piece_class(3, control_number, mass, actions, player, reserve, evolve, evolves_to, evolves_sprite).addChildTo(this);
+    let evolves_sprite = Narikyou({before_evolves_sprite :this, f_onpointstart:f_onpointstart});
+    this.c = Piece_class(3, control_number, mass, actions, player,
+      reserve, evolve, evolves_to, evolves_sprite).addChildTo(this);
+    this.on("pointstart", function () {
+      this.parent.parent.parent.pick = true;
+      this.parent.parent.parent.num_pick_piece = this.c.control_number;
+    });
   },
 });
 
 phina.define("Kin", {
   //Spriteクラスを継承
   superClass: 'Sprite',
-  init: function (control_number, mass, actions, player, reserve = false, evolve = false, evolves_to = "", evolves_sprite = null) {
+  init: function ({ control_number, mass, actions, player,
+    reserve = false, evolve = false, evolves_to = "", evolves_sprite=null, f_onpointstart = null }) {
     // 親クラス初期化
     this.superInit('kin');
-    this.c = Piece_class(4, control_number, mass, actions, player, reserve, evolve, evolves_to, evolves_sprite).addChildTo(this);
+    this.c = Piece_class(4, control_number, mass, actions, player,
+      reserve, evolve, evolves_to, evolves_sprite).addChildTo(this);
+    this.on("pointstart", function () {
+      this.parent.parent.parent.pick = true;
+      this.parent.parent.parent.num_pick_piece = this.c.control_number;
+    });
   },
 });
 
 phina.define("Gin", {
   //Spriteクラスを継承
   superClass: 'Sprite',
-  init: function (control_number, mass, actions, player, reserve = false, evolve = false, evolves_to = "", evolves_sprite = null) {
+  init: function ({ control_number, mass, actions, player,
+    reserve = false, evolve = false, evolves_to = "", f_onpointstart = null }) {
     // 親クラス初期化
     this.superInit('gin');
-    this.c = Piece_class(5, control_number, mass, actions, player, reserve, evolve, evolves_to, evolves_sprite).addChildTo(this);
+    let evolves_sprite = Narigin({before_evolves_sprite :this, f_onpointstart:f_onpointstart});
+    this.c = Piece_class(5, control_number, mass, actions, player,
+      reserve, evolve, evolves_to, evolves_sprite).addChildTo(this);
+    this.on("pointstart", function () {
+      this.parent.parent.parent.pick = true;
+      this.parent.parent.parent.num_pick_piece = this.c.control_number;
+    });
   },
 });
 
 phina.define("Hisya", {
   //Spriteクラスを継承
   superClass: 'Sprite',
-  init: function (control_number, mass, actions, player, reserve = false, evolve = false, evolves_to = "", evolves_sprite = null) {
+  init: function ({ control_number, mass, actions, player,
+    reserve = false, evolve = false, evolves_to = "", f_onpointstart = null }) {
     // 親クラス初期化
     this.superInit('hisya');
-    this.c = Piece_class(6, control_number, mass, actions, player, reserve, evolve, evolves_to, evolves_sprite).addChildTo(this);
+    let evolves_sprite = Ryuou({before_evolves_sprite :this, f_onpointstart:f_onpointstart});
+    this.c = Piece_class(6, control_number, mass, actions, player,
+      reserve, evolve, evolves_to, evolves_sprite).addChildTo(this);
+    this.on("pointstart", function () {
+      this.parent.parent.parent.pick = true;
+      this.parent.parent.parent.num_pick_piece = this.c.control_number;
+    });
   },
 });
 
 phina.define("Kaku", {
   //Spriteクラスを継承
   superClass: 'Sprite',
-  init: function (control_number, mass, actions, player, reserve = false, evolve = false, evolves_to = "", evolves_sprite = null) {
+  init: function ({ control_number, mass, actions, player,
+    reserve = false, evolve = false, evolves_to = "", f_onpointstart = null }) {
     // 親クラス初期化
     this.superInit('kaku');
-    this.c = Piece_class(7, control_number, mass, actions, player, reserve, evolve, evolves_to, evolves_sprite).addChildTo(this);
+    let evolves_sprite = Ryuma({before_evolves_sprite :this, f_onpointstart:f_onpointstart});
+    this.c = Piece_class(7, control_number, mass, actions, player,
+      reserve, evolve, evolves_to, evolves_sprite).addChildTo(this);
+    this.on("pointstart", function () {
+      this.parent.parent.parent.pick = true;
+      this.parent.parent.parent.num_pick_piece = this.c.control_number;
+    });
   },
 });
-
 phina.define("Osyo", {
 	//Spriteクラスを継承
 	superClass: 'Sprite',
-  init: function (control_number, mass, actions, player, reserve = false, evolve = false, evolves_to = "", evolves_sprite = null) {
+  init: function ({ control_number, mass, actions, player,
+    reserve = false, evolve = false, evolves_to = "", f_onpointstart = null }) {
 		// 親クラス初期化
-		this.superInit('osyo');
-    this.c = Piece_class(8, control_number, mass, actions, player, reserve, evolve, evolves_to, evolves_sprite).addChildTo(this);
+    this.superInit('osyo');
+    let evolves_sprite = null;
+    this.c = Piece_class(8, control_number, mass, actions, player,
+      reserve, evolve, evolves_to, evolves_sprite).addChildTo(this);
+    this.on("pointstart", function () {
+      this.parent.parent.parent.pick = true;
+      this.parent.parent.parent.num_pick_piece = this.c.control_number;
+    });
+  },
+});
+
+phina.define("Tokin", {
+  superClass: 'Sprite',
+  init: function ({ before_evolves_sprite, f_onpointstart }) {
+    this.superInit('tokin');
+    this.before_evolves = before_evolves_sprite;
+    this.on("pointstart", function () {
+      this.parent.parent.parent.pick = true;
+      this.parent.parent.parent.num_pick_piece = this.before_evolves.c.control_number;
+    });
+  },
+});
+phina.define("Narikei", {
+  superClass: 'Sprite',
+  init: function ({ before_evolves_sprite, f_onpointstart }) {
+    this.superInit('narikei');
+    this.before_evolves = before_evolves_sprite;
+    this.on("pointstart", function () {
+      this.parent.parent.parent.pick = true;
+      this.parent.parent.parent.num_pick_piece = this.before_evolves_sprite.c.control_number;
+    });
+  },
+});
+phina.define("Narikyou", {
+  superClass: 'Sprite',
+  init: function ({ before_evolves_sprite, f_onpointstart }) {
+    this.superInit('narikyou');
+    this.before_evolves = before_evolves_sprite;
+    this.on("pointstart", function () {
+      this.parent.parent.parent.pick = true;
+      this.parent.parent.parent.num_pick_piece = this.before_evolves.c.control_number;
+    });
+  },
+});
+phina.define("Narigin", {
+  superClass: 'Sprite',
+  init: function ({ before_evolves_sprite, f_onpointstart }) {
+    this.superInit('narigin');
+    this.before_evolves = before_evolves_sprite;
+    this.on("pointstart", function () {
+      this.parent.parent.parent.pick = true;
+      this.parent.parent.parent.num_pick_piece = this.before_evolves.c.control_number;
+    });
+  },
+});
+
+phina.define("Ryuou", {
+  superClass: 'Sprite',
+  init: function ({ before_evolves_sprite, f_onpointstart }) {
+    this.superInit('ryuou');
+    this.before_evolves = before_evolves_sprite;
+    this.on("pointstart", function () {
+      this.parent.parent.parent.pick = true;
+      this.parent.parent.parent.num_pick_piece = this.before_evolves.c.control_number;
+    });
+  },
+});
+phina.define("Ryuma", {
+  superClass: 'Sprite',
+  init: function ({ before_evolves_sprite, f_onpointstart }) {
+    this.superInit('ryuma');
+    this.before_evolves = before_evolves_sprite;
+    this.on("pointstart", function () {
+      this.parent.parent.parent.pick = true;
+      this.parent.parent.parent.num_pick_piece = this.before_evolves.c.control_number;
+    });
   },
 });
 
@@ -206,7 +371,7 @@ phina.define('Reserve_Space',{
     console.log(this.show_timing);
     this.sort(piece_list);
   },
-  del_piece: function(piece){
+  del_piece: function(piece,piece_list){
     console.log("del_piece, piece",piece);
     let idx = 0;
     for(let p=0;p<2;p++){
@@ -216,7 +381,7 @@ phina.define('Reserve_Space',{
         this.show_timing[p].splice(idx, 1);
       }
     }
-    this.reserve_group.sort(this.piece_list);
+    this.sort(piece_list);
     console.log("this.show_timing",this.show_timing);
     // console.log("idx",idx);
   }
@@ -245,7 +410,7 @@ phina.define('Reserve_Ban',{
     for (let i = 0; i < this.parent.show_timing[this.player].length; i++) {
       console.log(this.parent.show_timing[this.player].length);
       piece_sprite = this.find_piece(this.parent.show_timing[this.player][i]);
-      piece_sprite.setPosition(x, y, 1);
+      piece_sprite.c.show(x, y, 1);
       let reverce = -1;
       if (piece_sprite.c.player == 1) {
         if (piece_sprite.scaleY > 0) {
@@ -286,6 +451,68 @@ phina.define('Reserve_Pieces',{
   },
 });
 
+phina.define('Two_choiceQ_Space', {
+  superClass: 'DisplayElement',
+  init: function ({q_text="です",Y_text="yes",N_text="no" }) {
+    this.superInit();
+    this.R = RectangleShape({
+      width: 300,
+      height: 200,
+      // TODO 色
+      fill: 'red',
+      stroke: 'lime',
+      strokeWidth: 0,
+      cornerRadius: 0,
+    }).addChildTo(this);
+    // 質問
+    this.question = Label('q').addChildTo(this);
+    this.question.fontFamily = "'Noto'";
+    this.question.setPosition(0, -40);
+    this.question.text = "ま";
+    // ボタン用
+    // 成る
+    DisplayElement().addChildTo(this);
+    this.button_yes = Button({
+      width: 75,
+      height: 50,
+      // TODO 色
+      fill: 'blue',
+      // stroke: 'lime',
+      strokeWidth: 0,
+      cornerRadius: 0,
+      text: Y_text,
+    }).addChildTo(this);
+    this.button_yes.setPosition(-75, 50);
+    // 成らない
+    DisplayElement().addChildTo(this);
+    this.button_no = Button({
+      width: 75,
+      height: 50,
+      // TODO 色
+      fill: 'green',
+      // stroke: 'lime',
+      strokeWidth: 0,
+      cornerRadius: 0,
+      text: N_text,
+    }).addChildTo(this);
+    this.button_no.setPosition(75, 50);
+    this.button_yes.on("pointstart", function () {
+      //console.log(this);
+      this.parent.clicked = true;
+      this.parent.yes = true;
+    });
+    this.button_yes.on("pointstart", function () {
+      this.parent.clicked = true;
+      this.parent.yes = false;
+    });
+    this.clicked = false;
+    this.yes = true;
+  },
+  get_answer: function () {
+    return [this.clicked, this.yes];
+  },
+});
+
 phina.define('Result',{
 	superClass: 'DisplayElement',
 	init: function(){
@@ -301,108 +528,140 @@ phina.define("MainScene", {
 	superClass: 'DisplayScene',
 	// 初期化
 	init: function() {
-	// 親クラス初期化
-	this.superInit();
-	// 背景色
-	this.backgroundColor = 'skyblue';
+	  // 親クラス初期化
+	  this.superInit();
+	  // 背景色
+	  this.backgroundColor = 'skyblue';
 
-	this.currentMass = 0;
-	this.hold = false;
-	this.holdPiece = 0;
-	this.flag = false;
-	this.caught = false;
+	  this.currentMass = 0;
+	  this.hold = false;
+	  this.holdPiece = 0;
+	  this.flag = false;
+	  this.caught = false;
     this.dragging = false;
     this.dragging_piece = 0;
-	this.game_status = ""
-	this.piece_seed_list = [];
-	this.piece_status = [];
-	this.piece_list = [];
-	this.pick = false;
-	this.num_pick_piece = 0;
-	this.put = false;
-	this.put_mass = 0;
-	this.previousMass = 0;
-	this.reservePieces = [];
-	this.turn = 0;
+	  this.game_status = ""
+	  this.piece_seed_list = [];
+	  this.piece_status = [];
+	  this.piece_list = [];
+	  this.pick = false;
+	  this.num_pick_piece = 0;
+	  this.put = false;
+	  this.put_mass = 0;
+	  this.previousMass = 0;
+	  this.reservePieces = [];
+	  this.turn = 0;
 
-	this.NUM_WIDTHMASS = 9;
-	this.NUM_HEIGHTMASS = 9;
-	this.NUM_ALLMASS = this.NUM_HEIGHTMASS * this.NUM_WIDTHMASS;
-	this.NUM_PIECE = [];
+	  this.NUM_WIDTHMASS = 9;
+	  this.NUM_HEIGHTMASS = 9;
+	  this.NUM_ALLMASS = this.NUM_HEIGHTMASS * this.NUM_WIDTHMASS;
+	  this.NUM_PIECE = [];
 
-	this.mass_size = 50;
-	this.BOARD_MARJIN = 5;
+	  this.mass_size = 50;
+	  this.BOARD_MARJIN = 5;
 
-	// 盤面初期化
-	// board_array　相手の駒はマイナス
-	this.board_array = [-3, -2, -5, -4, -8, -4, -5, -2, -3,
-										0, -6, 0, 0, 0, 0, 0, -7, 0,
-										-1,-1,-1,-1,-1,-1,-1,-1,-1,
-										0, 0, 0, 0, 0, 0, 0, 0, 0,
-										0, 0, 0, 0, 0, 0, 0, 0, 0,
-										0, 0, 0, 0, 0, 0, 0, 0, 0,
-										1, 1, 1, 1, 1, 1, 1, 1, 1,
-										0, 7, 0, 0, 0, 0, 0, 6, 0,
-										3, 2, 5, 4, 8, 4, 5, 2, 3,
-										]
+	  // 盤面初期化
+	  // board_array　相手の駒はマイナス
+	  this.board_array = [-3, -2, -5, -4, -8, -4, -5, -2, -3,
+	  									0, -6, 0, 0, 0, 0, 0, -7, 0,
+	  									-1,-1,-1,-1,-1,-1,-1,-1,-1,
+	  									0, 0, 0, 0, 0, 0, 0, 0, 0,
+	  									0, 0, 0, 0, 0, 0, 0, 0, 0,
+	  									0, 0, 0, 0, 0, 0, 0, 0, 0,
+	  									1, 1, 1, 1, 1, 1, 1, 1, 1,
+	  									0, 7, 0, 0, 0, 0, 0, 6, 0,
+	  									3, 2, 5, 4, 8, 4, 5, 2, 3,
+	  									]
 
     let num_piece = [];
-	[this.piece_status,this.piece_seed_list,num_piece] = syogi_init(this.board_array,this.NUM_WIDTHMASS,this.NUM_HEIGHTMASS);
+	  [this.piece_status,this.piece_seed_list,num_piece] = syogi_init(this.board_array,this.NUM_WIDTHMASS,this.NUM_HEIGHTMASS);
     this.NUM_PIECE = num_piece;
     this.SUM_PIECE = sum_array(this.NUM_PIECE);
     console.log("piece_status,piece_seed_list,NUM_PIECE");
-	console.log(this.piece_status,this.piece_seed_list,this.NUM_PIECE);
-	// 駒初期化
+	  console.log(this.piece_status,this.piece_seed_list,this.NUM_PIECE);
+	  // 駒初期化
 
-	// メモ　game本体 piece_status[駒種-1][通し番号]
-	//       Sprite piece_list[番号] 番号の求め方（仮）(駒種ごとの駒の数のそれまでの合計)+(上の通し番号)
+	  // メモ　game本体 piece_status[駒種-1][通し番号]
+	  //       Sprite piece_list[番号] 番号の求め方（仮）(駒種ごとの駒の数のそれまでの合計)+(上の通し番号)
 		let control_number = 0;
 	  //歩 no.1
 	  for(let i=0;i<this.NUM_PIECE[0];i++){
-		  // mass,action,player 
-		  this.piece_list.push(Hu(control_number,this.piece_status[0][i].mass,this.piece_seed_list[0].actions,this.piece_status[0][i].player));
+      // mass,action,player 
+      this.piece_list.push(Hu({
+          control_number: control_number, mass:this.piece_status[0][i].mass,
+        actions: this.piece_seed_list[0].actions, player: this.piece_status[0][i].player,
+        evolve: true, f_onpointstart: this.pick_piece
+      }));
       control_number++;
-			}
+		}
     //桂馬 no.2
     for (let i = 0; i < this.NUM_PIECE[1]; i++) {
       // mass,action,player 
-      this.piece_list.push(Keima(control_number,this.piece_status[1][i].mass,this.piece_seed_list[1].actions, this.piece_status[1][i].player));
+      this.piece_list.push(Keima({
+        control_number:control_number, mass:this.piece_status[1][i].mass,
+        actions:this.piece_seed_list[1].actions,player: this.piece_status[1][i].player
+        ,evolve: false, f_onpointstart: this.pick_piece
+      }));
 			control_number++;
 		}
     //香車 no.3
     for (let i = 0; i < this.NUM_PIECE[2]; i++) {
       // mass,action,player 
-      this.piece_list.push(Kyousya(control_number,this.piece_status[2][i].mass, this.piece_seed_list[2].actions, this.piece_status[2][i].player));
+      this.piece_list.push(Kyousya({
+        control_number: control_number, mass: this.piece_status[2][i].mass,
+        actions: this.piece_seed_list[2].actions, player: this.piece_status[2][i].player
+        ,evolve: false, f_onpointstart: this.pick_piece
+      }));
 			control_number++;
 		}
     //金 no.4
     for (let i = 0; i < this.NUM_PIECE[3]; i++) {
       // mass,action,player 
-      this.piece_list.push(Kin(control_number,this.piece_status[3][i].mass, this.piece_seed_list[3].actions, this.piece_status[3][i].player));
+      this.piece_list.push(Kin({
+        control_number: control_number, mass: this.piece_status[3][i].mass,
+        actions: this.piece_seed_list[3].actions, player: this.piece_status[3][i].player
+        ,evolve: false, f_onpointstart: this.pick_piece
+      }));
 			control_number++;
 		}
     //銀 no.5
     for (let i = 0; i < this.NUM_PIECE[4]; i++) {
       // mass,action,player 
-      this.piece_list.push(Gin(control_number,this.piece_status[4][i].mass, this.piece_seed_list[4].actions, this.piece_status[4][i].player));
+      this.piece_list.push(Gin({
+        control_number:control_number, mass:this.piece_status[4][i].mass,
+        actions:this.piece_seed_list[4].actions, player:this.piece_status[4][i].player
+        ,evolve: false, f_onpointstart: this.pick_piece
+      }));
 			control_number++;
 		}
     //飛車 no.6
     for (let i = 0; i < this.NUM_PIECE[5]; i++) {
       // mass,action,player 
-      this.piece_list.push(Hisya(control_number,this.piece_status[5][i].mass, this.piece_seed_list[5].actions, this.piece_status[5][i].player));
+      this.piece_list.push(Hisya({
+        control_number:control_number, mass:this.piece_status[5][i].mass,
+        actions:this.piece_seed_list[5].actions, player:this.piece_status[5][i].player
+        ,evolve: false, f_onpointstart: this.pick_piece
+      }));
 			control_number++;
 		}
     //角 no.7
     for (let i = 0; i < this.NUM_PIECE[6]; i++) {
       // mass,action,player 
-      this.piece_list.push(Kaku(control_number,this.piece_status[6][i].mass, this.piece_seed_list[6].actions, this.piece_status[6][i].player));
+      this.piece_list.push(Kaku({
+        control_number:control_number, mass:this.piece_status[6][i].mass,
+        actions:this.piece_seed_list[6].actions, player:this.piece_status[6][i].player
+        ,evolve: false, f_onpointstart: this.pick_piece
+      }));
 			control_number++;
 		}
 	  //王将 no.8
 	  for(let i=0;i<this.NUM_PIECE[7];i++){
 		  // mass,action,player 
-		  this.piece_list.push(Osyo(control_number,this.piece_status[7][i].mass,this.piece_seed_list[7].actions,this.piece_status[7][i].player));
+      this.piece_list.push(Osyo({
+        control_number:control_number, mass:this.piece_status[7][i].mass,
+        actions:this.piece_seed_list[7].actions, player:this.piece_status[7][i].player
+        ,evolve: false, f_onpointstart: this.pick_piece
+      }));
 			control_number++;
 		}
 
@@ -415,9 +674,7 @@ phina.define("MainScene", {
 	  this.board_group = Board_Space().addChildTo(this);
 	  this.board_group.setPosition(this.gridX.center(), this.gridY.center());
  
-    
-    let reverce = 1;
-	
+   	
 	  // 持ち駒グループ
 	  this.reserve_group = Reserve_Space().addChildTo(this).setPosition(this.gridX.center(), this.gridY.center());
 	  
@@ -425,164 +682,164 @@ phina.define("MainScene", {
     console.log("piece_list");
     console.log(this.piece_list);
 
-	// 駒
-	for(let i=0;i<this.SUM_PIECE;i++){
-		// 敵は表示を上下反転
-		if(this.piece_list[i].c.player == 1){
-			reverce = -1;
-		}else{
-			reverce = 1;
-		}
-		var mass_x = this.piece_list[i].c.mass;
-		for(var mass_y = 0;mass_x >= this.NUM_WIDTHMASS;mass_y++){
-			mass_x -= this.NUM_WIDTHMASS;
-    }
-    this.piece_list[i].addChildTo(this.board_group.pieces)
-			.setSize(this.mass_size, this.mass_size)
-			.on('pointstart', function(){
-				this.parent.parent.parent.pick = true;
-				this.parent.parent.parent.num_pick_piece = this.c.control_number;
-      });
-    this.piece_list[i].c.set_on_mass(mass_x, mass_y);
-		this.piece_list[i].scaleY *= reverce;
-	}
-	console.log(this.board_group);
+	  // 駒
+	  for(let i=0;i<this.SUM_PIECE;i++){
+	  	var mass_x = this.piece_list[i].c.mass;
+	  	for(var mass_y = 0;mass_x >= this.NUM_WIDTHMASS;mass_y++){
+	  		mass_x -= this.NUM_WIDTHMASS;
+      }
+      this.piece_list[i].addChildTo(this.board_group.pieces)
+      if (this.piece_list[i].c.evolve_sprite != null) {
+        this.piece_list[i].c.evolve_sprite.addChildTo(this.board_group.pieces);
+      }
+      this.piece_list[i].c.set_size(this.mass_size, this.mass_size);
+      this.piece_list[i].c.set_on_mass(mass_x, mass_y);
+	  }
+	  console.log(this.board_group);
 
-	// 将棋盤の当たり判定ます
-	for (j = 0; j < this.NUM_HEIGHTMASS; j++) {
-		for (i = 0; i < this.NUM_WIDTHMASS; i++) {
-		// RectangleShape
-			let mass = xy_to_mass(i, j, this.NUM_WIDTHMASS);
-      Mass(mass).addChildTo(this.board_group.mass)
-        .setPosition(48 * (i - (this.NUM_WIDTHMASS - 1) / 2) + 0,
-          52 * (j - (this.NUM_HEIGHTMASS - 1) / 2) + 0)
-        .on('pointstart', function () {
-          // 駒を置くとき(ここに動くことは確定している)
-          this.parent.parent.parent.put = true;
-					this.parent.parent.parent.put_mass = this.number;
-				});
-      this.board_group.mass.children[mass].alpha = 0.0;
-    }
-	}
+	  // 将棋盤の当たり判定ます
+	  for (j = 0; j < this.NUM_HEIGHTMASS; j++) {
+	  	for (i = 0; i < this.NUM_WIDTHMASS; i++) {
+	  	// RectangleShape
+	  		let mass = xy_to_mass(i, j, this.NUM_WIDTHMASS);
+        Mass(mass).addChildTo(this.board_group.mass)
+          .setPosition(48 * (i - (this.NUM_WIDTHMASS - 1) / 2) + 0,
+            52 * (j - (this.NUM_HEIGHTMASS - 1) / 2) + 0)
+          .on('pointstart', function () {
+            // 駒を置くとき(ここに動くことは確定している)
+            this.parent.parent.parent.put = true;
+	  				this.parent.parent.parent.put_mass = this.number;
+	  			});
+        this.board_group.mass.children[mass].alpha = 0.0;
+      }
+	  }
 
-	// 駒のタッチを有効にする
-	for(i = 0;i < this.SUM_PIECE;i++){
-		 this.piece_list[i].setInteractive(true);
-  }
+	  // 駒のタッチを有効にする
+    for (i = 0; i < this.SUM_PIECE; i++){
+      // 自分の駒だけ
+      if (this.piece_list[i].c.player == 0) {
+        this.piece_list[i].c.set_interactive(true);
+      }
+    }
 	},
 	// 毎フレーム更新処理
 	update: function(app) {
-	console.log("turn",this.turn,"dragging",this.dragging,"pick",this.pick,"put",this.put);
-	// 自分の番
-	if(this.turn == 0){
-    if (this.dragging) {
-      /*
-      const mouse = app.pointer;
-			this.board_group.children[this.dragging_piece+1].setPosition(mouse.x,mouse.y);
-			// 当たり判定 ちょっと光らせる
-			for(let i=0;i<this.NUM_WIDTHMASS*this.NUM_HEIGHTMASS;i++){
-        if (this.board_group.children[this.dragging_piece+1]
-					.hitTestElement(this.board_group.children[i+1+this.SUM_PIECE])){
-					//console.log(i, "hit");
-					this.board_group.children[i+1+this.SUM_PIECE].alpha = 0.1;
-				}else{
-					this.board_group.children[i+1+this.SUM_PIECE].alpha = 0;
-					//console.log(i, "no hit");
-				}
-			}
-      */
-		}
-		if(this.put){
-			this.put_piece();
-    }
-		if(this.pick){
-			this.pick_piece();
-    }
-	// 相手の番
-	}else if(this.turn == 1){
-    let activePiece;
-    // console.log("enemy_pieces", this.get_num_enemy_piece());
-		let valid_actions = [];
-		let cnt = 0;
-		let control_number = 0;
-		let seed = 0;
-		let piece_number = 0;
-		while(valid_actions.length === 0){
-			console.log("in while");
-			// 動かすコマ
-		  activePiece = Math.floor(Math.random() * this.get_num_enemy_piece());
-			console.log("activePiece",activePiece);
-      cnt = 0;
-      for (let i = 0; i < this.SUM_PIECE; i++) {
-        if (this.piece_list[i].c.player == 1) {
-          // console.log("player=1,cnt,control_number",cnt,i);
-          if (cnt == activePiece) {
-			      control_number = i;
-            break;
-          }
-					cnt++;
-				}
+	  console.log("turn",this.turn,"dragging",this.dragging,"pick",this.pick,"put",this.put);
+	  // 自分の番
+	  if(this.turn == 0){
+      if (this.dragging) {
+        /*
+        const mouse = app.pointer;
+	  		this.board_group.children[this.dragging_piece+1].setPosition(mouse.x,mouse.y);
+	  		// 当たり判定 ちょっと光らせる
+	  		for(let i=0;i<this.NUM_WIDTHMASS*this.NUM_HEIGHTMASS;i++){
+          if (this.board_group.children[this.dragging_piece+1]
+	  				.hitTestElement(this.board_group.children[i+1+this.SUM_PIECE])){
+	  				//console.log(i, "hit");
+	  				this.board_group.children[i+1+this.SUM_PIECE].alpha = 0.1;
+	  			}else{
+	  				this.board_group.children[i+1+this.SUM_PIECE].alpha = 0;
+	  				//console.log(i, "no hit");
+	  			}
+	  		}
+        */
       }
-      console.log("control_number",control_number);
-			// どこに動く
-			seed = 0;
-			piece_number = 0;
-			[seed, piece_number] = ctr_num_to_stat_num(control_number, this.NUM_PIECE);
-			valid_actions = get_valid_actions(this.board_array, this.piece_seed_list, this.piece_status, seed, piece_number,this.NUM_HEIGHTMASS,this.NUM_WIDTHMASS)
-      console.log("valid_actions, control_number,seed, piece_number", valid_actions, control_number, seed, piece_number);
-		}
-		let action_idx = Math.floor(Math.random() * valid_actions.length);
-		let action = valid_actions[action_idx];
-    console.log("mass,action", this.piece_list[control_number].c.mass, action);
-    console.log("piece_status", this.piece_status);
-    console.log("board_group", this.board_group);
-    this.piece_list[control_number].c.mass = action;
-    [this.board_array, this.reservePieces, this.done] = syogi_step(this.board_array, this.piece_status, this.reservePieces, this.NUM_PIECE, piece = control_number, action, player = 1);
-
-		console.log("turn:1,piece,action",control_number,action)
-		// 駒の表示位置更新
-		let mass_x = 0;
-		let mass_y = 0;
-		[mass_x,mass_y] = mass_to_xy(this.piece_list[control_number].c.mass,this.NUM_HEIGHTMASS,this.NUM_WIDTHMASS);
-		console.log("action,x,y",this.piece_list[control_number].c.mass,mass_x,mass_y);
-		this.piece_list[control_number].c.set_on_mass(mass_x,mass_y);
-
-    // 敵のコマを取ったら
-    console.log(this.reservePieces);
-    this.obtain_piece(player=1);
-
-		this.turn = 0;
-		// ターン終了
-		// 駒のタッチを有効にする
-		for(i=0;i<this.SUM_PIECE;i++){
-			// 自分の駒だけ
-			if(this.piece_list[i].c.player == 0){
-				this.piece_list[i].setInteractive(true);
+      if (this.pick) {
+        this.pick_piece();
       }
-		}
-		if(this.done == true){
-			this.turn = 10;
-			this.game_status = "enemy win"
+	  	if(this.put){
+	  		this.put_piece();
+      }
+	  // 相手の番
+	  }else if(this.turn == 1){
+      let activePiece;
+      // console.log("enemy_pieces", this.get_num_enemy_piece());
+	  	let valid_actions = [];
+	  	let cnt = 0;
+	  	let control_number = 0;
+	  	let seed = 0;
+	  	let piece_number = 0;
+	  	while(valid_actions.length === 0){
+	  		console.log("in while");
+	  		// 動かすコマ
+	  	  activePiece = Math.floor(Math.random() * this.get_num_enemy_piece());
+	  		console.log("activePiece",activePiece);
+        cnt = 0;
+        for (let i = 0; i < this.SUM_PIECE; i++) {
+          if (this.piece_list[i].c.player == 1) {
+            // console.log("player=1,cnt,control_number",cnt,i);
+            if (cnt == activePiece) {
+	  		      control_number = i;
+              break;
+            }
+	  				cnt++;
+	  			}
+        }
+        console.log("control_number",control_number);
+	  		// どこに動く
+	  		seed = 0;
+	  		piece_number = 0;
+	  		[seed, piece_number] = ctr_num_to_stat_num(control_number, this.NUM_PIECE);
+	  		valid_actions = get_valid_actions(this.board_array, this.piece_seed_list, this.piece_status, seed, piece_number,this.NUM_HEIGHTMASS,this.NUM_WIDTHMASS)
+        console.log("valid_actions, control_number,seed, piece_number", valid_actions, control_number, seed, piece_number);
+	  	}
+	  	let action_idx = Math.floor(Math.random() * valid_actions.length);
+	  	let action = valid_actions[action_idx];
+      console.log("mass,action", this.piece_list[control_number].c.mass, action);
+      console.log("piece_status", this.piece_status);
+      console.log("board_group", this.board_group);
+      this.piece_list[control_number].c.mass = action;
+      [this.board_array, this.reservePieces, this.done] = syogi_step(this.board_array, this.piece_status, this.reservePieces, this.NUM_PIECE, piece = control_number, action, player = 1);
+
+	  	console.log("turn:1,piece,action",control_number,action)
+	  	// 駒の表示位置更新
+	  	let mass_x = 0;
+	  	let mass_y = 0;
+	  	[mass_x,mass_y] = mass_to_xy(this.piece_list[control_number].c.mass,this.NUM_HEIGHTMASS,this.NUM_WIDTHMASS);
+	  	console.log("action,x,y",this.piece_list[control_number].c.mass,mass_x,mass_y);
+	  	this.piece_list[control_number].c.set_on_mass(mass_x,mass_y);
+
+      // 敵のコマを取ったら
+      console.log(this.reservePieces);
+      this.obtain_piece(player=1);
+
+	  	this.turn = 0;
+	  	// ターン終了
+	  	// 駒のタッチを有効にする
+	  	for(i=0;i<this.SUM_PIECE;i++){
+	  		// 自分の駒だけ
+	  		if(this.piece_list[i].c.player == 0){
+	  			this.piece_list[i].c.set_interactive(true);
+        }
+	  	}
+	  	if(this.done == true){
+	  		this.turn = 10;
+	  		this.game_status = "enemy win"
+      }
+	  }else if(this.turn == 10){
+	  	 // ゲーム終了
+	  	 this.show_result();
+	  	 this.turn = 11;
     }
-	}else if(this.turn == 10){
-		 // ゲーム終了
-		 this.show_result();
-		 this.turn = 11;
-  }
 	},
-	pick_piece: function(){
-		console.log("pick_piece")
+	pick_piece: function(sender){
+    console.log("pick_piece")
+
+    console.log("SUM_PIECE",this.SUM_PIECE);
+    piece_class = sender;
+    // sender 駒のスプライト
 		// 駒を選ぶとき
 		// 駒のタッチを無効にする
 		for(i=0;i<this.SUM_PIECE;i++){
-			this.piece_list[i].setInteractive(false);
+			this.piece_list[i].c.set_interactive(false);
 		}
-		this.dragging = true;
-		this.dragging_piece = this.num_pick_piece;
+    this.dragging = true;
+    this.dragging_piece = this.num_pick_piece;
     /*
 		console.log("dragging_piece",this.dragging_piece);
     console.log("NUM_PIECE", this.NUM_PIECE);
     */
+    console.log("piece_list", this.piece_list);
     if (this.piece_list[this.dragging_piece].c.reserve === true){
       this.pick_reserve_piece();
     }else{
@@ -609,7 +866,7 @@ phina.define("MainScene", {
         for (i = 0; i < this.SUM_PIECE; i++) {
           // 自分の駒だけ
           if (this.piece_list[i].c.player == 0) {
-            this.piece_list[i].setInteractive(true);
+            this.piece_list[i].c.set_interactive(true);
           }
         }
       }
@@ -640,9 +897,6 @@ phina.define("MainScene", {
       this.board_group.mass.children[empty_mass[i]].alpha = 0.5;
       this.board_group.mass.children[empty_mass[i]].setInteractive(true);
     }
-    // 盤の上下３マスだけ置いたあと動けるか調べる
-    let dummy_board = [];
-    let dummy_valid_actions = [];
     let mass = 0;
     let valid = true;
     for (let i = 0; i < this.NUM_HEIGHTMASS; i++) {
@@ -658,7 +912,7 @@ phina.define("MainScene", {
           if (dummy_valid_actions == []) {
             mass = xy_to_mass(j, i); 
             this.board_group.mass.children[mass].alpha = 0.0;
-            this.board_group.mass.children[mass].setInteractive(false);
+            this.board_group.mass.children[mass].set_interactive(false);
           }
         }
         */
@@ -719,14 +973,16 @@ phina.define("MainScene", {
     let dragging_piece = this.dragging_piece;
     let seed = 0;
     let number = 0;
+    let was_reserve = false;
     [seed, number] = ctr_num_to_stat_num(dragging_piece, this.NUM_PIECE);
-    if(this.piece_list[dragging_piece].c.reserve === true){
+    if (this.piece_list[dragging_piece].c.reserve) {
+      was_reserve = true;
       this.piece_list[dragging_piece].c.reserve = false;
       this.piece_list[dragging_piece].addChildTo(this.board_group.pieces);
-      this.reserve_group.del_piece(dragging_piece);
+      this.reserve_group.del_piece(dragging_piece, this.piece_list);
     }
     // 光らせた場所を暗くする
-    for(let i = 0; i<this.NUM_ALLMASS;i++){
+    for (let i = 0; i < this.NUM_ALLMASS; i++){
       this.board_group.mass.children[i].alpha = 0.0;
       this.board_group.mass.children[i].setInteractive(false);
     }
@@ -737,7 +993,7 @@ phina.define("MainScene", {
     for (let l = 0; l < this.NUM_WIDTHMASS * this.NUM_HEIGHTMASS; l++) {
       if (valid_actions.includes(l)) {
         // タッチイベントを無効にする
-        this.board_group.mass.children[l].setInteractive(false);
+        this.board_group.mass.children[l].set_interactive(false);
         // 光らせた場所を暗くする
         this.board_group.mass.children[l].alpha = 0.0;
       }
@@ -765,6 +1021,14 @@ phina.define("MainScene", {
 			this.turn = 10;
 			this.game_status = "player win"
     }
+
+    console.log("was_reserve, mass <(3 * this.NUM_WIDTHMASS)", was_reserve, mass< (3 * this.NUM_WIDTHMASS));
+    // 成れる駒が相手側から３ます以内に入ったとき(持ち駒から置いたときを除く)
+    if (!was_reserve && mass < (3 * this.NUM_WIDTHMASS)) {
+      this.user_grow_select_element = Two_choiceQ_Space({ Y_text: "yes", N_text: "成らない" }).addChildTo(this);
+      this.user_grow_select_element.setPosition(this.gridX.center(), this.gridY.center());
+    }
+
   },
   
   // 盤面に駒がどこにあるかの配列を返す
@@ -827,6 +1091,9 @@ phina.define("MainScene", {
           this.piece_list[ctr_num].c.player = 1;
         } else if (this.piece_list[ctr_num].c.player == 1) {
           this.piece_list[ctr_num].c.player = 0;
+        }
+        if (this.piece_list[ctr_num].c.evolve) {
+          this.piece_list[ctr_num].c.evolve = false;
         }
         this.reserve_group.add_piece(player,ctr_num, this.piece_list);
       }
