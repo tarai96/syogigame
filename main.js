@@ -78,14 +78,14 @@ phina.define("Piece_class", {
     if (this.evolve) {
       this.parent.alpha = 0.5;
       // 画面外に置いときたい
-      this.parent.setPosition(-50, -50);
+      this.parent.setPosition(-500, -500);
       this.evolve_sprite.alpha = 1.0;
       this.evolve_sprite.setPosition(x, y,z);
     } else {
       this.parent.alpha = 1.0;
       this.evolve_sprite.alpha = 0.5;
       // 画面外に置いときたい
-      this.evolve_sprite.setPosition(-50, -50);
+      this.evolve_sprite.setPosition(-500, -500);
     }
   },
   set_interactive(interactive) {
@@ -590,7 +590,7 @@ phina.define("MainScene", {
       this.piece_list.push(Hu({
           control_number: control_number, mass:this.piece_status[0][i].mass,
         actions: this.piece_seed_list[0].actions, player: this.piece_status[0][i].player,
-        evolve: true, f_onpointstart: this.pick_piece
+        evolve: false, f_onpointstart: this.pick_piece
       }));
       control_number++;
 		}
@@ -1023,11 +1023,13 @@ phina.define("MainScene", {
     }
 
     console.log("was_reserve, mass <(3 * this.NUM_WIDTHMASS)", was_reserve, mass< (3 * this.NUM_WIDTHMASS));
+    /*
     // 成れる駒が相手側から３ます以内に入ったとき(持ち駒から置いたときを除く)
     if (!was_reserve && mass < (3 * this.NUM_WIDTHMASS)) {
       this.user_grow_select_element = Two_choiceQ_Space({ q_text:"成りますか?",Y_text: "はい", N_text: "いいえ" }).addChildTo(this);
       this.user_grow_select_element.setPosition(this.gridX.center(), this.gridY.center());
     }
+    */
 
   },
   
