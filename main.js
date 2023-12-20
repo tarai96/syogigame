@@ -26,7 +26,7 @@ var ASSETS = {
 phina.define("Piece_class", {
   superClass: 'DisplayElement',
   init: function (seed, control_number, mass, actions, player,
-                  reserve = false, evolve = false, evolves_to = "", evolves_sprite = null) {
+                  reserve = false, evolve = false, evolves_to = 0, evolves_sprite = null) {
     this.superInit();
     this.mass = mass;
     this.previousMass = mass;
@@ -39,10 +39,10 @@ phina.define("Piece_class", {
     this.evolves_to = evolves_to;
     this.evolve_sprite = evolves_sprite;
   },
-  set_size(width, height) {
+  set_size: function (width, height) {
     this.parent.width = width;
     this.parent.height = height;
-    // 成らないなら何もいじらない
+    // 成ってないなら何もいじらない
     //console.log("this.evolves_sprite", this.evolves_sprite);
     if (this.evolve_sprite === null) {
       return;
@@ -51,14 +51,14 @@ phina.define("Piece_class", {
       this.evolve_sprite.height = height;
     }
   },
-  set_on_mass(x, y) {
+  set_on_mass: function (x, y) {
     // mainsceneから
     let NUM_WIDTHMASS = this.parent.parent.parent.parent.NUM_WIDTHMASS;
     let NUM_HEIGHTMASS = this.parent.parent.parent.parent.NUM_HEIGHTMASS;
 
     this.show(48 * (x - (NUM_WIDTHMASS - 1) / 2), 52 * (y - (NUM_HEIGHTMASS - 1) / 2));
   },
-  show(x, y, z = 0) {
+  show: function (x, y, z = 0) {
     this.parent.setPosition(x, y, z);
     let reverce = 0;
     // 敵の駒なら反転
@@ -68,7 +68,7 @@ phina.define("Piece_class", {
       reverce = 1;
     }
     this.parent.scaleY = reverce;
-    // 成らないなら何もいじらない
+    // 成ってないなら何もいじらない
     //console.log("this.evolves_sprite", this.evolves_sprite);
     if (this.evolve_sprite === null) {
       return;
@@ -88,16 +88,28 @@ phina.define("Piece_class", {
       this.evolve_sprite.setPosition(-500, -500);
     }
   },
-  set_interactive(interactive) {
+  set_interactive: function (interactive) {
     this.parent.setInteractive(interactive);
-    // 成らないなら何もいじらない
+    // 成ってないなら何もいじらない
     if (this.evolve_sprite === null) {
       return;
     } else if (this.evolve) {
       this.evolve_sprite.setInteractive(!interactive);
       this.evolve_sprite.setInteractive(interactive);
     }
-  }
+  },
+  evolves: function () {
+    let NUM_WIDTHMASS = this.parent.parent.parent.parent.NUM_WIDTHMASS;
+    let NUM_HEIGHTMASS = this.parent.parent.parent.parent.NUM_HEIGHTMASS;
+
+    let mass_x;
+    let mass_y;
+    [mass_x, mass_y] = mass_to_xy(this.mass, NUM_HEIGHTMASS, NUM_WIDTHMASS);
+    this.evolve = true;
+
+    // 表示更新
+    this.set_on_mass(mass_x, mass_y);
+  },
 });
 
 
@@ -109,7 +121,7 @@ phina.define("Hu", {
     f_onpointstart = null }) {
     // 親クラス初期化
     this.superInit('hu');
-    let evolves_to = "";
+    let evolves_to = 9;
     let evolves_sprite = Tokin({before_evolves_sprite :this, f_onpointstart:f_onpointstart});
     this.c = Piece_class(1, control_number, mass, actions, player,
       reserve, evolve, evolves_to, evolves_sprite).addChildTo(this);
@@ -124,10 +136,12 @@ phina.define("Keima", {
   //Spriteクラスを継承
   superClass: 'Sprite',
   init: function ({ control_number, mass, actions, player,
-    reserve = false, evolve = false, evolves_to = "", f_onpointstart = null
+    reserve = false, evolve = false,
+    f_onpointstart = null
       }) {
     // 親クラス初期化
     this.superInit('keima');
+    let evolves_to = 10;
     let evolves_sprite = Narikei({before_evolves_sprite :this, f_onpointstart:f_onpointstart});
     this.c = Piece_class(2, control_number, mass, actions, player,
       reserve, evolve, evolves_to, evolves_sprite).addChildTo(this);
@@ -142,9 +156,11 @@ phina.define("Kyousya", {
   //Spriteクラスを継承
   superClass: 'Sprite',
   init: function ({ control_number, mass, actions, player,
-    reserve = false, evolve = false, evolves_to = "", f_onpointstart = null }) {
+    reserve = false, evolve = false,
+    f_onpointstart = null }) {
     // 親クラス初期化
     this.superInit('kyousya');
+    let evolves_to = 11;
     let evolves_sprite = Narikyou({before_evolves_sprite :this, f_onpointstart:f_onpointstart});
     this.c = Piece_class(3, control_number, mass, actions, player,
       reserve, evolve, evolves_to, evolves_sprite).addChildTo(this);
@@ -159,9 +175,11 @@ phina.define("Kin", {
   //Spriteクラスを継承
   superClass: 'Sprite',
   init: function ({ control_number, mass, actions, player,
-    reserve = false, evolve = false, evolves_to = "", evolves_sprite=null, f_onpointstart = null }) {
+    reserve = false, evolve = false,
+    evolves_sprite = null, f_onpointstart = null }) {
     // 親クラス初期化
     this.superInit('kin');
+    let evolves_to = 0;
     this.c = Piece_class(4, control_number, mass, actions, player,
       reserve, evolve, evolves_to, evolves_sprite).addChildTo(this);
     this.on("pointstart", function () {
@@ -175,9 +193,11 @@ phina.define("Gin", {
   //Spriteクラスを継承
   superClass: 'Sprite',
   init: function ({ control_number, mass, actions, player,
-    reserve = false, evolve = false, evolves_to = "", f_onpointstart = null }) {
+    reserve = false, evolve = false,
+    f_onpointstart = null }) {
     // 親クラス初期化
     this.superInit('gin');
+    let evolves_to = 12;
     let evolves_sprite = Narigin({before_evolves_sprite :this, f_onpointstart:f_onpointstart});
     this.c = Piece_class(5, control_number, mass, actions, player,
       reserve, evolve, evolves_to, evolves_sprite).addChildTo(this);
@@ -192,9 +212,11 @@ phina.define("Hisya", {
   //Spriteクラスを継承
   superClass: 'Sprite',
   init: function ({ control_number, mass, actions, player,
-    reserve = false, evolve = false, evolves_to = "", f_onpointstart = null }) {
+    reserve = false, evolve = false,
+    f_onpointstart = null }) {
     // 親クラス初期化
     this.superInit('hisya');
+    let evolves_to = 13;
     let evolves_sprite = Ryuou({before_evolves_sprite :this, f_onpointstart:f_onpointstart});
     this.c = Piece_class(6, control_number, mass, actions, player,
       reserve, evolve, evolves_to, evolves_sprite).addChildTo(this);
@@ -209,9 +231,11 @@ phina.define("Kaku", {
   //Spriteクラスを継承
   superClass: 'Sprite',
   init: function ({ control_number, mass, actions, player,
-    reserve = false, evolve = false, evolves_to = "", f_onpointstart = null }) {
+    reserve = false, evolve = false,
+    f_onpointstart = null }) {
     // 親クラス初期化
     this.superInit('kaku');
+    let evolves_to = 14;
     let evolves_sprite = Ryuma({before_evolves_sprite :this, f_onpointstart:f_onpointstart});
     this.c = Piece_class(7, control_number, mass, actions, player,
       reserve, evolve, evolves_to, evolves_sprite).addChildTo(this);
@@ -225,9 +249,11 @@ phina.define("Osyo", {
 	//Spriteクラスを継承
 	superClass: 'Sprite',
   init: function ({ control_number, mass, actions, player,
-    reserve = false, evolve = false, evolves_to = "", f_onpointstart = null }) {
+    reserve = false, evolve = false, 
+    f_onpointstart = null }) {
 		// 親クラス初期化
     this.superInit('osyo');
+    let evolves_to = 0;
     let evolves_sprite = null;
     this.c = Piece_class(8, control_number, mass, actions, player,
       reserve, evolve, evolves_to, evolves_sprite).addChildTo(this);
@@ -469,9 +495,7 @@ phina.define('Two_choiceQ_Space', {
     this.question.fontFamily = "'Noto'";
     this.question.setPosition(0, -40);
     this.question.text = q_text;
-    // ボタン用
-    // 成る
-    DisplayElement().addChildTo(this);
+    // ボタン
     this.button_yes = Button({
       width: 75,
       height: 50,
@@ -483,8 +507,7 @@ phina.define('Two_choiceQ_Space', {
       text: Y_text,
     }).addChildTo(this);
     this.button_yes.setPosition(-75, 50);
-    // 成らない
-    DisplayElement().addChildTo(this);
+
     this.button_no = Button({
       width: 75,
       height: 50,
@@ -501,12 +524,12 @@ phina.define('Two_choiceQ_Space', {
       this.parent.clicked = true;
       this.parent.yes = true;
     });
-    this.button_yes.on("pointstart", function () {
+    this.button_no.on("pointstart", function () {
       this.parent.clicked = true;
       this.parent.yes = false;
     });
     this.clicked = false;
-    this.yes = true;
+    this.yes = false;
   },
   get_answer: function () {
     return [this.clicked, this.yes];
@@ -550,6 +573,7 @@ phina.define("MainScene", {
 	  this.put_mass = 0;
 	  this.previousMass = 0;
 	  this.reservePieces = [];
+    this.select_waiting = false;
 	  this.turn = 0;
 
 	  this.NUM_WIDTHMASS = 9;
@@ -750,6 +774,25 @@ phina.define("MainScene", {
 	  	if(this.put){
 	  		this.put_piece();
       }
+      if (this.select_waiting) {
+        let clicked;
+        let answer;
+        [clicked,answer] = this.user_evolve_select_element.get_answer();
+        if (clicked) {
+          console.log("answer", answer);
+          if (answer) {
+            // 成る
+            this.piece_list[this.dragging_piece].c.evolves();
+          } else {
+            //成らない
+          }
+          // 相手の番
+          this.turn = 1;
+          this.select_waiting = false;
+          // 選択エレメント消去
+          this.user_evolve_select_element.remove();
+        }
+      }
 	  // 相手の番
 	  }else if(this.turn == 1){
       let activePiece;
@@ -758,7 +801,8 @@ phina.define("MainScene", {
 	  	let cnt = 0;
 	  	let control_number = 0;
 	  	let seed = 0;
-	  	let piece_number = 0;
+      let piece_number = 0;
+      let evolve = false;
 	  	while(valid_actions.length === 0){
 	  		console.log("in while");
 	  		// 動かすコマ
@@ -779,8 +823,13 @@ phina.define("MainScene", {
 	  		// どこに動く
 	  		seed = 0;
 	  		piece_number = 0;
-	  		[seed, piece_number] = ctr_num_to_stat_num(control_number, this.NUM_PIECE);
-	  		valid_actions = get_valid_actions(this.board_array, this.piece_seed_list, this.piece_status, seed, piece_number,this.NUM_HEIGHTMASS,this.NUM_WIDTHMASS)
+        [seed, piece_number] = ctr_num_to_stat_num(control_number, this.NUM_PIECE);
+        console.log(this.piece_list[control_number]);
+        if (this.piece_list[control_number].c.evolve) {
+          seed = this.piece_list[control_number].c.evolves_to;
+          evolve = true;
+        }
+        valid_actions = get_valid_actions(this.board_array, this.piece_seed_list, this.piece_status, seed, piece_number,evolve, this.NUM_HEIGHTMASS, this.NUM_WIDTHMASS)
         console.log("valid_actions, control_number,seed, piece_number", valid_actions, control_number, seed, piece_number);
 	  	}
 	  	let action_idx = Math.floor(Math.random() * valid_actions.length);
@@ -845,15 +894,22 @@ phina.define("MainScene", {
     }else{
       let seed = 0;
       let piece_number = 0;
+      let evolve = false;
       [seed, piece_number] = ctr_num_to_stat_num(this.dragging_piece, this.NUM_PIECE);
       console.log("seed,piece_number", seed, piece_number);
-		  let mass = this.piece_list[this.dragging_piece].c.mass;
+      console.log(this.piece_list[this.dragging_piece]);
+      if (this.piece_list[this.dragging_piece].c.evolve) {
+        seed = this.piece_list[this.dragging_piece].c.evolves_to;
+        evolve = true;
+      }
+      console.log("seed", seed);
+      let mass = this.piece_list[this.dragging_piece].c.mass;
 		  this.piece_list[this.dragging_piece].c.previousMass = mass;
       // コマがある場所を光らせる
       this.board_group.mass.children[mass].alpha = 0.5;
       // 将棋盤の当たり判定オブジェクト(マス)のタッチイベントを有効にする
       // 駒が動ける場所だけ
-      let valid_actions = get_valid_actions(this.board_array, this.piece_seed_list, this.piece_status, seed, piece_number, this.NUM_HEIGHTMASS, this.NUM_WIDTHMASS);
+      let valid_actions = get_valid_actions(this.board_array, this.piece_seed_list, this.piece_status, seed, piece_number,evolve, this.NUM_HEIGHTMASS, this.NUM_WIDTHMASS);
       console.log("valid_actions", valid_actions);
       // 動ける場所がなければキャンセルする
       if (valid_actions.length == 0) {
@@ -1007,30 +1063,33 @@ phina.define("MainScene", {
 		console.log("put,action,x,y",mass,mass_x,mass_y);
 		this.piece_list[dragging_piece].c.set_on_mass(mass_x,mass_y);
 
-    this.dragging = false;
     let player = this.piece_status[seed_to_index(seed)][number].player;
     [this.board_array, this.reservePieces, this.done] = syogi_step(this.board_array, this.piece_status, this.reservePieces, this.NUM_PIECE, dragging_piece, action = mass, player = player);
     
 		// 敵のコマを取ったら
     console.log(this.reservePieces);
     this.obtain_piece(player);
+
+    console.log("was_reserve, mass <(3 * this.NUM_WIDTHMASS)", was_reserve, mass < (3 * this.NUM_WIDTHMASS));
+    
+    // 成れる駒が相手側から３ます以内に入ったとき(持ち駒から置いたときを除く)
+    if ((!was_reserve
+      && !this.piece_list[dragging_piece].c.evolve)
+      && mass < (3 * this.NUM_WIDTHMASS)) {
+      this.user_evolve_select_element = Two_choiceQ_Space({ q_text: "成りますか?", Y_text: "はい", N_text: "いいえ" }).addChildTo(this);
+      this.user_evolve_select_element.setPosition(this.gridX.center(), this.gridY.center());
+      this.select_waiting = true;
+    } else {
+		  this.turn = 1;
+    }
+    
     this.put = false;
 		this.put_mass = 0;
-		this.turn = 1;
+    this.dragging = false;
 		if(this.done == true){
 			this.turn = 10;
 			this.game_status = "player win"
     }
-
-    console.log("was_reserve, mass <(3 * this.NUM_WIDTHMASS)", was_reserve, mass< (3 * this.NUM_WIDTHMASS));
-    /*
-    // 成れる駒が相手側から３ます以内に入ったとき(持ち駒から置いたときを除く)
-    if (!was_reserve && mass < (3 * this.NUM_WIDTHMASS)) {
-      this.user_grow_select_element = Two_choiceQ_Space({ q_text:"成りますか?",Y_text: "はい", N_text: "いいえ" }).addChildTo(this);
-      this.user_grow_select_element.setPosition(this.gridX.center(), this.gridY.center());
-    }
-    */
-
   },
   
   // 盤面に駒がどこにあるかの配列を返す

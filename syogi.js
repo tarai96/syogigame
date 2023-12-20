@@ -77,6 +77,7 @@ function is_valid_action(board_array, action, player,NUM_HEIGHTMASS,NUM_WIDTHMAS
   let NUM_ALLMASS = NUM_HEIGHTMASS * NUM_WIDTHMASS;
 	if (action < 0 && action >= NUM_ALLMASS) {
 		// 将棋盤の外
+	  console.log("error,action,board_array[action]",action,board_array[action]);
 		  return false;
 	}	else if (board_array[action] < 0 && player == 0) {
 		// 動こうとするマスにこの駒の味方の駒がいなければ動ける
@@ -94,8 +95,25 @@ function is_valid_action(board_array, action, player,NUM_HEIGHTMASS,NUM_WIDTHMAS
 	}
 }
 
+// 駒種 歩桂香金銀飛角王と金成桂成香成銀竜王竜馬
+// seed 1 2 3 4 5 6 7 8 9   10  11  12  13  14
+// idx  0 1 2 3 4 5 6 7 8   9   10  11  12  13
+function seed_evo_to_og(evo_seed) {
+  let og_seed;
+  if (9 <= evo_seed) {
+    if (evo_seed <= 11) {
+      og_seed = evo_seed - 8;
+    } else if (evo_seed <= 14) {
+      og_seed = evo_seed - 7;
+    }
+  } else {
+    console.log("error evo_seed", evo_seed);
+  }
+  return og_seed;
+}
+
 // 一つの駒を指定し動けるマスを座標で返す
-function get_valid_actions(board_array, piece_seed_list, pieces_status, seed, piece_number,NUM_HEIGHTMASS,NUM_WIDTHMASS) {
+function get_valid_actions(board_array, piece_seed_list, pieces_status, seed, piece_number,is_evolve,NUM_HEIGHTMASS,NUM_WIDTHMASS) {
 	let board = board_array.concat();
   let seed_idx = seed_to_index(seed);
 	let piece_status = pieces_status.concat();
@@ -106,21 +124,27 @@ function get_valid_actions(board_array, piece_seed_list, pieces_status, seed, pi
   for(let i=0;i<NUM_HEIGHTMASS;i++){
     console.log(board_array.slice(i*NUM_WIDTHMASS,(i+1)*NUM_WIDTHMASS));
   }
-
-	if (piece_status[seed_to_index(seed)][piece_number].reserve) {
+  let origin_seed;
+  if (is_evolve) {
+    origin_seed = seed_evo_to_og(seed);
+  } else {
+    origin_seed = seed;
+  }
+  let og_seed_idx = seed_to_index(origin_seed);
+  if (piece_status[og_seed_idx][piece_number].reserve) {
 		return [];
 	}
   // 香車飛車系統
-  if([3,6,7].includes(seed)){
+  if([3,6,7,13,14].includes(seed)){
     let position = 0;
     let action = 0;
-    let player = piece_status[seed_idx][piece_number].player;
-		if(piece_status[seed_idx][piece_number].player == 1){
+    let player = piece_status[og_seed_idx][piece_number].player;
+		if(piece_status[og_seed_idx][piece_number].player == 1){
 			opponent = 1;
-		}else if(piece_status[seed_idx][piece_number].player == 0){
+		}else if(piece_status[og_seed_idx][piece_number].player == 0){
 			opponent = -1;
     }
-    position = piece_status[seed_idx][piece_number].mass;
+    position = piece_status[og_seed_idx][piece_number].mass;
     let x = 0;
     let y = 0;
     [x, y] = mass_to_xy(position, NUM_HEIGHTMASS, NUM_WIDTHMASS);
@@ -129,9 +153,9 @@ function get_valid_actions(board_array, piece_seed_list, pieces_status, seed, pi
     let last_action_x = 0;
     let last_action_y = 0;
     for (let i = 0; i < piece_actions.length; i++) {
-      if (piece_status[seed_idx][piece_number].player == 1) {
+      if (piece_status[og_seed_idx][piece_number].player == 1) {
         action = position - piece_actions[i][0];
-      } else if (piece_status[seed_idx][piece_number].player == 0) {
+      } else if (piece_status[og_seed_idx][piece_number].player == 0) {
         action = position + piece_actions[i][0];
       }
       [last_action_x, last_action_y] = mass_to_xy(position, NUM_HEIGHTMASS, NUM_WIDTHMASS);
@@ -147,9 +171,9 @@ function get_valid_actions(board_array, piece_seed_list, pieces_status, seed, pi
       }
       for(let j =0;j<piece_actions[i].length;j++){
         // 敵のアクションは反転させる
-		    if(piece_status[seed_idx][piece_number].player == 1){
+		    if(piece_status[og_seed_idx][piece_number].player == 1){
           action = position - piece_actions[i][j];
-		    }else if(piece_status[seed_idx][piece_number].player == 0){
+		    }else if(piece_status[og_seed_idx][piece_number].player == 0){
           action = position + piece_actions[i][j];
         }
         console.log("action, NUM_HEIGHTMASS, NUM_WIDTHMASS", action, NUM_HEIGHTMASS, NUM_WIDTHMASS);
@@ -170,7 +194,7 @@ function get_valid_actions(board_array, piece_seed_list, pieces_status, seed, pi
         } else if (last_action_x === NUM_WIDTHMASS - 1 && [-NUM_WIDTHMASS + 1, 1, NUM_WIDTHMASS + 1].includes(action - xy_to_mass(last_action_x, last_action_y, NUM_WIDTHMASS))) {
           //右端にいて画面横端を越えたら
           break;
-        }else if (is_valid_action(board, action, piece_status[seed_idx][piece_number].player, NUM_HEIGHTMASS, NUM_WIDTHMASS)) {
+        }else if (is_valid_action(board, action, piece_status[og_seed_idx][piece_number].player, NUM_HEIGHTMASS, NUM_WIDTHMASS)) {
           // もし動いたとき駒をとるなら終わり
           if (board[action] > 0 && player == 1) {
             valid_actions.push(action);
@@ -192,20 +216,18 @@ function get_valid_actions(board_array, piece_seed_list, pieces_status, seed, pi
     // 駒種のアクションを実際の座標に直す
     let position = 0;
     let action = 0;
-    if(seed === 2){
       console.log("actions",piece_seed_list[seed_idx].actions);
-    }
     for (var i in piece_seed_list[seed_idx].actions) {
-      position = piece_status[seed_idx][piece_number].mass;
+      position = piece_status[og_seed_idx][piece_number].mass;
       // 敵のアクションは反転させる
-		  if(piece_status[seed_idx][piece_number].player == 1){
+		  if(piece_status[og_seed_idx][piece_number].player == 1){
 			  action = position - piece_seed_list[seed_idx].actions[i];
-		  }else if(piece_status[seed_idx][piece_number].player == 0){
+		  }else if(piece_status[og_seed_idx][piece_number].player == 0){
 			  action = position + piece_seed_list[seed_idx].actions[i];
       }else{
 			  console.log("error");
       }
-		  if (is_valid_action(board, action, piece_status[seed_idx][piece_number].player, NUM_HEIGHTMASS, NUM_WIDTHMASS)) {
+		  if (is_valid_action(board, action, piece_status[og_seed_idx][piece_number].player, NUM_HEIGHTMASS, NUM_WIDTHMASS)) {
 			  valid_actions.push(action);
 		  }
 	  }
@@ -233,7 +255,6 @@ function syogi_init(board_array, NUM_WIDTHMASS, NUM_HEIGHTMASS) {
 	console.log(board_array);
 	// メモ配列初期化 var board_array = new Array(NUM_ALLMASS).fill(0);
 	var piece_status = [[], [], [], [], [], [], [], [], [], [], []];
-	var player = 0;
 	var seed = 0;
 	var NUM_PIECE = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 	let control_number = 0;
@@ -264,6 +285,9 @@ function syogi_init(board_array, NUM_WIDTHMASS, NUM_HEIGHTMASS) {
 			j++;
     }
   }
+  // 駒種 歩桂香金銀飛角王と金成桂成香成銀竜王竜馬
+  // seed 1 2 3 4 5 6 7 8 9   10  11  12  13  14
+  // idx  0 1 2 3 4 5 6 7 8   9   10  11  12  13
 	// 駒種クラスの初期化
 	// 各駒種のアクション
 	// メモ actions １次元相対座標そのコマの座標を0として
@@ -273,7 +297,11 @@ function syogi_init(board_array, NUM_WIDTHMASS, NUM_HEIGHTMASS) {
 		actions[i] = [];
 	}
 	*/
-	var actions = [[], [], [], [], [], [],[], [], [], [], [], [], []];
+  let actions = new Array(20);
+  for (let i = 0; i < 20; i++) {
+    actions[i] = [];
+  }
+	//var actions = [[], [], [], [], [], [],[], [], [], [], [], [], []];
 	var cnt = 0;
 	actions[0][0] = -1 * NUM_WIDTHMASS;
 
@@ -310,10 +338,11 @@ function syogi_init(board_array, NUM_WIDTHMASS, NUM_HEIGHTMASS) {
     actions[5][j] = [];
   }
   for (let j = 1; j <= NUM_HEIGHTMASS; j++) {
+    /*
     console.log("actions[5]",actions[5]);
     console.log("actions[5][0]",actions[5][0]);
     console.log("actions[5][0][0]",actions[5][0][0]);
-
+    */
     actions[5][0][j - 1] = -j * NUM_WIDTHMASS;
     actions[5][1][j - 1] = j * NUM_WIDTHMASS;
   }
@@ -347,15 +376,16 @@ function syogi_init(board_array, NUM_WIDTHMASS, NUM_HEIGHTMASS) {
   actions[7][7] = 1 * NUM_WIDTHMASS + 1;
 
   // 竜王
+  actions[8] = actions[5].concat();
+  for (let j = 4; j <= 7; j++) {
+    actions[8][j] = [];
+  }
+  /*
   for (let j = 1; j <= NUM_HEIGHTMASS; j++) {
     actions[8][j - 1] = -j * NUM_WIDTHMASS;
     actions[8][NUM_HEIGHTMASS + j - 1] = j * NUM_WIDTHMASS;
   }
-  actions[8][2 * NUM_HEIGHTMASS + 0] = -1 * NUM_WIDTHMASS - 1;
-  actions[8][2 * NUM_HEIGHTMASS + 1] = -1 * NUM_WIDTHMASS + 1;
-  actions[8][2 * NUM_HEIGHTMASS + 2] = 1 * NUM_WIDTHMASS - 1;
-  actions[8][2 * NUM_HEIGHTMASS + 3] = 1 * NUM_WIDTHMASS + 1;
-  actions[8][2 * NUM_HEIGHTMASS + 4] = j * NUM_WIDTHMASS;
+  //actions[8][2 * NUM_HEIGHTMASS + 4] = j * NUM_WIDTHMASS;
   for (let j = 1; j <= NUM_WIDTHMASS; j++) {
     if (j == 0) {
       continue;
@@ -363,7 +393,17 @@ function syogi_init(board_array, NUM_WIDTHMASS, NUM_HEIGHTMASS) {
     actions[8][2 * NUM_HEIGHTMASS + 5 + j - 1] = -j;
     actions[8][2 * NUM_HEIGHTMASS + 5 + NUM_WIDTHMASS + j - 1] = j;
   }
+  */
+  actions[8][4][0] = -1 * NUM_WIDTHMASS - 1;
+  actions[8][5][0] = -1 * NUM_WIDTHMASS + 1;
+  actions[8][6][0] = 1 * NUM_WIDTHMASS - 1;
+  actions[8][7][0] = 1 * NUM_WIDTHMASS + 1;
   // 竜馬
+  actions[9] = actions[6].concat();
+  for (let j = 4; j <= 7; j++) {
+    actions[9][j] = [];
+  }
+  /*
   for (let j = 1; j <= NUM_HEIGHTMASS; j++) {
     actions[9][j - 1] = -j * NUM_WIDTHMASS - j;
     actions[9][NUM_HEIGHTMASS + j - 1] = -j * NUM_WIDTHMASS + j;
@@ -372,17 +412,26 @@ function syogi_init(board_array, NUM_WIDTHMASS, NUM_HEIGHTMASS) {
     actions[9][2 * NUM_HEIGHTMASS + j - 1] = j * NUM_WIDTHMASS - j;
     actions[9][3 * NUM_HEIGHTMASS + j - 1] = j * NUM_WIDTHMASS + j;
   }
-  actions[9][4 * NUM_HEIGHTMASS] = -1 * NUM_WIDTHMASS;
-  actions[9][4 * NUM_HEIGHTMASS + 1] = 1 * NUM_WIDTHMASS;
-  actions[9][4 * NUM_HEIGHTMASS + 2] = -1;
-  actions[9][4 * NUM_HEIGHTMASS + 3] = 1;
+  */
+  actions[9][4][0] = -1 * NUM_WIDTHMASS;
+  actions[9][5][0] = 1 * NUM_WIDTHMASS;
+  actions[9][6][0] = -1;
+  actions[9][7][0] = 1;
 
-
+  console.log("actions", actions);
 	var piece_seed_list = [];
 
-	for (var i = 0; i < 12; i++) {
+	for (var i = 0; i <= 7; i++) {
 		piece_seed_list.push(new SyogiPiece(actions[i]));
-	}
+  }
+  // 成った後の動きが金と同じ
+  for (var i = 8; i <= 11; i++) {
+		piece_seed_list.push(new SyogiPiece(actions[3]));
+  }
+  for (var i = 8; i <= 9; i++) {
+		piece_seed_list.push(new SyogiPiece(actions[i]));
+  }
+  
 
 	// TODO ほかの初期化追加
   /*
