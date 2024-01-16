@@ -485,9 +485,9 @@ phina.define('Two_choiceQ_Space', {
       width: 300,
       height: 200,
       // TODO 色
-      fill: 'red',
-      stroke: 'lime',
-      strokeWidth: 0,
+      fill: 'white',
+      stroke: 'black',
+      strokeWidth: 10,
       cornerRadius: 0,
     }).addChildTo(this);
     // 質問
@@ -500,7 +500,7 @@ phina.define('Two_choiceQ_Space', {
       width: 75,
       height: 50,
       // TODO 色
-      fill: 'blue',
+      fill: 'black',
       // stroke: 'lime',
       strokeWidth: 0,
       cornerRadius: 0,
@@ -509,11 +509,11 @@ phina.define('Two_choiceQ_Space', {
     this.button_yes.setPosition(-75, 50);
 
     this.button_no = Button({
-      width: 75,
+      width: 95,
       height: 50,
       // TODO 色
-      fill: 'green',
-      // stroke: 'lime',
+      fill: 'black',
+      stroke: 'lime',
       strokeWidth: 0,
       cornerRadius: 0,
       text: N_text,
