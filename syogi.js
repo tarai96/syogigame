@@ -12,7 +12,7 @@ function sum_array(arr) {
 	return sum;
 }
 
-// piece_list‚Ì”Ô†‚©‚çpiece_status‚Ì”Ô†‚Ö
+// piece_listã®ç•ªå·ã‹ã‚‰piece_statusã®ç•ªå·ã¸
 function ctr_num_to_stat_num(control_number, NUM_PIECE) {
   let status_number = control_number;
   if (control_number >= sum_array(NUM_PIECE)) {
@@ -24,7 +24,7 @@ function ctr_num_to_stat_num(control_number, NUM_PIECE) {
 		if (status_number >= NUM_PIECE[seed_idx]) {
       status_number -= NUM_PIECE[seed_idx];
     } else {
-      // seed‚Í‚P‚©‚çn‚Ü‚é
+      // seedã¯ï¼‘ã‹ã‚‰å§‹ã¾ã‚‹
       return [seed_idx+1, status_number];
 		}
 	}
@@ -76,11 +76,11 @@ function is_valid_action(board_array, action, player,NUM_HEIGHTMASS,NUM_WIDTHMAS
   // console.log("action, player",action, player);
   let NUM_ALLMASS = NUM_HEIGHTMASS * NUM_WIDTHMASS;
 	if (action < 0 && action >= NUM_ALLMASS) {
-		// «Šû”Õ‚ÌŠO
+		// å°†æ£‹ç›¤ã®å¤–
 	  console.log("error,action,board_array[action]",action,board_array[action]);
 		  return false;
 	}	else if (board_array[action] < 0 && player == 0) {
-		// “®‚±‚¤‚Æ‚·‚éƒ}ƒX‚É‚±‚Ì‹î‚Ì–¡•û‚Ì‹î‚ª‚¢‚È‚¯‚ê‚Î“®‚¯‚é
+		// å‹•ã“ã†ã¨ã™ã‚‹ãƒã‚¹ã«ã“ã®é§’ã®å‘³æ–¹ã®é§’ãŒã„ãªã‘ã‚Œã°å‹•ã‘ã‚‹
 		  return true;
 	} else if (board_array[action] > 0 && player == 1) {
 		  return true;
@@ -95,7 +95,7 @@ function is_valid_action(board_array, action, player,NUM_HEIGHTMASS,NUM_WIDTHMAS
 	}
 }
 
-// ‹îí •àŒj‹à‹â”òŠp‰¤‚Æ‹à¬Œj¬¬‹â—³‰¤—³”n
+// é§’ç¨® æ­©æ¡‚é¦™é‡‘éŠ€é£›è§’ç‹ã¨é‡‘æˆæ¡‚æˆé¦™æˆéŠ€ç«œç‹ç«œé¦¬
 // seed 1 2 3 4 5 6 7 8 9   10  11  12  13  14
 // idx  0 1 2 3 4 5 6 7 8   9   10  11  12  13
 function seed_evo_to_og(evo_seed) {
@@ -112,7 +112,7 @@ function seed_evo_to_og(evo_seed) {
   return og_seed;
 }
 
-// ˆê‚Â‚Ì‹î‚ğw’è‚µ“®‚¯‚éƒ}ƒX‚ğÀ•W‚Å•Ô‚·
+// ä¸€ã¤ã®é§’ã‚’æŒ‡å®šã—å‹•ã‘ã‚‹ãƒã‚¹ã‚’åº§æ¨™ã§è¿”ã™
 function get_valid_actions(board_array, piece_seed_list, pieces_status, seed, piece_number,is_evolve,NUM_HEIGHTMASS,NUM_WIDTHMASS) {
 	let board = board_array.concat();
   let seed_idx = seed_to_index(seed);
@@ -134,7 +134,7 @@ function get_valid_actions(board_array, piece_seed_list, pieces_status, seed, pi
   if (piece_status[og_seed_idx][piece_number].reserve) {
 		return [];
 	}
-  // Ô”òÔŒn“
+  // é¦™è»Šé£›è»Šç³»çµ±
   if([3,6,7,13,14].includes(seed)){
     let position = 0;
     let action = 0;
@@ -159,18 +159,18 @@ function get_valid_actions(board_array, piece_seed_list, pieces_status, seed, pi
         action = position + piece_actions[i][0];
       }
       [last_action_x, last_action_y] = mass_to_xy(position, NUM_HEIGHTMASS, NUM_WIDTHMASS);
-      //last_action_x -= 1; // ‚í‚´‚Æˆê‚Â‚¸‚ç‚·
-      //last_action_y -= 1; // ‚í‚´‚Æˆê‚Â‚¸‚ç‚·
+      //last_action_x -= 1; // ã‚ã–ã¨ä¸€ã¤ãšã‚‰ã™
+      //last_action_y -= 1; // ã‚ã–ã¨ä¸€ã¤ãšã‚‰ã™
       //console.log("last_action_x,x", last_action_x, x);
       if (x === 0 && [-NUM_WIDTHMASS - 1, -1, NUM_WIDTHMASS - 1].includes(action - position)) {
-        //¶’[‚É‚¢‚Ä‰æ–Ê‰¡’[‚ğ‰z‚¦‚½‚ç
+        //å·¦ç«¯ã«ã„ã¦ç”»é¢æ¨ªç«¯ã‚’è¶ŠãˆãŸã‚‰
         continue;
       } else if (x === NUM_WIDTHMASS - 1 && [-NUM_WIDTHMASS + 1, 1, NUM_WIDTHMASS + 1].includes(action - position)) {
-        //‰E’[‚É‚¢‚Ä‰æ–Ê‰¡’[‚ğ‰z‚¦‚½‚ç
+        //å³ç«¯ã«ã„ã¦ç”»é¢æ¨ªç«¯ã‚’è¶ŠãˆãŸã‚‰
         continue;
       }
       for(let j =0;j<piece_actions[i].length;j++){
-        // “G‚ÌƒAƒNƒVƒ‡ƒ“‚Í”½“]‚³‚¹‚é
+        // æ•µã®ã‚¢ã‚¯ã‚·ãƒ§ãƒ³ã¯åè»¢ã•ã›ã‚‹
 		    if(piece_status[og_seed_idx][piece_number].player == 1){
           action = position - piece_actions[i][j];
 		    }else if(piece_status[og_seed_idx][piece_number].player == 0){
@@ -185,17 +185,17 @@ function get_valid_actions(board_array, piece_seed_list, pieces_status, seed, pi
         //console.log("xsa,ysa",xsa, ysa);
         /*
         if ([6].includes(seed) && (action_x < 0 || NUM_WIDTHMASS <= action_x)) {
-          // ‰æ–Ê‰¡’[‚ğ‰z‚¦‚½‚ç”òÔ
+          // ç”»é¢æ¨ªç«¯ã‚’è¶ŠãˆãŸã‚‰é£›è»Š
           break;
         */
         if (last_action_x === 0 && [-NUM_WIDTHMASS - 1, -1, NUM_WIDTHMASS - 1].includes(action - xy_to_mass(last_action_x, last_action_y, NUM_WIDTHMASS))) {
-          //¶’[‚É‚¢‚Ä‰æ–Ê‰¡’[‚ğ‰z‚¦‚½‚ç
+          //å·¦ç«¯ã«ã„ã¦ç”»é¢æ¨ªç«¯ã‚’è¶ŠãˆãŸã‚‰
           break;
         } else if (last_action_x === NUM_WIDTHMASS - 1 && [-NUM_WIDTHMASS + 1, 1, NUM_WIDTHMASS + 1].includes(action - xy_to_mass(last_action_x, last_action_y, NUM_WIDTHMASS))) {
-          //‰E’[‚É‚¢‚Ä‰æ–Ê‰¡’[‚ğ‰z‚¦‚½‚ç
+          //å³ç«¯ã«ã„ã¦ç”»é¢æ¨ªç«¯ã‚’è¶ŠãˆãŸã‚‰
           break;
         }else if (is_valid_action(board, action, piece_status[og_seed_idx][piece_number].player, NUM_HEIGHTMASS, NUM_WIDTHMASS)) {
-          // ‚à‚µ“®‚¢‚½‚Æ‚«‹î‚ğ‚Æ‚é‚È‚çI‚í‚è
+          // ã‚‚ã—å‹•ã„ãŸã¨ãé§’ã‚’ã¨ã‚‹ãªã‚‰çµ‚ã‚ã‚Š
           if (board[action] > 0 && player == 1) {
             valid_actions.push(action);
             break;
@@ -205,7 +205,7 @@ function get_valid_actions(board_array, piece_seed_list, pieces_status, seed, pi
           }
           valid_actions.push(action);
         }else{
-          // “r’†‚Åi‚ß‚È‚­‚È‚Á‚½‚çI‚í‚è
+          // é€”ä¸­ã§é€²ã‚ãªããªã£ãŸã‚‰çµ‚ã‚ã‚Š
           break;
         }
         last_action_x = action_x;
@@ -213,13 +213,13 @@ function get_valid_actions(board_array, piece_seed_list, pieces_status, seed, pi
       }
     }
   }else{
-    // ‹îí‚ÌƒAƒNƒVƒ‡ƒ“‚ğÀÛ‚ÌÀ•W‚É’¼‚·
+    // é§’ç¨®ã®ã‚¢ã‚¯ã‚·ãƒ§ãƒ³ã‚’å®Ÿéš›ã®åº§æ¨™ã«ç›´ã™
     let position = 0;
     let action = 0;
       console.log("actions",piece_seed_list[seed_idx].actions);
     for (var i in piece_seed_list[seed_idx].actions) {
       position = piece_status[og_seed_idx][piece_number].mass;
-      // “G‚ÌƒAƒNƒVƒ‡ƒ“‚Í”½“]‚³‚¹‚é
+      // æ•µã®ã‚¢ã‚¯ã‚·ãƒ§ãƒ³ã¯åè»¢ã•ã›ã‚‹
 		  if(piece_status[og_seed_idx][piece_number].player == 1){
 			  action = position - piece_seed_list[seed_idx].actions[i];
 		  }else if(piece_status[og_seed_idx][piece_number].player == 0){
@@ -250,10 +250,10 @@ function find_piece_for_mass(piece_status,mass,NUM_PIECE) {
 }
 
 function syogi_init(board_array, NUM_WIDTHMASS, NUM_HEIGHTMASS) {
-	// ”z—ñ‚ğ“Ç‚İ‚ñ‚ÅApiece_status,piece_seed_list,NUM_PIECE‚ğ•Ô‚·
+	// é…åˆ—ã‚’èª­ã¿è¾¼ã‚“ã§ã€piece_status,piece_seed_list,NUM_PIECEã‚’è¿”ã™
 	console.log("board_array");
 	console.log(board_array);
-	// ƒƒ‚”z—ñ‰Šú‰» var board_array = new Array(NUM_ALLMASS).fill(0);
+	// ãƒ¡ãƒ¢é…åˆ—åˆæœŸåŒ– var board_array = new Array(NUM_ALLMASS).fill(0);
 	var piece_status = [[], [], [], [], [], [], [], [], [], [], []];
 	var seed = 0;
 	var NUM_PIECE = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -285,13 +285,13 @@ function syogi_init(board_array, NUM_WIDTHMASS, NUM_HEIGHTMASS) {
 			j++;
     }
   }
-  // ‹îí •àŒj‹à‹â”òŠp‰¤‚Æ‹à¬Œj¬¬‹â—³‰¤—³”n
+  // é§’ç¨® æ­©æ¡‚é¦™é‡‘éŠ€é£›è§’ç‹ã¨é‡‘æˆæ¡‚æˆé¦™æˆéŠ€ç«œç‹ç«œé¦¬
   // seed 1 2 3 4 5 6 7 8 9   10  11  12  13  14
   // idx  0 1 2 3 4 5 6 7 8   9   10  11  12  13
-	// ‹îíƒNƒ‰ƒX‚Ì‰Šú‰»
-	// Še‹îí‚ÌƒAƒNƒVƒ‡ƒ“
-	// ƒƒ‚ actions ‚PŸŒ³‘Š‘ÎÀ•W‚»‚ÌƒRƒ}‚ÌÀ•W‚ğ0‚Æ‚µ‚Ä
-	//              x+y*(‰¡‚Ìƒ}ƒX”)
+	// é§’ç¨®ã‚¯ãƒ©ã‚¹ã®åˆæœŸåŒ–
+	// å„é§’ç¨®ã®ã‚¢ã‚¯ã‚·ãƒ§ãƒ³
+	// ãƒ¡ãƒ¢ actions ï¼‘æ¬¡å…ƒç›¸å¯¾åº§æ¨™ãã®ã‚³ãƒã®åº§æ¨™ã‚’0ã¨ã—ã¦
+	//              x+y*(æ¨ªã®ãƒã‚¹æ•°)
 	/*
 	for (var i = 0; i < 2; i++) {
 		actions[i] = [];
@@ -306,18 +306,18 @@ function syogi_init(board_array, NUM_WIDTHMASS, NUM_HEIGHTMASS) {
 	actions[0][0] = -1 * NUM_WIDTHMASS;
 
   // action
-  // •à
+  // æ­©
   actions[0][0] = -1 * NUM_WIDTHMASS;
-  //Œj”n
+  //æ¡‚é¦¬
   actions[1][0] = -2 * NUM_WIDTHMASS - 1;
   actions[1][1] = -2 * NUM_WIDTHMASS + 1;
-  // Ô
+  // é¦™è»Š
   actions[2][0] = [];
   for (let j = 1; j <= NUM_HEIGHTMASS - 1; j++) {
     actions[2][0][j - 1] = -j * NUM_WIDTHMASS;
   }
   console.log(actions);
-  // ‹à
+  // é‡‘
   actions[3][0] = -1 * NUM_WIDTHMASS - 1;
   actions[3][1] = -1 * NUM_WIDTHMASS;
   actions[3][2] = -1 * NUM_WIDTHMASS + 1;
@@ -325,14 +325,14 @@ function syogi_init(board_array, NUM_WIDTHMASS, NUM_HEIGHTMASS) {
   actions[3][4] = 1;
   actions[3][5] = 1 * NUM_WIDTHMASS;
 
-  // ‹â
+  // éŠ€
   actions[4][0] = -1 * NUM_WIDTHMASS - 1;
   actions[4][1] = -1 * NUM_WIDTHMASS;
   actions[4][2] = -1 * NUM_WIDTHMASS + 1;
   actions[4][3] = 1 * NUM_WIDTHMASS - 1;
   actions[4][4] = 1 * NUM_WIDTHMASS + 1;
 
-  // ”òÔ
+  // é£›è»Š
 
   for(let j = 0;j<4;j++){
     actions[5][j] = [];
@@ -353,7 +353,7 @@ function syogi_init(board_array, NUM_WIDTHMASS, NUM_HEIGHTMASS) {
     actions[5][2][j - 1] = -j;
     actions[5][3][j - 1] = j;
   }
-  // Šp
+  // è§’
   for(let j = 0;j<4;j++){
     actions[6][j] = [];
   }
@@ -365,7 +365,7 @@ function syogi_init(board_array, NUM_WIDTHMASS, NUM_HEIGHTMASS) {
     actions[6][2][j - 1] = j * NUM_WIDTHMASS - j;
     actions[6][3][j - 1] = j * NUM_WIDTHMASS + j;
   }
-  // ‰¤
+  // ç‹
   actions[7][0] = -1 * NUM_WIDTHMASS - 1;
   actions[7][1] = -1 * NUM_WIDTHMASS;
   actions[7][2] = -1 * NUM_WIDTHMASS + 1;
@@ -375,7 +375,7 @@ function syogi_init(board_array, NUM_WIDTHMASS, NUM_HEIGHTMASS) {
   actions[7][6] = 1 * NUM_WIDTHMASS;
   actions[7][7] = 1 * NUM_WIDTHMASS + 1;
 
-  // —³‰¤
+  // ç«œç‹
   actions[8] = actions[5].concat();
   for (let j = 4; j <= 7; j++) {
     actions[8][j] = [];
@@ -398,7 +398,7 @@ function syogi_init(board_array, NUM_WIDTHMASS, NUM_HEIGHTMASS) {
   actions[8][5][0] = -1 * NUM_WIDTHMASS + 1;
   actions[8][6][0] = 1 * NUM_WIDTHMASS - 1;
   actions[8][7][0] = 1 * NUM_WIDTHMASS + 1;
-  // —³”n
+  // ç«œé¦¬
   actions[9] = actions[6].concat();
   for (let j = 4; j <= 7; j++) {
     actions[9][j] = [];
@@ -424,7 +424,7 @@ function syogi_init(board_array, NUM_WIDTHMASS, NUM_HEIGHTMASS) {
 	for (var i = 0; i <= 7; i++) {
 		piece_seed_list.push(new SyogiPiece(actions[i]));
   }
-  // ¬‚Á‚½Œã‚Ì“®‚«‚ª‹à‚Æ“¯‚¶
+  // æˆã£ãŸå¾Œã®å‹•ããŒé‡‘ã¨åŒã˜
   for (var i = 8; i <= 11; i++) {
 		piece_seed_list.push(new SyogiPiece(actions[3]));
   }
@@ -433,7 +433,7 @@ function syogi_init(board_array, NUM_WIDTHMASS, NUM_HEIGHTMASS) {
   }
   
 
-	// TODO ‚Ù‚©‚Ì‰Šú‰»’Ç‰Á
+	// TODO ã»ã‹ã®åˆæœŸåŒ–è¿½åŠ 
   /*
 	console.log("piece_status,piece_seed_list,NUM_PIECE");
 	console.log(piece_status, piece_seed_list, NUM_PIECE);
@@ -441,9 +441,9 @@ function syogi_init(board_array, NUM_WIDTHMASS, NUM_HEIGHTMASS) {
 	return [piece_status, piece_seed_list, NUM_PIECE];
 }
 
-// –ß‚è’l board_array, reserve_pieces, done
+// æˆ»ã‚Šå€¤ board_array, reserve_pieces, done
 function syogi_step(board_array, pieces_status, reserve_pieces,NUM_PIECE, piece_control_number, action, player) {
-  // ˆø”‚Ì”z—ñ‚ğ•Ï‚¦‚½‚­‚È‚¢‚Ì‚ÅƒRƒs[‚ğæ‚é
+  // å¼•æ•°ã®é…åˆ—ã‚’å¤‰ãˆãŸããªã„ã®ã§ã‚³ãƒ”ãƒ¼ã‚’å–ã‚‹
   let board = board_array.concat();
   let piece_status = pieces_status.concat();
   let reserve_piece = reserve_pieces.concat();
@@ -451,14 +451,14 @@ function syogi_step(board_array, pieces_status, reserve_pieces,NUM_PIECE, piece_
   let seed = 0;
   let seed_idx = 0;
   let piece_idx = 0;
-  let reverse = 1; // 1‚È‚ç–¡•û-1‚È‚ç‘Šè
+  let reverse = 1; // 1ãªã‚‰å‘³æ–¹-1ãªã‚‰ç›¸æ‰‹
   
   [seed, piece_idx] = ctr_num_to_stat_num(piece_control_number, NUM_PIECE);
   seed_idx = seed_to_index(seed);
   if ((board[action] < 0 && player == 0) || (board[action] > 0 && player == 1)) {
-    // “®‚±‚¤‚Æ‚·‚éƒ}ƒX‚É‚±‚Ì‹î‚Ì“G‚Ì‹î‚ª‚¢‚ê‚Î
-    // TODO ‰¤‚ğæ‚Á‚½‚Ìˆ—
-    // ‚¿‹î‚É‚·‚éƒRƒ}
+    // å‹•ã“ã†ã¨ã™ã‚‹ãƒã‚¹ã«ã“ã®é§’ã®æ•µã®é§’ãŒã„ã‚Œã°
+    // TODO ç‹ã‚’å–ã£ãŸæ™‚ã®å‡¦ç†
+    // æŒã¡é§’ã«ã™ã‚‹ã‚³ãƒ
     [seed, piece_idx] = find_piece_for_mass(piece_status,action ,NUM_PIECE);
     seed_idx = seed_to_index(seed);
 		console.log(piece_status,seed_idx,piece_idx);
@@ -475,7 +475,7 @@ function syogi_step(board_array, pieces_status, reserve_pieces,NUM_PIECE, piece_
     if([8].includes(seed) === true){
       done = true;
     }
-    // “®‚©‚·ƒRƒ}
+    // å‹•ã‹ã™ã‚³ãƒ
     [seed, piece_idx] = ctr_num_to_stat_num(piece_control_number, NUM_PIECE);
     seed_idx = seed_to_index(seed);
     board[piece_status[seed_idx][piece_idx].mass] = 0;
@@ -488,7 +488,7 @@ function syogi_step(board_array, pieces_status, reserve_pieces,NUM_PIECE, piece_
     board[action] = seed * reverse;
     piece_status[seed_idx][piece_idx].mass = action;
   }else if(piece_status[seed_idx][piece_idx].reserve === true){
-    // ‚¿‹î‚ğ’u‚¢‚½
+    // æŒã¡é§’ã‚’ç½®ã„ãŸ
     piece_status[seed_idx][piece_idx].reserve = false;
     let idx = 0;
     for(let player=0;player<2;player++){
@@ -512,7 +512,7 @@ function syogi_step(board_array, pieces_status, reserve_pieces,NUM_PIECE, piece_
     console.log("error");
     console.log("board, action,player, reserve_piece");
     console.log(board, action, player, reserve_piece);
-    // TODO ƒGƒ‰[ˆ—
+    // TODO ã‚¨ãƒ©ãƒ¼å‡¦ç†
   }
 
   return [board, reserve_piece, done];

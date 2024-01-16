@@ -1,9 +1,9 @@
 // JavaScript source code
-// ƒOƒ[ƒoƒ‹‚É“WŠJ
+// ã‚°ãƒ­ãƒ¼ãƒãƒ«ã«å±•é–‹
 phina.globalize();
-// ƒAƒZƒbƒg
+// ã‚¢ã‚»ãƒƒãƒˆ
 var ASSETS = {
-	// ‰æ‘œ
+	// ç”»åƒ
 	image: {
 	  'hu': "image/syougi14_fuhyou.png",
 	  'tokin' : "image/syougi15_tokin.png",
@@ -33,7 +33,7 @@ phina.define("Piece_class", {
     this.actions = actions;
     this.player = player;
     this.reserve = reserve;
-    this.seed = seed; // ‹îí
+    this.seed = seed; // é§’ç¨®
     this.control_number = control_number;
     this.evolve = evolve;
     this.evolves_to = evolves_to;
@@ -42,7 +42,7 @@ phina.define("Piece_class", {
   set_size: function (width, height) {
     this.parent.width = width;
     this.parent.height = height;
-    // ¬‚Á‚Ä‚È‚¢‚È‚ç‰½‚à‚¢‚¶‚ç‚È‚¢
+    // æˆã£ã¦ãªã„ãªã‚‰ä½•ã‚‚ã„ã˜ã‚‰ãªã„
     //console.log("this.evolves_sprite", this.evolves_sprite);
     if (this.evolve_sprite === null) {
       return;
@@ -52,7 +52,7 @@ phina.define("Piece_class", {
     }
   },
   set_on_mass: function (x, y) {
-    // mainscene‚©‚ç
+    // mainsceneã‹ã‚‰
     let NUM_WIDTHMASS = this.parent.parent.parent.parent.NUM_WIDTHMASS;
     let NUM_HEIGHTMASS = this.parent.parent.parent.parent.NUM_HEIGHTMASS;
 
@@ -61,14 +61,14 @@ phina.define("Piece_class", {
   show: function (x, y, z = 0) {
     this.parent.setPosition(x, y, z);
     let reverce = 0;
-    // “G‚Ì‹î‚È‚ç”½“]
+    // æ•µã®é§’ãªã‚‰åè»¢
     if (this.player == 1) {
       reverce = -1;
     } else {
       reverce = 1;
     }
     this.parent.scaleY = reverce;
-    // ¬‚Á‚Ä‚È‚¢‚È‚ç‰½‚à‚¢‚¶‚ç‚È‚¢
+    // æˆã£ã¦ãªã„ãªã‚‰ä½•ã‚‚ã„ã˜ã‚‰ãªã„
     //console.log("this.evolves_sprite", this.evolves_sprite);
     if (this.evolve_sprite === null) {
       return;
@@ -77,20 +77,20 @@ phina.define("Piece_class", {
     }
     if (this.evolve) {
       this.parent.alpha = 0.5;
-      // ‰æ–ÊŠO‚É’u‚¢‚Æ‚«‚½‚¢
+      // ç”»é¢å¤–ã«ç½®ã„ã¨ããŸã„
       this.parent.setPosition(-500, -500);
       this.evolve_sprite.alpha = 1.0;
       this.evolve_sprite.setPosition(x, y,z);
     } else {
       this.parent.alpha = 1.0;
       this.evolve_sprite.alpha = 0.5;
-      // ‰æ–ÊŠO‚É’u‚¢‚Æ‚«‚½‚¢
+      // ç”»é¢å¤–ã«ç½®ã„ã¨ããŸã„
       this.evolve_sprite.setPosition(-500, -500);
     }
   },
   set_interactive: function (interactive) {
     this.parent.setInteractive(interactive);
-    // ¬‚Á‚Ä‚È‚¢‚È‚ç‰½‚à‚¢‚¶‚ç‚È‚¢
+    // æˆã£ã¦ãªã„ãªã‚‰ä½•ã‚‚ã„ã˜ã‚‰ãªã„
     if (this.evolve_sprite === null) {
       return;
     } else if (this.evolve) {
@@ -107,19 +107,19 @@ phina.define("Piece_class", {
     [mass_x, mass_y] = mass_to_xy(this.mass, NUM_HEIGHTMASS, NUM_WIDTHMASS);
     this.evolve = true;
 
-    // •\¦XV
+    // è¡¨ç¤ºæ›´æ–°
     this.set_on_mass(mass_x, mass_y);
   },
 });
 
 
 phina.define("Hu", {
-	//SpriteƒNƒ‰ƒX‚ğŒp³
+	//Spriteã‚¯ãƒ©ã‚¹ã‚’ç¶™æ‰¿
 	superClass: 'Sprite',
   init: function ({ control_number, mass, actions, player,
     reserve = false, evolve = false,
     f_onpointstart = null }) {
-    // eƒNƒ‰ƒX‰Šú‰»
+    // è¦ªã‚¯ãƒ©ã‚¹åˆæœŸåŒ–
     this.superInit('hu');
     let evolves_to = 9;
     let evolves_sprite = Tokin({before_evolves_sprite :this, f_onpointstart:f_onpointstart});
@@ -133,13 +133,13 @@ phina.define("Hu", {
 });
 
 phina.define("Keima", {
-  //SpriteƒNƒ‰ƒX‚ğŒp³
+  //Spriteã‚¯ãƒ©ã‚¹ã‚’ç¶™æ‰¿
   superClass: 'Sprite',
   init: function ({ control_number, mass, actions, player,
     reserve = false, evolve = false,
     f_onpointstart = null
       }) {
-    // eƒNƒ‰ƒX‰Šú‰»
+    // è¦ªã‚¯ãƒ©ã‚¹åˆæœŸåŒ–
     this.superInit('keima');
     let evolves_to = 10;
     let evolves_sprite = Narikei({before_evolves_sprite :this, f_onpointstart:f_onpointstart});
@@ -153,12 +153,12 @@ phina.define("Keima", {
 });
 
 phina.define("Kyousya", {
-  //SpriteƒNƒ‰ƒX‚ğŒp³
+  //Spriteã‚¯ãƒ©ã‚¹ã‚’ç¶™æ‰¿
   superClass: 'Sprite',
   init: function ({ control_number, mass, actions, player,
     reserve = false, evolve = false,
     f_onpointstart = null }) {
-    // eƒNƒ‰ƒX‰Šú‰»
+    // è¦ªã‚¯ãƒ©ã‚¹åˆæœŸåŒ–
     this.superInit('kyousya');
     let evolves_to = 11;
     let evolves_sprite = Narikyou({before_evolves_sprite :this, f_onpointstart:f_onpointstart});
@@ -172,12 +172,12 @@ phina.define("Kyousya", {
 });
 
 phina.define("Kin", {
-  //SpriteƒNƒ‰ƒX‚ğŒp³
+  //Spriteã‚¯ãƒ©ã‚¹ã‚’ç¶™æ‰¿
   superClass: 'Sprite',
   init: function ({ control_number, mass, actions, player,
     reserve = false, evolve = false,
     evolves_sprite = null, f_onpointstart = null }) {
-    // eƒNƒ‰ƒX‰Šú‰»
+    // è¦ªã‚¯ãƒ©ã‚¹åˆæœŸåŒ–
     this.superInit('kin');
     let evolves_to = 0;
     this.c = Piece_class(4, control_number, mass, actions, player,
@@ -190,12 +190,12 @@ phina.define("Kin", {
 });
 
 phina.define("Gin", {
-  //SpriteƒNƒ‰ƒX‚ğŒp³
+  //Spriteã‚¯ãƒ©ã‚¹ã‚’ç¶™æ‰¿
   superClass: 'Sprite',
   init: function ({ control_number, mass, actions, player,
     reserve = false, evolve = false,
     f_onpointstart = null }) {
-    // eƒNƒ‰ƒX‰Šú‰»
+    // è¦ªã‚¯ãƒ©ã‚¹åˆæœŸåŒ–
     this.superInit('gin');
     let evolves_to = 12;
     let evolves_sprite = Narigin({before_evolves_sprite :this, f_onpointstart:f_onpointstart});
@@ -209,12 +209,12 @@ phina.define("Gin", {
 });
 
 phina.define("Hisya", {
-  //SpriteƒNƒ‰ƒX‚ğŒp³
+  //Spriteã‚¯ãƒ©ã‚¹ã‚’ç¶™æ‰¿
   superClass: 'Sprite',
   init: function ({ control_number, mass, actions, player,
     reserve = false, evolve = false,
     f_onpointstart = null }) {
-    // eƒNƒ‰ƒX‰Šú‰»
+    // è¦ªã‚¯ãƒ©ã‚¹åˆæœŸåŒ–
     this.superInit('hisya');
     let evolves_to = 13;
     let evolves_sprite = Ryuou({before_evolves_sprite :this, f_onpointstart:f_onpointstart});
@@ -228,12 +228,12 @@ phina.define("Hisya", {
 });
 
 phina.define("Kaku", {
-  //SpriteƒNƒ‰ƒX‚ğŒp³
+  //Spriteã‚¯ãƒ©ã‚¹ã‚’ç¶™æ‰¿
   superClass: 'Sprite',
   init: function ({ control_number, mass, actions, player,
     reserve = false, evolve = false,
     f_onpointstart = null }) {
-    // eƒNƒ‰ƒX‰Šú‰»
+    // è¦ªã‚¯ãƒ©ã‚¹åˆæœŸåŒ–
     this.superInit('kaku');
     let evolves_to = 14;
     let evolves_sprite = Ryuma({before_evolves_sprite :this, f_onpointstart:f_onpointstart});
@@ -246,12 +246,12 @@ phina.define("Kaku", {
   },
 });
 phina.define("Osyo", {
-	//SpriteƒNƒ‰ƒX‚ğŒp³
+	//Spriteã‚¯ãƒ©ã‚¹ã‚’ç¶™æ‰¿
 	superClass: 'Sprite',
   init: function ({ control_number, mass, actions, player,
     reserve = false, evolve = false, 
     f_onpointstart = null }) {
-		// eƒNƒ‰ƒX‰Šú‰»
+		// è¦ªã‚¯ãƒ©ã‚¹åˆæœŸåŒ–
     this.superInit('osyo');
     let evolves_to = 0;
     let evolves_sprite = null;
@@ -420,7 +420,7 @@ phina.define('Reserve_Ban',{
 		this.superInit({
       width: 150,
       height: 150,
-      // TODO F
+      // TODO è‰²
       fill: '#BB9657',
       // stroke: 'lime',
       strokeWidth: 0,
@@ -430,7 +430,7 @@ phina.define('Reserve_Ban',{
   },
 	reload: function(){
     let piece_sprite;
-    // ©•ª
+    // è‡ªåˆ†
     let x = -50;
     let y = -50;
     for (let i = 0; i < this.parent.show_timing[this.player].length; i++) {
@@ -484,22 +484,22 @@ phina.define('Two_choiceQ_Space', {
     this.R = RectangleShape({
       width: 300,
       height: 200,
-      // TODO F
+      // TODO è‰²
       fill: 'red',
       stroke: 'lime',
       strokeWidth: 0,
       cornerRadius: 0,
     }).addChildTo(this);
-    // ¿–â
+    // è³ªå•
     this.question = Label('q').addChildTo(this);
     this.question.fontFamily = "'Noto'";
     this.question.setPosition(0, -40);
     this.question.text = q_text;
-    // ƒ{ƒ^ƒ“
+    // ãƒœã‚¿ãƒ³
     this.button_yes = Button({
       width: 75,
       height: 50,
-      // TODO F
+      // TODO è‰²
       fill: 'blue',
       // stroke: 'lime',
       strokeWidth: 0,
@@ -511,7 +511,7 @@ phina.define('Two_choiceQ_Space', {
     this.button_no = Button({
       width: 75,
       height: 50,
-      // TODO F
+      // TODO è‰²
       fill: 'green',
       // stroke: 'lime',
       strokeWidth: 0,
@@ -544,16 +544,16 @@ phina.define('Result',{
 });
 
 /*
- * ƒƒCƒ“ƒV[ƒ“
+ * ãƒ¡ã‚¤ãƒ³ã‚·ãƒ¼ãƒ³
  */
 phina.define("MainScene", {
-	// Œp³
+	// ç¶™æ‰¿
 	superClass: 'DisplayScene',
-	// ‰Šú‰»
+	// åˆæœŸåŒ–
 	init: function() {
-	  // eƒNƒ‰ƒX‰Šú‰»
+	  // è¦ªã‚¯ãƒ©ã‚¹åˆæœŸåŒ–
 	  this.superInit();
-	  // ”wŒiF
+	  // èƒŒæ™¯è‰²
 	  this.backgroundColor = 'skyblue';
 
 	  this.currentMass = 0;
@@ -584,8 +584,8 @@ phina.define("MainScene", {
 	  this.mass_size = 50;
 	  this.BOARD_MARJIN = 5;
 
-	  // ”Õ–Ê‰Šú‰»
-	  // board_array@‘Šè‚Ì‹î‚Íƒ}ƒCƒiƒX
+	  // ç›¤é¢åˆæœŸåŒ–
+	  // board_arrayã€€ç›¸æ‰‹ã®é§’ã¯ãƒã‚¤ãƒŠã‚¹
 	  this.board_array = [-3, -2, -5, -4, -8, -4, -5, -2, -3,
 	  									0, -6, 0, 0, 0, 0, 0, -7, 0,
 	  									-1,-1,-1,-1,-1,-1,-1,-1,-1,
@@ -603,12 +603,12 @@ phina.define("MainScene", {
     this.SUM_PIECE = sum_array(this.NUM_PIECE);
     console.log("piece_status,piece_seed_list,NUM_PIECE");
 	  console.log(this.piece_status,this.piece_seed_list,this.NUM_PIECE);
-	  // ‹î‰Šú‰»
+	  // é§’åˆæœŸåŒ–
 
-	  // ƒƒ‚@game–{‘Ì piece_status[‹îí-1][’Ê‚µ”Ô†]
-	  //       Sprite piece_list[”Ô†] ”Ô†‚Ì‹‚ß•ûi‰¼j(‹îí‚²‚Æ‚Ì‹î‚Ì”‚Ì‚»‚ê‚Ü‚Å‚Ì‡Œv)+(ã‚Ì’Ê‚µ”Ô†)
+	  // ãƒ¡ãƒ¢ã€€gameæœ¬ä½“ piece_status[é§’ç¨®-1][é€šã—ç•ªå·]
+	  //       Sprite piece_list[ç•ªå·] ç•ªå·ã®æ±‚ã‚æ–¹ï¼ˆä»®ï¼‰(é§’ç¨®ã”ã¨ã®é§’ã®æ•°ã®ãã‚Œã¾ã§ã®åˆè¨ˆ)+(ä¸Šã®é€šã—ç•ªå·)
 		let control_number = 0;
-	  //•à no.1
+	  //æ­© no.1
 	  for(let i=0;i<this.NUM_PIECE[0];i++){
       // mass,action,player 
       this.piece_list.push(Hu({
@@ -618,7 +618,7 @@ phina.define("MainScene", {
       }));
       control_number++;
 		}
-    //Œj”n no.2
+    //æ¡‚é¦¬ no.2
     for (let i = 0; i < this.NUM_PIECE[1]; i++) {
       // mass,action,player 
       this.piece_list.push(Keima({
@@ -628,7 +628,7 @@ phina.define("MainScene", {
       }));
 			control_number++;
 		}
-    //Ô no.3
+    //é¦™è»Š no.3
     for (let i = 0; i < this.NUM_PIECE[2]; i++) {
       // mass,action,player 
       this.piece_list.push(Kyousya({
@@ -638,7 +638,7 @@ phina.define("MainScene", {
       }));
 			control_number++;
 		}
-    //‹à no.4
+    //é‡‘ no.4
     for (let i = 0; i < this.NUM_PIECE[3]; i++) {
       // mass,action,player 
       this.piece_list.push(Kin({
@@ -648,7 +648,7 @@ phina.define("MainScene", {
       }));
 			control_number++;
 		}
-    //‹â no.5
+    //éŠ€ no.5
     for (let i = 0; i < this.NUM_PIECE[4]; i++) {
       // mass,action,player 
       this.piece_list.push(Gin({
@@ -658,7 +658,7 @@ phina.define("MainScene", {
       }));
 			control_number++;
 		}
-    //”òÔ no.6
+    //é£›è»Š no.6
     for (let i = 0; i < this.NUM_PIECE[5]; i++) {
       // mass,action,player 
       this.piece_list.push(Hisya({
@@ -668,7 +668,7 @@ phina.define("MainScene", {
       }));
 			control_number++;
 		}
-    //Šp no.7
+    //è§’ no.7
     for (let i = 0; i < this.NUM_PIECE[6]; i++) {
       // mass,action,player 
       this.piece_list.push(Kaku({
@@ -678,7 +678,7 @@ phina.define("MainScene", {
       }));
 			control_number++;
 		}
-	  //‰¤« no.8
+	  //ç‹å°† no.8
 	  for(let i=0;i<this.NUM_PIECE[7];i++){
 		  // mass,action,player 
       this.piece_list.push(Osyo({
@@ -689,8 +689,8 @@ phina.define("MainScene", {
 			control_number++;
 		}
 
-	  // ‚¿‹î‰Šú‰»
-	  // reservePieces 2ŸŒ³”z—ñ 0 ©•ª@1 ‘Šè
+	  // æŒã¡é§’åˆæœŸåŒ–
+	  // reservePieces 2æ¬¡å…ƒé…åˆ— 0 è‡ªåˆ†ã€€1 ç›¸æ‰‹
 	  for(let i = 0; i < 2; i++) { this.reservePieces.push([]); }
 	
 	  // Sprite
@@ -699,14 +699,14 @@ phina.define("MainScene", {
 	  this.board_group.setPosition(this.gridX.center(), this.gridY.center());
  
    	
-	  // ‚¿‹îƒOƒ‹[ƒv
+	  // æŒã¡é§’ã‚°ãƒ«ãƒ¼ãƒ—
 	  this.reserve_group = Reserve_Space().addChildTo(this).setPosition(this.gridX.center(), this.gridY.center());
 	  
 
     console.log("piece_list");
     console.log(this.piece_list);
 
-	  // ‹î
+	  // é§’
 	  for(let i=0;i<this.SUM_PIECE;i++){
 	  	var mass_x = this.piece_list[i].c.mass;
 	  	for(var mass_y = 0;mass_x >= this.NUM_WIDTHMASS;mass_y++){
@@ -721,7 +721,7 @@ phina.define("MainScene", {
 	  }
 	  console.log(this.board_group);
 
-	  // «Šû”Õ‚Ì“–‚½‚è”»’è‚Ü‚·
+	  // å°†æ£‹ç›¤ã®å½“ãŸã‚Šåˆ¤å®šã¾ã™
 	  for (j = 0; j < this.NUM_HEIGHTMASS; j++) {
 	  	for (i = 0; i < this.NUM_WIDTHMASS; i++) {
 	  	// RectangleShape
@@ -730,7 +730,7 @@ phina.define("MainScene", {
           .setPosition(48 * (i - (this.NUM_WIDTHMASS - 1) / 2) + 0,
             52 * (j - (this.NUM_HEIGHTMASS - 1) / 2) + 0)
           .on('pointstart', function () {
-            // ‹î‚ğ’u‚­‚Æ‚«(‚±‚±‚É“®‚­‚±‚Æ‚ÍŠm’è‚µ‚Ä‚¢‚é)
+            // é§’ã‚’ç½®ãã¨ã(ã“ã“ã«å‹•ãã“ã¨ã¯ç¢ºå®šã—ã¦ã„ã‚‹)
             this.parent.parent.parent.put = true;
 	  				this.parent.parent.parent.put_mass = this.number;
 	  			});
@@ -738,24 +738,24 @@ phina.define("MainScene", {
       }
 	  }
 
-	  // ‹î‚Ìƒ^ƒbƒ`‚ğ—LŒø‚É‚·‚é
+	  // é§’ã®ã‚¿ãƒƒãƒã‚’æœ‰åŠ¹ã«ã™ã‚‹
     for (i = 0; i < this.SUM_PIECE; i++){
-      // ©•ª‚Ì‹î‚¾‚¯
+      // è‡ªåˆ†ã®é§’ã ã‘
       if (this.piece_list[i].c.player == 0) {
         this.piece_list[i].c.set_interactive(true);
       }
     }
 	},
-	// –ˆƒtƒŒ[ƒ€XVˆ—
+	// æ¯ãƒ•ãƒ¬ãƒ¼ãƒ æ›´æ–°å‡¦ç†
 	update: function(app) {
 	  console.log("turn",this.turn,"dragging",this.dragging,"pick",this.pick,"put",this.put);
-	  // ©•ª‚Ì”Ô
+	  // è‡ªåˆ†ã®ç•ª
 	  if(this.turn == 0){
       if (this.dragging) {
         /*
         const mouse = app.pointer;
 	  		this.board_group.children[this.dragging_piece+1].setPosition(mouse.x,mouse.y);
-	  		// “–‚½‚è”»’è ‚¿‚å‚Á‚ÆŒõ‚ç‚¹‚é
+	  		// å½“ãŸã‚Šåˆ¤å®š ã¡ã‚‡ã£ã¨å…‰ã‚‰ã›ã‚‹
 	  		for(let i=0;i<this.NUM_WIDTHMASS*this.NUM_HEIGHTMASS;i++){
           if (this.board_group.children[this.dragging_piece+1]
 	  				.hitTestElement(this.board_group.children[i+1+this.SUM_PIECE])){
@@ -781,19 +781,19 @@ phina.define("MainScene", {
         if (clicked) {
           console.log("answer", answer);
           if (answer) {
-            // ¬‚é
+            // æˆã‚‹
             this.piece_list[this.dragging_piece].c.evolves();
           } else {
-            //¬‚ç‚È‚¢
+            //æˆã‚‰ãªã„
           }
-          // ‘Šè‚Ì”Ô
+          // ç›¸æ‰‹ã®ç•ª
           this.turn = 1;
           this.select_waiting = false;
-          // ‘I‘ğƒGƒŒƒƒ“ƒgÁ‹
+          // é¸æŠã‚¨ãƒ¬ãƒ¡ãƒ³ãƒˆæ¶ˆå»
           this.user_evolve_select_element.remove();
         }
       }
-	  // ‘Šè‚Ì”Ô
+	  // ç›¸æ‰‹ã®ç•ª
 	  }else if(this.turn == 1){
       let activePiece;
       // console.log("enemy_pieces", this.get_num_enemy_piece());
@@ -805,7 +805,7 @@ phina.define("MainScene", {
       let evolve = false;
 	  	while(valid_actions.length === 0){
 	  		console.log("in while");
-	  		// “®‚©‚·ƒRƒ}
+	  		// å‹•ã‹ã™ã‚³ãƒ
 	  	  activePiece = Math.floor(Math.random() * this.get_num_enemy_piece());
 	  		console.log("activePiece",activePiece);
         cnt = 0;
@@ -820,7 +820,7 @@ phina.define("MainScene", {
 	  			}
         }
         console.log("control_number",control_number);
-	  		// ‚Ç‚±‚É“®‚­
+	  		// ã©ã“ã«å‹•ã
 	  		seed = 0;
 	  		piece_number = 0;
         [seed, piece_number] = ctr_num_to_stat_num(control_number, this.NUM_PIECE);
@@ -841,22 +841,22 @@ phina.define("MainScene", {
       [this.board_array, this.reservePieces, this.done] = syogi_step(this.board_array, this.piece_status, this.reservePieces, this.NUM_PIECE, piece = control_number, action, player = 1);
 
 	  	console.log("turn:1,piece,action",control_number,action)
-	  	// ‹î‚Ì•\¦ˆÊ’uXV
+	  	// é§’ã®è¡¨ç¤ºä½ç½®æ›´æ–°
 	  	let mass_x = 0;
 	  	let mass_y = 0;
 	  	[mass_x,mass_y] = mass_to_xy(this.piece_list[control_number].c.mass,this.NUM_HEIGHTMASS,this.NUM_WIDTHMASS);
 	  	console.log("action,x,y",this.piece_list[control_number].c.mass,mass_x,mass_y);
 	  	this.piece_list[control_number].c.set_on_mass(mass_x,mass_y);
 
-      // “G‚ÌƒRƒ}‚ğæ‚Á‚½‚ç
+      // æ•µã®ã‚³ãƒã‚’å–ã£ãŸã‚‰
       console.log(this.reservePieces);
       this.obtain_piece(player=1);
 
 	  	this.turn = 0;
-	  	// ƒ^[ƒ“I—¹
-	  	// ‹î‚Ìƒ^ƒbƒ`‚ğ—LŒø‚É‚·‚é
+	  	// ã‚¿ãƒ¼ãƒ³çµ‚äº†
+	  	// é§’ã®ã‚¿ãƒƒãƒã‚’æœ‰åŠ¹ã«ã™ã‚‹
 	  	for(i=0;i<this.SUM_PIECE;i++){
-	  		// ©•ª‚Ì‹î‚¾‚¯
+	  		// è‡ªåˆ†ã®é§’ã ã‘
 	  		if(this.piece_list[i].c.player == 0){
 	  			this.piece_list[i].c.set_interactive(true);
         }
@@ -866,7 +866,7 @@ phina.define("MainScene", {
 	  		this.game_status = "enemy win"
       }
 	  }else if(this.turn == 10){
-	  	 // ƒQ[ƒ€I—¹
+	  	 // ã‚²ãƒ¼ãƒ çµ‚äº†
 	  	 this.show_result();
 	  	 this.turn = 11;
     }
@@ -876,9 +876,9 @@ phina.define("MainScene", {
 
     console.log("SUM_PIECE",this.SUM_PIECE);
     piece_class = sender;
-    // sender ‹î‚ÌƒXƒvƒ‰ƒCƒg
-		// ‹î‚ğ‘I‚Ô‚Æ‚«
-		// ‹î‚Ìƒ^ƒbƒ`‚ğ–³Œø‚É‚·‚é
+    // sender é§’ã®ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆ
+		// é§’ã‚’é¸ã¶ã¨ã
+		// é§’ã®ã‚¿ãƒƒãƒã‚’ç„¡åŠ¹ã«ã™ã‚‹
 		for(i=0;i<this.SUM_PIECE;i++){
 			this.piece_list[i].c.set_interactive(false);
 		}
@@ -905,22 +905,22 @@ phina.define("MainScene", {
       console.log("seed", seed);
       let mass = this.piece_list[this.dragging_piece].c.mass;
 		  this.piece_list[this.dragging_piece].c.previousMass = mass;
-      // ƒRƒ}‚ª‚ ‚éêŠ‚ğŒõ‚ç‚¹‚é
+      // ã‚³ãƒãŒã‚ã‚‹å ´æ‰€ã‚’å…‰ã‚‰ã›ã‚‹
       this.board_group.mass.children[mass].alpha = 0.5;
-      // «Šû”Õ‚Ì“–‚½‚è”»’èƒIƒuƒWƒFƒNƒg(ƒ}ƒX)‚Ìƒ^ƒbƒ`ƒCƒxƒ“ƒg‚ğ—LŒø‚É‚·‚é
-      // ‹î‚ª“®‚¯‚éêŠ‚¾‚¯
+      // å°†æ£‹ç›¤ã®å½“ãŸã‚Šåˆ¤å®šã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ(ãƒã‚¹)ã®ã‚¿ãƒƒãƒã‚¤ãƒ™ãƒ³ãƒˆã‚’æœ‰åŠ¹ã«ã™ã‚‹
+      // é§’ãŒå‹•ã‘ã‚‹å ´æ‰€ã ã‘
       let valid_actions = get_valid_actions(this.board_array, this.piece_seed_list, this.piece_status, seed, piece_number,evolve, this.NUM_HEIGHTMASS, this.NUM_WIDTHMASS);
       console.log("valid_actions", valid_actions);
-      // “®‚¯‚éêŠ‚ª‚È‚¯‚ê‚ÎƒLƒƒƒ“ƒZƒ‹‚·‚é
+      // å‹•ã‘ã‚‹å ´æ‰€ãŒãªã‘ã‚Œã°ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã™ã‚‹
       if (valid_actions.length == 0) {
         console.log("cancel");
         this.pick = false;
         this.num_pick_piece = 0;
-        // ƒRƒ}‚ª‚ ‚éêŠ‚ğˆÃ‚­‚·‚é
+        // ã‚³ãƒãŒã‚ã‚‹å ´æ‰€ã‚’æš—ãã™ã‚‹
         this.board_group.mass.children[mass].alpha = 0.0;
-        // ‹î‚Ìƒ^ƒbƒ`‚ğ—LŒø‚É‚·‚é
+        // é§’ã®ã‚¿ãƒƒãƒã‚’æœ‰åŠ¹ã«ã™ã‚‹
         for (i = 0; i < this.SUM_PIECE; i++) {
-          // ©•ª‚Ì‹î‚¾‚¯
+          // è‡ªåˆ†ã®é§’ã ã‘
           if (this.piece_list[i].c.player == 0) {
             this.piece_list[i].c.set_interactive(true);
           }
@@ -929,7 +929,7 @@ phina.define("MainScene", {
       for (let j = 0; j < this.NUM_WIDTHMASS * this.NUM_HEIGHTMASS; j++){
 		  	if(valid_actions.includes(j)){
           this.board_group.mass.children[j].setInteractive(true);
-          // ƒRƒ}‚ª“®‚¯‚é‚Æ‚±‚ë‚ğŒõ‚ç‚¹‚é
+          // ã‚³ãƒãŒå‹•ã‘ã‚‹ã¨ã“ã‚ã‚’å…‰ã‚‰ã›ã‚‹
           this.board_group.mass.children[j].alpha = 0.5;
 		  	}
 		  }
@@ -937,7 +937,7 @@ phina.define("MainScene", {
 		this.pick = false;
 		this.num_pick_piece = 0;
   },
-  // pick_piece‚Ì’†‚É–„‚ß‚Ş
+  // pick_pieceã®ä¸­ã«åŸ‹ã‚è¾¼ã‚€
   pick_reserve_piece: function () {
     console.log("pick_reserve_piece");
     NUM_HEIGHTMASS = this.NUM_HEIGHTMASS;
@@ -947,7 +947,7 @@ phina.define("MainScene", {
     let piece_number = 0;
     [seed, piece_number] = ctr_num_to_stat_num(pick_piece, this.NUM_PIECE);
     let player = this.piece_status[seed_to_index(seed)][piece_number].player;
-    // ‹ó‚Ì‚Ü‚·‚ğŒõ‚ç‚¹‚Äƒ^ƒbƒ`‚ğ—LŒø‚É‚·‚é
+    // ç©ºã®ã¾ã™ã‚’å…‰ã‚‰ã›ã¦ã‚¿ãƒƒãƒã‚’æœ‰åŠ¹ã«ã™ã‚‹
     let empty_mass = this.get_empty_mass();
     for (let i = 0; i < empty_mass.length; i++) {
       this.board_group.mass.children[empty_mass[i]].alpha = 0.5;
@@ -964,7 +964,7 @@ phina.define("MainScene", {
           dummy_board[mass_to_xy(j, i, this.NUM_WIDTHMASS)] = seed * player;
           // dummy_valid_actions = get_valid_actions(this.board_array, this.piece_seed_list, this.piece_status, seed, piece_number, this.NUM_HEIGHTMASS, this.NUM_WIDTHMASS);
           
-          // ’u‚¯‚È‚¢ƒ}ƒX‚ÍŒõ‚ğÁ‚·ƒ^ƒbƒ`–³Œø
+          // ç½®ã‘ãªã„ãƒã‚¹ã¯å…‰ã‚’æ¶ˆã™ã‚¿ãƒƒãƒç„¡åŠ¹
           if (dummy_valid_actions == []) {
             mass = xy_to_mass(j, i); 
             this.board_group.mass.children[mass].alpha = 0.0;
@@ -1022,8 +1022,8 @@ phina.define("MainScene", {
   },
 
 	put_piece: function(){
-    // ‹î‚ğ’u‚­‚Æ‚«(‚±‚±‚É“®‚­‚±‚Æ‚ÍŠm’è‚µ‚Ä‚¢‚é)
-    // piece ‚Í’Ê‚µ”Ô†
+    // é§’ã‚’ç½®ãã¨ã(ã“ã“ã«å‹•ãã“ã¨ã¯ç¢ºå®šã—ã¦ã„ã‚‹)
+    // piece ã¯é€šã—ç•ªå·
     let mass = this.put_mass;
     // console.log("put_mass", mass);
     let dragging_piece = this.dragging_piece;
@@ -1037,7 +1037,7 @@ phina.define("MainScene", {
       this.piece_list[dragging_piece].addChildTo(this.board_group.pieces);
       this.reserve_group.del_piece(dragging_piece, this.piece_list);
     }
-    // Œõ‚ç‚¹‚½êŠ‚ğˆÃ‚­‚·‚é
+    // å…‰ã‚‰ã›ãŸå ´æ‰€ã‚’æš—ãã™ã‚‹
     for (let i = 0; i < this.NUM_ALLMASS; i++){
       this.board_group.mass.children[i].alpha = 0.0;
       this.board_group.mass.children[i].setInteractive(false);
@@ -1048,14 +1048,14 @@ phina.define("MainScene", {
     let valid_actions = get_valid_actions(this.board_array, this.piece_seed_list, this.piece_status, seed, number);
     for (let l = 0; l < this.NUM_WIDTHMASS * this.NUM_HEIGHTMASS; l++) {
       if (valid_actions.includes(l)) {
-        // ƒ^ƒbƒ`ƒCƒxƒ“ƒg‚ğ–³Œø‚É‚·‚é
+        // ã‚¿ãƒƒãƒã‚¤ãƒ™ãƒ³ãƒˆã‚’ç„¡åŠ¹ã«ã™ã‚‹
         this.board_group.mass.children[l].set_interactive(false);
-        // Œõ‚ç‚¹‚½êŠ‚ğˆÃ‚­‚·‚é
+        // å…‰ã‚‰ã›ãŸå ´æ‰€ã‚’æš—ãã™ã‚‹
         this.board_group.mass.children[l].alpha = 0.0;
       }
     }
     */
-		// ‹î‚Ì•\¦ˆÊ’uXV
+		// é§’ã®è¡¨ç¤ºä½ç½®æ›´æ–°
     this.piece_list[dragging_piece].c.mass = mass;
 		let mass_x = 0;
 		let mass_y = 0;
@@ -1066,17 +1066,17 @@ phina.define("MainScene", {
     let player = this.piece_status[seed_to_index(seed)][number].player;
     [this.board_array, this.reservePieces, this.done] = syogi_step(this.board_array, this.piece_status, this.reservePieces, this.NUM_PIECE, dragging_piece, action = mass, player = player);
     
-		// “G‚ÌƒRƒ}‚ğæ‚Á‚½‚ç
+		// æ•µã®ã‚³ãƒã‚’å–ã£ãŸã‚‰
     console.log(this.reservePieces);
     this.obtain_piece(player);
 
     console.log("was_reserve, mass <(3 * this.NUM_WIDTHMASS)", was_reserve, mass < (3 * this.NUM_WIDTHMASS));
     
-    // ¬‚ê‚é‹î‚ª‘Šè‘¤‚©‚ç‚R‚Ü‚·ˆÈ“à‚É“ü‚Á‚½‚Æ‚«(‚¿‹î‚©‚ç’u‚¢‚½‚Æ‚«‚ğœ‚­)
+    // æˆã‚Œã‚‹é§’ãŒç›¸æ‰‹å´ã‹ã‚‰ï¼“ã¾ã™ä»¥å†…ã«å…¥ã£ãŸã¨ã(æŒã¡é§’ã‹ã‚‰ç½®ã„ãŸã¨ãã‚’é™¤ã)
     if ((!was_reserve
       && !this.piece_list[dragging_piece].c.evolve)
       && mass < (3 * this.NUM_WIDTHMASS)) {
-      this.user_evolve_select_element = Two_choiceQ_Space({ q_text: "¬‚è‚Ü‚·‚©?", Y_text: "‚Í‚¢", N_text: "‚¢‚¢‚¦" }).addChildTo(this);
+      this.user_evolve_select_element = Two_choiceQ_Space({ q_text: "æˆã‚Šã¾ã™ã‹?", Y_text: "ã¯ã„", N_text: "ã„ã„ãˆ" }).addChildTo(this);
       this.user_evolve_select_element.setPosition(this.gridX.center(), this.gridY.center());
       this.select_waiting = true;
     } else {
@@ -1092,7 +1092,7 @@ phina.define("MainScene", {
     }
   },
   
-  // ”Õ–Ê‚É‹î‚ª‚Ç‚±‚É‚ ‚é‚©‚Ì”z—ñ‚ğ•Ô‚·
+  // ç›¤é¢ã«é§’ãŒã©ã“ã«ã‚ã‚‹ã‹ã®é…åˆ—ã‚’è¿”ã™
   get_piece_mass: function(number_piece){
     let mass_list =[];
     for(var j = 0; j<NUM_HEIGHTMASS;j++){
@@ -1131,7 +1131,7 @@ phina.define("MainScene", {
     console.log(empty_mass);
     return empty_mass;
   },
-  // ‰½‚à‚È‚¢ƒ}ƒX‚ğŒõ‚ç‚¹‚é
+  // ä½•ã‚‚ãªã„ãƒã‚¹ã‚’å…‰ã‚‰ã›ã‚‹
   flash_empty_mass: function () {
     for (let i = 0; i < this.NUM_ALLMASS; i++) {
       if (this.board_array[i] == 0) {
@@ -1140,11 +1140,11 @@ phina.define("MainScene", {
       }
     }
   },
-  // ‹î‚ğ‚Æ‚é
+  // é§’ã‚’ã¨ã‚‹
   obtain_piece: function (player) {
     for (let i = 0; i < this.reservePieces[player].length; i++) {
       ctr_num = this.reservePieces[player][i];
-      // ‚Ü‚¾ƒpƒ‰ƒ[ƒ^‚ğXV‚µ‚Ä‚¢‚È‚¯‚ê‚Î
+      // ã¾ã ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’æ›´æ–°ã—ã¦ã„ãªã‘ã‚Œã°
       if (this.piece_list[ctr_num].c.reserve == false) {
         this.piece_list[ctr_num].c.reserve = true;
         this.piece_list[ctr_num].c.mass = -1;
@@ -1174,25 +1174,25 @@ phina.define("MainScene", {
       cornerRadius: 0
     }).addChildTo(result_elements);
 		rect.alpha = 0.7;
-		// ƒ‰ƒxƒ‹•\¦
+		// ãƒ©ãƒ™ãƒ«è¡¨ç¤º
 		let label = Label(this.game_status).addChildTo(result_elements);
 		// label.setPosition(result_elements.gridX.center(), result_elements.gridY.center());
   }
 });
 
 /*
- * ƒƒCƒ“ˆ—
+ * ãƒ¡ã‚¤ãƒ³å‡¦ç†
  */
 phina.main(function() {
-	// ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ğ¶¬
+	// ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚’ç”Ÿæˆ
 	var app = GameApp({
-	// MainScene ‚©‚çŠJn
+	// MainScene ã‹ã‚‰é–‹å§‹
 	startLabel: 'main',
-	// ƒAƒZƒbƒg“Ç‚İ‚İ
+	// ã‚¢ã‚»ãƒƒãƒˆèª­ã¿è¾¼ã¿
 	assets: ASSETS,
 	});
-	// fps•\¦
+	// fpsè¡¨ç¤º
 	app.enableStats();
-	// Às
+	// å®Ÿè¡Œ
 	app.run();
 });

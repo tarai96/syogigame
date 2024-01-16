@@ -1,4 +1,4 @@
-// ‰æ–Ê‚ÌÀ•W
+// ç”»é¢ã®åº§æ¨™
 class Point{
   constructor(x, y) {
     this.x = x;
@@ -13,7 +13,7 @@ class Size{
     }
 }
 
-// «Šû”Õã‚ÌÀ•W
+// å°†æ£‹ç›¤ä¸Šã®åº§æ¨™
 class Position{
   constructor(x, y) {
     this.x = x;

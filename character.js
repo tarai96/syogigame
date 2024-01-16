@@ -15,23 +15,23 @@ function CharacterShot() {
 }
 
 CharacterShot.prototype.set = function (p, size, speed) {
-    // À•W‚ğƒZƒbƒg
+    // åº§æ¨™ã‚’ã‚»ãƒƒãƒˆ
     this.position.x = p.x;
     this.position.y = p.y;
 
-    // ƒTƒCƒYAƒXƒs[ƒh‚ğƒZƒbƒg
+    // ã‚µã‚¤ã‚ºã€ã‚¹ãƒ”ãƒ¼ãƒ‰ã‚’ã‚»ãƒƒãƒˆ
     this.size = size;
     this.speed = speed;
 
-    // ¶‘¶ƒtƒ‰ƒO‚ğ—§‚Ä‚é
+    // ç”Ÿå­˜ãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
     this.alive = true;
 };
 
 CharacterShot.prototype.move = function () {
-  // À•W‚ğ^ã‚Éspeed•ª‚¾‚¯ˆÚ“®‚³‚¹‚é
+  // åº§æ¨™ã‚’çœŸä¸Šã«speedåˆ†ã ã‘ç§»å‹•ã•ã›ã‚‹
   this.position.y -= this.speed;
 
-  // ˆê’èˆÈã‚ÌÀ•W‚É“’B‚µ‚Ä‚¢‚½‚ç¶‘¶ƒtƒ‰ƒO‚ğ~‚ë‚·
+  // ä¸€å®šä»¥ä¸Šã®åº§æ¨™ã«åˆ°é”ã—ã¦ã„ãŸã‚‰ç”Ÿå­˜ãƒ•ãƒ©ã‚°ã‚’é™ã‚ã™
   if (this.position.y < -this.size) {
       this.alive = false;
   }
@@ -48,7 +48,7 @@ class SyogiPieceStatus{
   constructor(seed, control_number, player, mass = 0, reserve = false){
     this.seed = seed;
     this.control_number = control_number;
-    // 0(è‘O),1(‰œ)
+    // 0(æ‰‹å‰),1(å¥¥)
      this.player = player;
      this.mass = mass;
      this.reserve = reserve;
