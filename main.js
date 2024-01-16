@@ -282,7 +282,7 @@ phina.define("Narikei", {
     this.before_evolves = before_evolves_sprite;
     this.on("pointstart", function () {
       this.parent.parent.parent.pick = true;
-      this.parent.parent.parent.num_pick_piece = this.before_evolves_sprite.c.control_number;
+      this.parent.parent.parent.num_pick_piece = this.before_evolves.c.control_number;
     });
   },
 });
@@ -1169,11 +1169,11 @@ phina.define("MainScene", {
       width: 300,
       height: 200,
       fill: '#5BA8D9',
-      // stroke: 'lime',
-      strokeWidth: 0,
+      stroke: 'black',
+      strokeWidth: 5,
       cornerRadius: 0
     }).addChildTo(result_elements);
-		rect.alpha = 0.7;
+		rect.alpha = 0.9;
 		// ラベル表示
 		let label = Label(this.game_status).addChildTo(result_elements);
 		// label.setPosition(result_elements.gridX.center(), result_elements.gridY.center());
